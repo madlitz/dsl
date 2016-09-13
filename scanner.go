@@ -30,13 +30,12 @@ type Scanner struct {
 	buf struct {
 		runes     []rune
 		unread    int
-        unpeeked  int
 	}
 	curLineBuffer bytes.Buffer
 	curLine       int
 	curPos        int
 	options       ScanOptions
-	expRunes     []rune
+	expRunes      []rune
 	tok           Token
 	error         *Error
     logger        *dslLogger
@@ -81,7 +80,6 @@ type ScanOptions struct {
 	Multiple bool
 	Invert   bool
 	Skip     bool
-    Peek     bool
     Error    func(*Scanner)
 }
 
@@ -148,10 +146,10 @@ func (s *Scanner) Expect(expect ExpectRune) {
     }
 	for {
 		found = false
-		rn = s.read(expect.Options.Peek)
+		rn = s.read()
 		for _, branch := range expect.Branches {
 			if branch.Rn == rn {
-				if !expect.Options.Invert && !expect.Options.Peek{
+				if !expect.Options.Invert{
 					s.consume(rn, found1orMore, expect.Options.Skip)
 				}
 				found1orMore = true
@@ -327,22 +325,13 @@ func (s *Scanner) scan() (Token, *Error) {
 // bufio reader s.r if it hasn't already been read. Using another buffer
 // s.buf means we can read and unread as many runes as we like.
 //
-func (s *Scanner) read(peeking bool) rune {
+func (s *Scanner) read() rune {
 
-    if peeking {
-        if s.buf.unpeeked > 0 {
-            rn := s.buf.runes[len(s.buf.runes)-s.buf.unpeeked]
-            s.buf.unpeeked--
-            return rn
-        }
-    } else {
-        s.buf.unpeeked = s.buf.unread
-        if s.buf.unread > 0{
-            rn := s.buf.runes[len(s.buf.runes)-s.buf.unread]
-            s.buf.unread--
-        return rn
-        }
-    }
+	if s.buf.unread > 0{
+		rn := s.buf.runes[len(s.buf.runes)-s.buf.unread]
+		s.buf.unread--
+		return rn
+	}
 	
 	rn, _, err := s.r.ReadRune() // We don't use s.r.UnreadRune as it can only be called once
     
@@ -355,9 +344,6 @@ func (s *Scanner) read(peeking bool) rune {
 		s.curLineBuffer.WriteRune(rn)
 	}
 	s.buf.runes = append(s.buf.runes, rn)
-    if peeking{
-        s.buf.unread++
-    }
     
 	// Assume an err means we have reached End of File
 	if err != nil {
@@ -371,7 +357,6 @@ func (s *Scanner) read(peeking bool) rune {
 func (s *Scanner) unread() {
 	if s.buf.unread < len(s.buf.runes) { // Ensure we don't unread more runes than have been read
 		s.buf.unread++
-        s.buf.unpeeked++
 	}
 }
 
