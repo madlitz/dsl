@@ -22,9 +22,9 @@ import (
 // to keep track of where the next node should be added.
 //
 type AST struct {
-	ns       NodeSet
-	RootNode *Node
-	curNode  *Node
+	ns       NodeSet	`json:"-"`
+	RootNode *Node		`json:"root"`
+	curNode  *Node		`json:"-"`
 }
 
 // newAST returns a new instance of AST. The RootNode has the

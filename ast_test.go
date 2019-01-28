@@ -4,8 +4,14 @@
 
 package dsl
 
-import "testing"
+import (
+	"bufio"
+	"bytes"
+	"testing"
+    "os"
+    "github.com/deslittle/go-dsl"
+)
 
-func TestAST(t *testing.T) {
+func TestPrintAST(t *testing.T) {
 
 }

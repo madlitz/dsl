@@ -192,14 +192,16 @@ func (s *Scanner) Expect(expect ExpectRune) {
 		strings := append(branchesToStrings(expect.Branches), branchRangesToStrings(expect.BranchRanges)...)
 		s.error = s.newError(RUNE_EXPECTED_NOT_FOUND, fmt.Errorf("Found [%v], expected any except %v", string(rn), strings))
 	}
+
 	return
 }
 
 func (s *Scanner) consume(rn rune, found1orMore bool, skip bool) {
 	if logenb{
         if !found1orMore {
+			s.log(fmt.Sprintf("Pos:%v ", s.curPos), NO_PREFIX)
             s.log("Found: ", NO_PREFIX)
-            s.log(sanitize(string(rn), true), NO_PREFIX)
+			s.log(sanitize(string(rn), true), NO_PREFIX)
         } else {
             s.log(", ", NO_PREFIX)
             s.log(sanitize(string(rn), true), NO_PREFIX)
@@ -208,14 +210,17 @@ func (s *Scanner) consume(rn rune, found1orMore bool, skip bool) {
 	if !skip {
 		s.expRunes = append(s.expRunes, rn)
 	}
-    if logenb{
-       s.log(fmt.Sprintf("Pos:%v", s.curPos), NO_PREFIX)
-    }
     s.curPos++
     if rn == '\n' {
        s.curLine++
 	   s.curPos = 1
-    }
+	   s.curLineBuffer.Reset()
+	   if logenb{
+		 s.log(fmt.Sprintf("Line %v:", s.curLine + 1), STARTLINE)
+	   }
+	}else {
+		s.curLineBuffer.WriteRune(rn)
+	}
 }
 
 func (s *Scanner) Call(fn func(*Scanner)) {
@@ -315,7 +320,7 @@ func (s *Scanner) newError(code ErrorCode, err error) *Error {
 func (s *Scanner) scan() (Token, *Error) {
 	s.init()
     if logenb{
-	   s.log("Scanning: "+getFuncName(s.fn), INCREMENT)
+	   s.log("Scanning: "+getFuncName(s.fn), INCREMENT) 
 	   defer s.log("Returning: "+getFuncName(s.fn), DECREMENT) // use defer keyword to log after the fn has returned
     }
     return s.fn(s), s.error                                 // Call the user ScanFunc with a reference to the p.s scanner
@@ -335,14 +340,6 @@ func (s *Scanner) read() rune {
 	
 	rn, _, err := s.r.ReadRune() // We don't use s.r.UnreadRune as it can only be called once
     
-	if rn == '\n' {
-		s.curLineBuffer.Reset()
-        if logenb{
-		  s.log(fmt.Sprintf("Line %v:", s.curLine), STARTLINE)
-        }
-    } else {
-		s.curLineBuffer.WriteRune(rn)
-	}
 	s.buf.runes = append(s.buf.runes, rn)
     
 	// Assume an err means we have reached End of File
@@ -448,9 +445,9 @@ func (s *Scanner) log(msg string, indent indent) {
 func (s *Scanner) getLine() string {
 	var numRunes int
 	var tempBuffer bytes.Buffer
-
+	
 	tempBuffer.WriteString(s.curLineBuffer.String())
-	_ = s.read()
+
 	for {
 		rn := s.read()
 		numRunes++

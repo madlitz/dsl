@@ -8,7 +8,7 @@ import (
 	"bufio"
 	"bytes"
 	"testing"
-    "github.com/deslittle/go-dsl"
+    "github.com/Autoblocks/go-dsl"
 )
 
 func TestDSL(t *testing.T) {

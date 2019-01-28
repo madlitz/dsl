@@ -1,7 +1,7 @@
 package mydsl
 
 import(
-    "github.com/deslittle/go-dsl"
+    "github.com/Autoblocks/go-dsl"
 )
 
 func NewNodeSet() dsl.NodeSet{

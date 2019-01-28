@@ -11,10 +11,10 @@ package dsl
 // add one token per node.
 //
 type Node struct {
-	Type     string
-	Tokens   []Token
-	Parent   *Node
-	Children []*Node
+	Type     string		`json:"type"`
+	Tokens   []Token 	`json:"tokens"`
+	Parent   *Node 		`json:"-"`
+	Children []*Node 	`json:"children"`
 }
 
 type NodeSet map[string]int

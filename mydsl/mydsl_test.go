@@ -8,9 +8,34 @@ import (
 	"bufio"
 	"bytes"
 	"testing"
-    "os"
-    "github.com/deslittle/go-dsl"
+	"os"
+	"encoding/json"
+	"fmt"
+    "github.com/Autoblocks/go-dsl"
 )
+
+func TestPrintAST(t *testing.T) {
+	reader := bytes.NewBufferString(
+		`a := 1 * 5 + 7
+		b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
+		double(a + b)`)
+	bufreader := bufio.NewReader(reader)
+	ts := NewTokenSet()
+    ns := NewNodeSet()
+    logfilename := "log.txt"
+    logfile, err := os.Create(logfilename)
+    if err != nil {
+		t.Fatal("Error: Could not create log file " + logfilename + ": " + err.Error())
+	}
+	ast, _ := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	logfile.Close()
+	
+	astjson, _ := json.Marshal(ast)
+	fmt.Print(astjson)
+	if(string(astjson) != `{"root": "1"}`){
+		t.Errorf("JSON malformed.")
+	}
+}
 
 func TestDSL(t *testing.T) {
 	
