@@ -1,0 +1,10 @@
+Line 1: 
+Parsing: github.com/Autoblocks/go-dsl/mydsl.Parse
+Expect Token (Multiple ): [VARIABLE EOF] 
+	Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
+	Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
+	Expect () Rune: [- + * / ( ) NL : ' EOF] Range: [0-9 A-Z a-z] 
+***Found [_], expected any of [- + * / ( ) NL : ' EOF 0-9 A-Z a-z]
+	Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
+***Found [UNKNOWN], expected any of [VARIABLE EOF]
+Returning: github.com/Autoblocks/go-dsl/mydsl.Parse

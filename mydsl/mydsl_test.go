@@ -22,7 +22,7 @@ func TestPrintAST(t *testing.T) {
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
     ns := NewNodeSet()
-    logfilename := "log.txt"
+    logfilename := "TestPrintAST.log"
     logfile, err := os.Create(logfilename)
     if err != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + err.Error())
@@ -46,10 +46,10 @@ double(a + b)`)
 	bufreader := bufio.NewReader(reader)
     ts := NewTokenSet()
     ns := NewNodeSet()
-    logfilename := "log.txt"
-    logfile, err := os.Create(logfilename)
-    if err != nil {
-		t.Fatal("Error: Could not create log file " + logfilename + ": " + err.Error())
+    logfilename := "TestDSL.log"
+    logfile, fileErr := os.Create(logfilename)
+    if fileErr != nil {
+		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
 	}
 	ast, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
     logfile.Close()
@@ -129,7 +129,12 @@ func TestTokenExpectedButNotFoundError(t *testing.T) {
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
-	_, errs := dsl.Parse(Parse, Scan, ts, ns, bufreader)
+	logfilename := "TestTokenExpectedButNotFoundError.log"
+    logfile, fileErr := os.Create(logfilename)
+    if fileErr != nil {
+		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
+	}
+	_, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
 
 	if len(errs) != 1 {
 		t.Fail()
@@ -163,7 +168,12 @@ func TestRuneExpectedButNotFoundError(t *testing.T) {
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
-	_, errs := dsl.Parse(Parse, Scan, ts, ns, bufreader)
+	logfilename := "TestRuneExpectedButNotFoundError.log"
+    logfile, fileErr := os.Create(logfilename)
+    if fileErr != nil {
+		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
+	}
+	_, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
 
 	if len(errs) != 1 {
 		t.Fail()

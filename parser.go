@@ -31,6 +31,7 @@ type Parser struct {
 	tokens []Token // Holds all tokens consumed until they are moved to the AST
 	errors []Error
 	eof    bool
+	err	   bool
 }
 
 // newParser returns an instance of a Parser
@@ -101,6 +102,11 @@ func (p *Parser) Expect(expect ExpectToken) {
 	//var found1inverted bool
 	var tok Token
 	var err *Error
+
+	//If we have previously found an error but have not yet recovered with p.Recover, skip any call to p.Expect.
+	if p.err{
+		return
+	}
     if logenb{
         p.log(fmt.Sprintf("Expect Token %v: %v ", getParseOptions(expect.Options), branchTokensToStrings(expect.Branches)), NEWLINE)
     }
@@ -143,7 +149,7 @@ func (p *Parser) Expect(expect ExpectToken) {
 			p.consume(tok, expect.Options.Skip)
 			//found1inverted = true
 		}
-		if !expect.Options.Multiple || p.eof {
+		if !expect.Options.Multiple || p.eof || p.err{
 			break
 		}
 	}
@@ -315,12 +321,22 @@ func (p *Parser) unscan() {
 }
 
 func (p *Parser) newError(code ErrorCode, errMsg error) {
-	fmt.Printf("Before: %v\n", p.s.curPos);
+	p.err = true
+	fmt.Printf("Before: %v, Err: %v\n", p.s.curPos, p.err);
 	err := p.s.newError(code, errMsg)
 	if err != nil {
 		p.errors = append(p.errors, *err)
 	}
-	fmt.Printf("After: %v\n", p.s.curPos);
+	fmt.Printf("After: %v, Err: %v\n", p.s.curPos, p.err);
+}
+
+func (p *Parser) Recover(Fn func(*Parser)) {
+	if logenb {
+        p.log(fmt.Sprint("Recovering...."), NEWLINE)
+	}
+	p.err = false
+	p.callFn(Fn)
+	return
 }
 
 // -------------------------------- Parser Helper Functions---------------------------------------
