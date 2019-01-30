@@ -291,27 +291,30 @@ func (s *Scanner) SkipRune() {
 //
 func (s *Scanner) newError(code ErrorCode, err error) *Error {
 	s.log(err.Error(), ERROR)
+	errLength := len(s.expRunes)
+	errStartPos := s.curPos - errLength
+	errEndPos := s.curPos
 	if s.error == nil {
 		s.error = &Error{
 			code,
 			err,
 			s.getLine(),
 			s.curLine,
-			s.curPos,
+			errStartPos,
+			errEndPos,
 		}
 		return s.error
-	} else {
-		if s.error.Line != s.curLine {
-			s.error = &Error{
-				code,
-				err,
-				s.getLine(),
-				s.curLine,
-				s.curPos,
-			}
-			return s.error
-		}
-	}
+	} 
+	// else if s.error.Line != s.curLine {
+	// 	s.error = &Error{
+	// 		code,
+	// 		err,
+	// 		s.getLine(),
+	// 		s.curLine,
+	// 		s.curPos,
+	// 	}
+	// 	return s.error
+	// }
 	return nil
 }
 
@@ -357,7 +360,7 @@ func (s *Scanner) unread() {
 	}
 }
 
-// Reset the scanner after every p.callFn() call
+// Reset the scanner after every s.callFn() call
 //
 func (s *Scanner) init() {
 	s.tok.ID = ""

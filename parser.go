@@ -315,10 +315,12 @@ func (p *Parser) unscan() {
 }
 
 func (p *Parser) newError(code ErrorCode, errMsg error) {
+	fmt.Printf("Before: %v\n", p.s.curPos);
 	err := p.s.newError(code, errMsg)
 	if err != nil {
 		p.errors = append(p.errors, *err)
 	}
+	fmt.Printf("After: %v\n", p.s.curPos);
 }
 
 // -------------------------------- Parser Helper Functions---------------------------------------
