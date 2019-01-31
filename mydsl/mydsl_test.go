@@ -10,7 +10,7 @@ import (
 	"testing"
 	"os"
 	"encoding/json"
-	"fmt"
+	//"fmt"
     "github.com/Autoblocks/go-dsl"
 )
 
@@ -31,7 +31,6 @@ func TestPrintAST(t *testing.T) {
 	logfile.Close()
 	
 	astjson, _ := json.Marshal(ast)
-	fmt.Print(string(astjson))
 	if(string(astjson) != `{"root":{"type":"ROOT","tokens":null,"children":[{"type":"ASSIGNMENT","tokens":[{"ID":"VARIABLE","Literal":"a","Line":1,"Position":1}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"1","Line":1,"Position":6}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"MULTIPLY","Literal":"*","Line":1,"Position":8}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"5","Line":1,"Position":10}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"PLUS","Literal":"+","Line":1,"Position":12}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"7","Line":1,"Position":14}],"children":null}]}]}]},{"type":"ASSIGNMENT","tokens":[{"ID":"VARIABLE","Literal":"b","Line":2,"Position":3}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"3.45","Line":2,"Position":8}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"MULTIPLY","Literal":"*","Line":2,"Position":13}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"44.21","Line":2,"Position":15}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"DIVIDE","Literal":"/","Line":2,"Position":21}],"children":[{"type":"EXPRESSION","tokens":[{"ID":"OPEN_PAREN","Literal":"(","Line":2,"Position":23}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"4","Line":2,"Position":24}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"PLUS","Literal":"+","Line":2,"Position":26}],"children":[{"type":"TERMINAL","tokens":[{"ID":"VARIABLE","Literal":"a","Line":2,"Position":28}],"children":null}]}]},{"type":"TERMINAL","tokens":[{"ID":"CLOSE_PAREN","Literal":")","Line":2,"Position":29}],"children":null}]}]}]},{"type":"COMMENT","tokens":[{"ID":"COMMENT","Literal":"A Simple Expression","Line":2,"Position":32}],"children":null},{"type":"CALL","tokens":[{"ID":"VARIABLE","Literal":"double","Line":3,"Position":3}],"children":[{"type":"TERMINAL","tokens":[{"ID":"VARIABLE","Literal":"a","Line":3,"Position":10}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"PLUS","Literal":"+","Line":3,"Position":12}],"children":[{"type":"TERMINAL","tokens":[{"ID":"VARIABLE","Literal":"b","Line":3,"Position":14}],"children":null}]}]}]}}`){
 		t.Errorf("JSON malformed.")
 	}
@@ -78,8 +77,6 @@ double(a + b)`)
 		{Type: "ROOT", Tokens: []dsl.Token{{"", "", 0, 0}}},
 	}
 	count := 0
-	ast.Print()
-	fmt.Println()
 	ast.Inspect(func(node *dsl.Node)(){
 		if count > len(cases) - 1{
 			t.Fatalf("Too many nodes.")
@@ -124,8 +121,8 @@ double(a + b)`)
 func TestTokenExpectedButNotFoundError(t *testing.T) {
 	reader := bytes.NewBufferString(
 		`a error := 1 * 5 + 7
-		b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
-		double(a + b)`)
+b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
+double(a + b)`)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
@@ -138,7 +135,7 @@ func TestTokenExpectedButNotFoundError(t *testing.T) {
 
 	if len(errs) != 1 {
 		t.Fail()
-		t.Error("Should only report exactly 1 error")
+		t.Error("Should report exactly 1 error")
 	}
 	err := errs[0];
 	if err.Code != dsl.TOKEN_EXPECTED_NOT_FOUND {
@@ -149,13 +146,13 @@ func TestTokenExpectedButNotFoundError(t *testing.T) {
 		t.Fail()
 		t.Errorf("Expected error line 1. Found line: %v", err.Line)
 	}
-	if err.StartPosition != 2 {
+	if err.StartPosition != 3 {
 		t.Fail()
-		t.Errorf("Expected error start position 2. Found position: %v", err.StartPosition)
+		t.Errorf("Expected error start position 3. Found position: %v", err.StartPosition)
 	}
-	if err.EndPosition != 7 {
+	if err.EndPosition != 8 {
 		t.Fail()
-		t.Errorf("Expected error end position 7. Found position: %v", err.EndPosition)
+		t.Errorf("Expected error end position 8. Found position: %v", err.EndPosition)
 	}
 
 }
@@ -177,7 +174,46 @@ func TestRuneExpectedButNotFoundError(t *testing.T) {
 
 	if len(errs) != 1 {
 		t.Fail()
-		t.Error("Should only exactly 1 error")
+		t.Error("Should report exactly 1 error")
+	}
+	err := errs[0];
+	if err.Code != dsl.RUNE_EXPECTED_NOT_FOUND {
+		t.Fail()
+		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
+	}
+	if err.Line != 1 {
+		t.Fail()
+		t.Errorf("Expected error line 1. Found line: %v", err.Line)
+	}
+	if err.StartPosition != 0 {
+		t.Fail()
+		t.Errorf("Expected error start position 0. Found position: %v", err.StartPosition)
+	}
+	if err.EndPosition != 1 {
+		t.Fail()
+		t.Errorf("Expected error end position 1. Found position: %v", err.EndPosition)
+	}
+
+}
+
+func TestErrorThenRecovery(t *testing.T) {
+	reader := bytes.NewBufferString(
+		`a := 1 * 5 + 7
+		b := 3.45 * 44.21 / (4;; + a) 'A Simple Expression
+		double((a + b)`)
+	bufreader := bufio.NewReader(reader)
+	ts := NewTokenSet()
+	ns := NewNodeSet()
+	logfilename := "TestErrorThenRecovery.log"
+    logfile, fileErr := os.Create(logfilename)
+    if fileErr != nil {
+		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
+	}
+	_, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+
+	if len(errs) != 2 {
+		t.Fail()
+		t.Error("Should report exactly 2 errors")
 	}
 	err := errs[0];
 	if err.Code != dsl.RUNE_EXPECTED_NOT_FOUND {

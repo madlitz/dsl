@@ -4,6 +4,15 @@ import(
     "github.com/Autoblocks/go-dsl"
 )
 func Scan(s *dsl.Scanner) dsl.Token {
+	if recover{
+		s.Expect(dsl.ExpectRune{
+			Branches: []dsl.Branch{
+				{rune(0), nil},
+				{'\n', nil}},
+			Options: dsl.ScanOptions{Multiple: true, Invert: true, Optional: true}})
+		s.Match([]dsl.Match{{"", "NL"}})
+		return s.Exit()
+	}
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{' ', nil},

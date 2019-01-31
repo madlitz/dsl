@@ -104,17 +104,21 @@ func (p *Parser) Expect(expect ExpectToken) {
 	var err *Error
 
 	//If we have previously found an error but have not yet recovered with p.Recover, skip any call to p.Expect.
-	if p.err{
-		return
-	}
-    if logenb{
+	if logenb{
         p.log(fmt.Sprintf("Expect Token %v: %v ", getParseOptions(expect.Options), branchTokensToStrings(expect.Branches)), NEWLINE)
     }
+	if p.err{
+		if logenb{
+			p.log(fmt.Sprint("Skipping Expect as error already found."), NEWLINE)
+		}
+		return
+	}
 	for {
 		found = false
 		tok, err = p.scan()
 		if err != nil {
 			p.errors = append(p.errors, *err)
+			p.err = true
 		}
 		if p.ts[tok.ID] == p.ts["EOF"]{
 			p.eof = true
@@ -124,13 +128,15 @@ func (p *Parser) Expect(expect ExpectToken) {
 				if logenb{
                     p.log(fmt.Sprintf("Error: Expected token [%v], not found in Token Set.", branch.TokenID), ERROR)
                 }
-                p.newError(EXPECTED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("Token %v, not found in Token Set.", branch.TokenID))
+				p.newError(EXPECTED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("Token %v, not found in Token Set.", branch.TokenID))
+				break
 			}
 			if p.ts[tok.ID] == 0 {
 				if logenb{
                     p.log(fmt.Sprintf("Error: Scanned token [%v], not found in Token Set.", tok.ID), ERROR)
                 }
-                p.newError(SCANNED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("Scanned token [%v], not found in Token Set.", tok.ID))
+				p.newError(SCANNED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("Scanned token [%v], not found in Token Set.", tok.ID))
+				break
 			}
 			if p.ts[tok.ID] == p.ts[branch.TokenID] && !expect.Options.Invert {
 				if !expect.Options.Invert {
@@ -327,7 +333,6 @@ func (p *Parser) newError(code ErrorCode, errMsg error) {
 	if err != nil {
 		p.errors = append(p.errors, *err)
 	}
-	fmt.Printf("After: %v, Err: %v\n", p.s.curPos, p.err);
 }
 
 func (p *Parser) Recover(Fn func(*Parser)) {

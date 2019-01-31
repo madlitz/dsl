@@ -216,7 +216,7 @@ func (s *Scanner) consume(rn rune, found1orMore bool, skip bool) {
 	   s.curPos = 1
 	   s.curLineBuffer.Reset()
 	   if logenb{
-		 s.log(fmt.Sprintf("Line %v:", s.curLine + 1), STARTLINE)
+		 s.log(fmt.Sprintf("Line %v:", s.curLine), STARTLINE)
 	   }
 	}else {
 		s.curLineBuffer.WriteRune(rn)

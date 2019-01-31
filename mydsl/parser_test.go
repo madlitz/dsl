@@ -3,6 +3,8 @@ package mydsl
 import(
     "github.com/Autoblocks/go-dsl"
 )
+var recover bool
+
 func Parse(p *dsl.Parser) (dsl.AST, []dsl.Error) {
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
@@ -104,6 +106,7 @@ func paren_expression(p *dsl.Parser) {
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
 			{"CLOSE_PAREN", operator}}})
+	p.Recover(skipUntilLineBreak)
 }
 
 // parse -> assignmentOrCall -> [expression] -> addcomment
@@ -111,4 +114,13 @@ func addcomment(p *dsl.Parser) {
 	p.AddNode("COMMENT")
 	p.AddTokens()
 	p.WalkUp()
+}
+
+func skipUntilLineBreak(p *dsl.Parser) {
+	recover = true
+	p.Expect(dsl.ExpectToken{
+		Branches: []dsl.BranchToken{
+			{"NL", nil},
+			{"EOF", nil}}})
+	recover = false
 }

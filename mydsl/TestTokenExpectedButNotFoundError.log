@@ -21,5 +21,9 @@ Found: VARIABLE
 			Returning: github.com/Autoblocks/go-dsl/mydsl.variable
 		Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
 ***Found [VARIABLE], expected any of [ASSIGN OPEN_PAREN]
+	Expect Token (Optional ): [COMMENT] 
+	Skipping Expect as error already found.
+	Expect Token (Skip ): [NL EOF] 
+	Skipping Expect as error already found.
 	Returning: github.com/Autoblocks/go-dsl/mydsl.assignmentOrCall
 Returning: github.com/Autoblocks/go-dsl/mydsl.Parse
