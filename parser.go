@@ -116,12 +116,13 @@ func (p *Parser) Expect(expect ExpectToken) {
 	for {
 		found = false
 		tok, err = p.scan()
+		if p.ts[tok.ID] == p.ts["EOF"]{
+			p.eof = true
+		}
 		if err != nil {
 			p.errors = append(p.errors, *err)
 			p.err = true
-		}
-		if p.ts[tok.ID] == p.ts["EOF"]{
-			p.eof = true
+			return
 		}
 		for _, branch := range expect.Branches {
 			if p.ts[branch.TokenID] == 0 {
@@ -170,11 +171,11 @@ func (p *Parser) Expect(expect ExpectToken) {
 func (p *Parser) callFn(fn func(*Parser)) {
 	if fn != nil && !p.eof {
 		if logenb{
-            p.log("Parsing: "+getFuncName(fn), INCREMENT)
+			p.log("Parsing: "+getFuncName(fn), INCREMENT)
         }
         fn(p)
 		if logenb{
-            p.log("Returning: "+getFuncName(fn), DECREMENT)
+			p.log("Returning: "+getFuncName(fn), DECREMENT)
         }
 	}
 }

@@ -10,9 +10,10 @@ func Scan(s *dsl.Scanner) dsl.Token {
 				{rune(0), nil},
 				{'\n', nil}},
 			Options: dsl.ScanOptions{Multiple: true, Invert: true, Optional: true}})
-		s.Match([]dsl.Match{{"", "NL"}})
+		s.Match([]dsl.Match{{"", "UNKNOWN"}})
 		return s.Exit()
 	}
+
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{' ', nil},
@@ -44,6 +45,7 @@ func Scan(s *dsl.Scanner) dsl.Token {
 		{"\n", "NL"}}))
 	return s.Exit()
 }
+
 
 func variable(s *dsl.Scanner) {
 	s.Expect(dsl.ExpectRune{

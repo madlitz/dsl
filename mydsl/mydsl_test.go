@@ -199,7 +199,7 @@ func TestRuneExpectedButNotFoundError(t *testing.T) {
 func TestErrorThenRecovery(t *testing.T) {
 	reader := bytes.NewBufferString(
 		`a := 1 * 5 + 7
-		b := 3.45 * 44.21 / (4;; + a) 'A Simple Expression
+		b := 3.45 * 44.21 / (4; + a) 'A Simple Expression
 		double((a + b)`)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
@@ -220,17 +220,34 @@ func TestErrorThenRecovery(t *testing.T) {
 		t.Fail()
 		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
 	}
-	if err.Line != 1 {
+	if err.Line != 2 {
 		t.Fail()
 		t.Errorf("Expected error line 1. Found line: %v", err.Line)
 	}
-	if err.StartPosition != 0 {
+	if err.StartPosition != 24 {
 		t.Fail()
-		t.Errorf("Expected error start position 0. Found position: %v", err.StartPosition)
+		t.Errorf("Expected error start position 24. Found position: %v", err.StartPosition)
 	}
-	if err.EndPosition != 1 {
+	if err.EndPosition != 25 {
 		t.Fail()
-		t.Errorf("Expected error end position 1. Found position: %v", err.EndPosition)
+		t.Errorf("Expected error end position 25. Found position: %v", err.EndPosition)
+	}
+	err = errs[1];
+	if err.Code != dsl.RUNE_EXPECTED_NOT_FOUND {
+		t.Fail()
+		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
+	}
+	if err.Line != 3 {
+		t.Fail()
+		t.Errorf("Expected error line 3. Found line: %v", err.Line)
+	}
+	if err.StartPosition != 6 {
+		t.Fail()
+		t.Errorf("Expected error start position 6. Found position: %v", err.StartPosition)
+	}
+	if err.EndPosition != 7 {
+		t.Fail()
+		t.Errorf("Expected error end position 7. Found position: %v", err.EndPosition)
 	}
 
 }

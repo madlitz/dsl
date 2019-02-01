@@ -273,8 +273,8 @@ Found: VARIABLE
 								Returning: github.com/Autoblocks/go-dsl/mydsl.operator
 							Recovering....
 								Parsing: github.com/Autoblocks/go-dsl/mydsl.skipUntilLineBreak
-								Expect Token (): [NL EOF] 
-***Found [COMMENT], expected any of [NL EOF]
+								Expect Token (): [UNKNOWN] 
+***Found [COMMENT], expected any of [UNKNOWN]
 								Returning: github.com/Autoblocks/go-dsl/mydsl.skipUntilLineBreak
 							Returning: github.com/Autoblocks/go-dsl/mydsl.paren_expression
 						Returning: github.com/Autoblocks/go-dsl/mydsl.expression

@@ -36,7 +36,7 @@ func (e *Error) String() string{
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("\nError Line:%v %v\n", e.Line, e.Error))
 	buf.WriteString(e.LineString + "\n")
-	for i := 0; i < e.StartPosition - 1; i++ {
+	for i := 1; i < e.StartPosition - 1; i++ {
 		if e.LineString[i] == '\t' {
 			buf.WriteString("\t")
 		} else {

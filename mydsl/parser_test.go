@@ -120,7 +120,6 @@ func skipUntilLineBreak(p *dsl.Parser) {
 	recover = true
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"NL", nil},
-			{"EOF", nil}}})
+			{"UNKNOWN", nil}}})
 	recover = false
 }
