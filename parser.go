@@ -337,6 +337,9 @@ func (p *Parser) newError(code ErrorCode, errMsg error) {
 }
 
 func (p *Parser) Recover(Fn func(*Parser)) {
+	if !p.err{
+		return
+	}
 	if logenb {
         p.log(fmt.Sprint("Recovering...."), NEWLINE)
 	}

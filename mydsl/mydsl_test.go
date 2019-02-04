@@ -51,7 +51,11 @@ double(a + b)`)
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
 	}
 	ast, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
-    logfile.Close()
+	logfile.Close()
+	if len(errs) != 0 {
+		t.Fail()
+		t.Error("Should report exactly 0 errors")
+	}
 	cases := []dsl.Node {
 		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "1", 1, 6}}},
 		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "5", 1, 10}}},
@@ -115,6 +119,7 @@ double(a + b)`)
 			t.Error(err.String())
 		}
 	}
+	ast.Print()
 
 }
 
@@ -159,9 +164,9 @@ double(a + b)`)
 
 func TestRuneExpectedButNotFoundError(t *testing.T) {
 	reader := bytes.NewBufferString(
-		`_ := 1 * 5 + 7
-		b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
-		double(a + b)`)
+`_ := 1 * 5 + 7
+b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
+double(a + b)`)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
@@ -198,9 +203,9 @@ func TestRuneExpectedButNotFoundError(t *testing.T) {
 
 func TestErrorThenRecovery(t *testing.T) {
 	reader := bytes.NewBufferString(
-		`a := 1 * 5 + 7
-		b := 3.45 * 44.21 / (4; + a) 'A Simple Expression
-		double((a + b)`)
+`a := 1 * 5 + 7
+b := 3.45 * 44.21 / (4; + a) 'A Simple Expression
+double((a + b)`)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
@@ -224,30 +229,30 @@ func TestErrorThenRecovery(t *testing.T) {
 		t.Fail()
 		t.Errorf("Expected error line 1. Found line: %v", err.Line)
 	}
-	if err.StartPosition != 24 {
+	if err.StartPosition != 22 {
 		t.Fail()
-		t.Errorf("Expected error start position 24. Found position: %v", err.StartPosition)
+		t.Errorf("Expected error start position 22. Found position: %v", err.StartPosition)
 	}
-	if err.EndPosition != 25 {
+	if err.EndPosition != 23 {
 		t.Fail()
-		t.Errorf("Expected error end position 25. Found position: %v", err.EndPosition)
+		t.Errorf("Expected error end position 23. Found position: %v", err.EndPosition)
 	}
 	err = errs[1];
-	if err.Code != dsl.RUNE_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.TOKEN_EXPECTED_NOT_FOUND {
 		t.Fail()
-		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
+		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
 	}
 	if err.Line != 3 {
 		t.Fail()
 		t.Errorf("Expected error line 3. Found line: %v", err.Line)
 	}
-	if err.StartPosition != 6 {
+	if err.StartPosition != 15 {
 		t.Fail()
-		t.Errorf("Expected error start position 6. Found position: %v", err.StartPosition)
+		t.Errorf("Expected error start position 14. Found position: %v", err.StartPosition)
 	}
-	if err.EndPosition != 7 {
+	if err.EndPosition != 16 {
 		t.Fail()
-		t.Errorf("Expected error end position 7. Found position: %v", err.EndPosition)
+		t.Errorf("Expected error end position 15. Found position: %v", err.EndPosition)
 	}
 
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Ram Nibbles <ramnibbles@gmail.com>
+// Copyright (c) 2015 Des Little <deslittle@gmail.com>
 // All rights reserved. Use of this source code is governed by a LGPL v3
 // license that can be found in the LICENSE file.
 
@@ -68,6 +68,7 @@ func visit(node *Node, fn func(*Node)) {
 //
 func (a *AST) Print() {
 	a.RootNode.Print("", true)
+	fmt.Println()
 }
 
 // Called by Parser.AddNode() in the user parse function. Creates a new node and
