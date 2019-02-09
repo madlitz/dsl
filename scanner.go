@@ -13,7 +13,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-    "log"
+	"log"
 )
 
 type dslLogger struct{
@@ -32,7 +32,9 @@ type Scanner struct {
 		unread    int
 	}
 	curLineBuffer bytes.Buffer
+	startLine	  int
 	curLine       int
+	startPos	  int
 	curPos        int
 	options       ScanOptions
 	expRunes      []rune
@@ -114,9 +116,7 @@ type Match struct {
 // The user scan function should return the result of Exit()
 //
 func (s *Scanner) Exit() Token {
-	if s.eof {
-		return Token{"EOF", "EOF", s.curLine, s.curPos}
-	}else if s.tok.ID == "" {
+	if s.tok.ID == "" {
 		return Token{"UNKNOWN", "UNKNOWN", s.curLine, s.curPos}
 	}
 	return s.tok
@@ -179,7 +179,7 @@ func (s *Scanner) Expect(expect ExpectRune) {
 			s.consume(rn, found1inverted, expect.Options.Skip)
 			found1inverted = true
 		}
-		if !expect.Options.Multiple || s.eof {
+		if !expect.Options.Multiple{
 			break
 		}
 	}
@@ -206,11 +206,12 @@ func (s *Scanner) consume(rn rune, found1orMore bool, skip bool) {
             s.log(", ", NO_PREFIX)
             s.log(sanitize(string(rn), true), NO_PREFIX)
         }
-    }
+	}
 	if !skip {
 		s.expRunes = append(s.expRunes, rn)
 	}
-    s.curPos++
+	s.curPos++
+	
     if rn == '\n' {
        s.curLine++
 	   s.curPos = 1
@@ -224,7 +225,9 @@ func (s *Scanner) consume(rn rune, found1orMore bool, skip bool) {
 }
 
 func (s *Scanner) Call(fn func(*Scanner)) {
-    s.log("Call", NEWLINE)
+    if logenb{
+		s.log("Call", NEWLINE)
+	}
     s.callFn(fn)
 }
 
@@ -252,7 +255,7 @@ func (s *Scanner) callFn(fn func(*Scanner)) {
 // and reset (by s.init()) by the parser.
 //
 func (s *Scanner) Match(matches []Match) {
-	if s.tok.ID != "" || s.eof {
+	if s.tok.ID != ""{
 		return
 	}
     expString := runesToString(s.expRunes)
@@ -290,31 +293,22 @@ func (s *Scanner) SkipRune() {
 // scanner as it exits immediately after an error
 //
 func (s *Scanner) newError(code ErrorCode, err error) *Error {
-	s.log(err.Error(), ERROR)
-	errLength := len(s.expRunes)
-	errStartPos := s.curPos - errLength
-	errEndPos := s.curPos
+	if logenb{
+		s.log(err.Error(), ERROR)
+	}
+	lineString := s.getLine()
+
 	if s.error == nil {
-		s.error = &Error{
+		return &Error{
 			code,
 			err,
-			s.getLine(),
+			lineString,
+			s.startLine,
+			s.startPos,
 			s.curLine,
-			errStartPos,
-			errEndPos,
+			s.curPos,
 		}
-		return s.error
 	} 
-	// else if s.error.Line != s.curLine {
-	// 	s.error = &Error{
-	// 		code,
-	// 		err,
-	// 		s.getLine(),
-	// 		s.curLine,
-	// 		s.curPos,
-	// 	}
-	// 	return s.error
-	// }
 	return nil
 }
 
@@ -347,7 +341,6 @@ func (s *Scanner) read() rune {
     
 	// Assume an err means we have reached End of File
 	if err != nil {
-		s.eof = true // Used by p.Expect() to break out of Multiple + Inverted calls
 		return rune(0)
 	}
 	return rn
@@ -366,6 +359,8 @@ func (s *Scanner) init() {
 	s.tok.ID = ""
 	s.expRunes = nil
 	s.error = nil
+	s.startLine = s.curLine
+	s.startPos = s.curPos
 }
 
 // log is where all lines are added to the log.

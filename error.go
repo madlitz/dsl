@@ -7,6 +7,7 @@ package dsl
 import (
 	"fmt"
 	"bytes"
+	"strings"
 )
 
 type ErrorCode int
@@ -27,14 +28,15 @@ type Error struct {
 	Code       		ErrorCode
 	Error      		error
 	LineString 		string
-	Line       		int
+	StartLine       int
 	StartPosition   int
+	EndLine			int
 	EndPosition		int
 }
 
 func (e *Error) String() string{
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("\nError Line:%v %v\n", e.Line, e.Error))
+	buf.WriteString(fmt.Sprintf("\nError Line:%v %v\n", e.StartLine, e.Error))
 	buf.WriteString(e.LineString + "\n")
 	for i := 1; i < e.StartPosition - 1; i++ {
 		if e.LineString[i] == '\t' {
@@ -44,9 +46,16 @@ func (e *Error) String() string{
 		}
 	}
 	buf.WriteString("^")
-	for i := e.StartPosition; i < e.EndPosition - 1; i++ {
-		buf.WriteString("-")
+	if e.StartLine != e.EndLine{
+		for i := e.StartPosition; i < strings.Count(e.LineString, ""); i++ {
+			buf.WriteString("-")
+		}
+	}else{
+		for i := e.StartPosition; i < e.EndPosition - 1; i++ {
+			buf.WriteString("-")
+		}
 	}
+	
 	buf.WriteString("^\n")
 	return buf.String()
 }

@@ -207,154 +207,31 @@ Found: VARIABLE
 						Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
 							Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
 							Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-							Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:21 Found: (
-							Matched: OPEN_PAREN - (
+							Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:21 Found: 4
+								Scanning: github.com/Autoblocks/go-dsl/mydsl.literal
+								Expect (Optional Multiple ) Rune: [] Range: [0-9] 
+								Expect (Optional ) Rune: [.] Range: [] 
+								Matched: LITERAL - 4
+								Returning: github.com/Autoblocks/go-dsl/mydsl.literal
 							Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
 							Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-						Found: OPEN_PAREN
-							Parsing: github.com/Autoblocks/go-dsl/mydsl.paren_expression
-							Peek: [[], ] 
-								Parsing: github.com/Autoblocks/go-dsl/mydsl.expression
-								AST Add Node: EXPRESSION
-								AST Add Tokens: OPEN_PAREN - (, 
-								Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
-									Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-									Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-									Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:22 Found: 4
-										Scanning: github.com/Autoblocks/go-dsl/mydsl.literal
-										Expect (Optional Multiple ) Rune: [] Range: [0-9] 
-										Expect (Optional ) Rune: [.] Range: [] 
-										Matched: LITERAL - 4
-										Returning: github.com/Autoblocks/go-dsl/mydsl.literal
-									Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-									Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-								Found: LITERAL
-									Parsing: github.com/Autoblocks/go-dsl/mydsl.operator
-									AST Add Node: TERMINAL
-									AST Add Tokens: LITERAL - 4, 
-									AST Walk Up
-									Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
-										Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-										Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-										Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] 
-***Found [;], expected any of [- + * / ( ) NL : ' " EOF 0-9 A-Z a-z]
-										Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-										Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-									AST Walk Up
-									Returning: github.com/Autoblocks/go-dsl/mydsl.operator
-								Returning: github.com/Autoblocks/go-dsl/mydsl.expression
-							Expect Token (): [CLOSE_PAREN] 
-							Skipping Expect as error already found.
-							Recovering....
-								Parsing: github.com/Autoblocks/go-dsl/mydsl.skipUntilLineBreak
-								Expect Token (): [UNKNOWN] 
-									Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-									Expect (Invert Optional Multiple ) Rune: [EOF NL] Range: [] Pos:23 Found: 4, ;, WS, +, WS, a, ), WS, ', A, WS, S, i, m, p, l, e, WS, E, x, p, r, e, s, s, i, o, n
-									Matched: UNKNOWN - 4; + a) 'A Simple Expression
-									Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-								Found: UNKNOWN
-								Returning: github.com/Autoblocks/go-dsl/mydsl.skipUntilLineBreak
-							Returning: github.com/Autoblocks/go-dsl/mydsl.paren_expression
-						Returning: github.com/Autoblocks/go-dsl/mydsl.expression
-					AST Walk Up
-					Returning: github.com/Autoblocks/go-dsl/mydsl.operator
-				Returning: github.com/Autoblocks/go-dsl/mydsl.expression
-			AST Walk Up
-			Returning: github.com/Autoblocks/go-dsl/mydsl.operator
-		Returning: github.com/Autoblocks/go-dsl/mydsl.assignment
-	Expect Token (Optional ): [COMMENT] 
-		Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-		Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:51 Found: NL
-Line 3:
-		Matched: NL - NL
-		Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-		Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-	Expect Token (Skip ): [NL EOF] 
-	Found: NL
-	Returning: github.com/Autoblocks/go-dsl/mydsl.assignmentOrCall
-	Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-	Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:1 Found: d
-		Scanning: github.com/Autoblocks/go-dsl/mydsl.variable
-		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] Pos:2 Found: o, u, b, l, e
-		Matched: VARIABLE - double
-		Returning: github.com/Autoblocks/go-dsl/mydsl.variable
-	Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-	Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-Found: VARIABLE
-	Parsing: github.com/Autoblocks/go-dsl/mydsl.assignmentOrCall
-	Expect Token (): [ASSIGN OPEN_PAREN] 
-		Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-		Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:7 Found: (
-		Matched: OPEN_PAREN - (
-		Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-		Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-	Found: OPEN_PAREN
-		Parsing: github.com/Autoblocks/go-dsl/mydsl.call
-		AST Skip Token: OPEN_PAREN - (, 
-		AST Add Node: CALL
-		AST Add Tokens: UNKNOWN - 4; + a) 'A Simple Expression, VARIABLE - double, 
-		Expect Token (): [VARIABLE LITERAL OPEN_PAREN] 
-			Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-			Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-			Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:8 Found: (
-			Matched: OPEN_PAREN - (
-			Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-			Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-		Found: OPEN_PAREN
-			Parsing: github.com/Autoblocks/go-dsl/mydsl.paren_expression
-			Peek: [[], ] 
-				Parsing: github.com/Autoblocks/go-dsl/mydsl.expression
-				AST Add Node: EXPRESSION
-				AST Add Tokens: OPEN_PAREN - (, 
-				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
-					Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-					Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-					Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:9 Found: a
-						Scanning: github.com/Autoblocks/go-dsl/mydsl.variable
-						Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
-						Matched: VARIABLE - a
-						Returning: github.com/Autoblocks/go-dsl/mydsl.variable
-					Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] Pos:10 Found: WS
-					Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-				Found: VARIABLE
-					Parsing: github.com/Autoblocks/go-dsl/mydsl.operator
-					AST Add Node: TERMINAL
-					AST Add Tokens: VARIABLE - a, 
-					AST Walk Up
-					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
-						Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-						Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-						Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:11 Found: +
-						Matched: PLUS - +
-						Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] Pos:12 Found: WS
-						Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-					Found: PLUS
-						Parsing: github.com/Autoblocks/go-dsl/mydsl.expression
-						AST Add Node: EXPRESSION
-						AST Add Tokens: PLUS - +, 
-						Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
-							Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-							Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-							Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:13 Found: b
-								Scanning: github.com/Autoblocks/go-dsl/mydsl.variable
-								Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
-								Matched: VARIABLE - b
-								Returning: github.com/Autoblocks/go-dsl/mydsl.variable
-							Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-							Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-						Found: VARIABLE
+						Found: LITERAL
 							Parsing: github.com/Autoblocks/go-dsl/mydsl.operator
 							AST Add Node: TERMINAL
-							AST Add Tokens: VARIABLE - b, 
+							AST Add Tokens: LITERAL - 4, 
 							AST Walk Up
 							Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 								Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
 								Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-								Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:14 Found: )
-								Matched: CLOSE_PAREN - )
+								Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:22 Found: "
+									Scanning: github.com/Autoblocks/go-dsl/mydsl.stringliteral
+									Skip Rune: ", 
+									Expect (Invert Optional Multiple ) Rune: ["] Range: [] Pos:23 Found: WS, \, e, r, c, e, c, NL
+Line 3:
+									, g, e, v, h, v, r, h, WS, WS
+									Skip Rune: WS, 
+									Matched: LITERAL -  \ercecNLgevhvrh 
+									Returning: github.com/Autoblocks/go-dsl/mydsl.stringliteral
 								Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
 								Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
 							AST Walk Up
@@ -363,30 +240,11 @@ Found: VARIABLE
 					AST Walk Up
 					Returning: github.com/Autoblocks/go-dsl/mydsl.operator
 				Returning: github.com/Autoblocks/go-dsl/mydsl.expression
-			Expect Token (): [CLOSE_PAREN] 
-			Found: CLOSE_PAREN
-				Parsing: github.com/Autoblocks/go-dsl/mydsl.operator
-				AST Add Node: TERMINAL
-				AST Add Tokens: CLOSE_PAREN - ), 
-				AST Walk Up
-				Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
-					Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-					Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-					Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:15 Found: EOF
-						Scanning: github.com/Autoblocks/go-dsl/mydsl.eof
-						Matched: EOF - EOF
-						Returning: github.com/Autoblocks/go-dsl/mydsl.eof
-					Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-					Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-				AST Walk Up
-				Returning: github.com/Autoblocks/go-dsl/mydsl.operator
-			Returning: github.com/Autoblocks/go-dsl/mydsl.paren_expression
-		Expect Token (): [CLOSE_PAREN] 
-***Found [EOF], expected any of [CLOSE_PAREN]
-		Returning: github.com/Autoblocks/go-dsl/mydsl.call
+			AST Walk Up
+			Returning: github.com/Autoblocks/go-dsl/mydsl.operator
+		Returning: github.com/Autoblocks/go-dsl/mydsl.assignment
 	Expect Token (Optional ): [COMMENT] 
-	Skipping Expect as error already found.
 	Expect Token (Skip ): [NL EOF] 
-	Skipping Expect as error already found.
+***Found [LITERAL], expected any of [NL EOF]
 	Returning: github.com/Autoblocks/go-dsl/mydsl.assignmentOrCall
 Returning: github.com/Autoblocks/go-dsl/mydsl.Parse

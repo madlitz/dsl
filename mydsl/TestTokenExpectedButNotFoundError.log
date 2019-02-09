@@ -3,22 +3,24 @@ Parsing: github.com/Autoblocks/go-dsl/mydsl.Parse
 Expect Token (Multiple ): [VARIABLE EOF] 
 	Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
 	Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
-	Expect () Rune: [- + * / ( ) NL : ' EOF] Range: [0-9 A-Z a-z] Pos:1 Found: a
+	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:1 Found: a
 		Scanning: github.com/Autoblocks/go-dsl/mydsl.variable
 		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
 		Matched: VARIABLE - a
 		Returning: github.com/Autoblocks/go-dsl/mydsl.variable
+	Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] Pos:2 Found: WS
 	Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
 Found: VARIABLE
 	Parsing: github.com/Autoblocks/go-dsl/mydsl.assignmentOrCall
 	Expect Token (): [ASSIGN OPEN_PAREN] 
 		Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-		Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] Pos:2 Found: WS
-		Expect () Rune: [- + * / ( ) NL : ' EOF] Range: [0-9 A-Z a-z] Pos:3 Found: e
+		Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
+		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:3 Found: e
 			Scanning: github.com/Autoblocks/go-dsl/mydsl.variable
 			Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] Pos:4 Found: r, r, o, r
 			Matched: VARIABLE - error
 			Returning: github.com/Autoblocks/go-dsl/mydsl.variable
+		Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] Pos:8 Found: WS
 		Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
 ***Found [VARIABLE], expected any of [ASSIGN OPEN_PAREN]
 	Expect Token (Optional ): [COMMENT] 

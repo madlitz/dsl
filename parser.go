@@ -329,7 +329,6 @@ func (p *Parser) unscan() {
 
 func (p *Parser) newError(code ErrorCode, errMsg error) {
 	p.err = true
-	fmt.Printf("Before: %v, Err: %v\n", p.s.curPos, p.err);
 	err := p.s.newError(code, errMsg)
 	if err != nil {
 		p.errors = append(p.errors, *err)

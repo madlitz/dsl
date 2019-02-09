@@ -30,7 +30,8 @@ func Scan(s *dsl.Scanner) dsl.Token {
 			{'\n', nil},
 			{':', assign},
 			{'\'', comment},
-			{rune(0), nil}},
+			{'"', stringliteral},
+			{rune(0), eof}},
 		BranchRanges: []dsl.BranchRange{
 			{'0', '9', literal},
 			{'A', 'Z', variable},
@@ -43,9 +44,17 @@ func Scan(s *dsl.Scanner) dsl.Token {
 		{"(", "OPEN_PAREN"},
 		{")", "CLOSE_PAREN"},
 		{"\n", "NL"}}))
+	s.Expect(dsl.ExpectRune{
+		Branches: []dsl.Branch{
+			{' ', nil},
+			{'\t', nil}},
+		Options: dsl.ScanOptions{Multiple: true, Optional: true, Skip: true}})
 	return s.Exit()
 }
 
+func eof(s *dsl.Scanner) {
+	s.Match([]dsl.Match{{"", "EOF"}})
+}
 
 func variable(s *dsl.Scanner) {
 	s.Expect(dsl.ExpectRune{
@@ -71,6 +80,16 @@ func literal(s *dsl.Scanner) {
 	s.Match([]dsl.Match{{"", "LITERAL"}})
 }
 
+// ScanFn -> literal
+func stringliteral(s *dsl.Scanner) {
+	s.SkipRune()
+	s.Expect(dsl.ExpectRune{
+		Branches: []dsl.Branch{
+			{'"', nil}},
+		Options: dsl.ScanOptions{Multiple: true, Invert: true, Optional: true}})
+	s.SkipRune()
+	s.Match([]dsl.Match{{"", "LITERAL"}})
+}
 // ScanFn -> number -> fraction
 func fraction(s *dsl.Scanner) {
 	s.Expect(dsl.ExpectRune{

@@ -119,7 +119,7 @@ double(a + b)`)
 			t.Error(err.String())
 		}
 	}
-	ast.Print()
+	//ast.Print()
 
 }
 
@@ -127,7 +127,7 @@ func TestTokenExpectedButNotFoundError(t *testing.T) {
 	reader := bytes.NewBufferString(
 		`a error := 1 * 5 + 7
 b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
-double(a + b)`)
+double(a + b)  `)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
@@ -147,17 +147,17 @@ double(a + b)`)
 		t.Fail()
 		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
 	}
-	if err.Line != 1 {
+	if err.StartLine != 1 {
 		t.Fail()
-		t.Errorf("Expected error line 1. Found line: %v", err.Line)
+		t.Errorf("Expected error line 1. Found line: %v", err.StartLine)
 	}
 	if err.StartPosition != 3 {
 		t.Fail()
 		t.Errorf("Expected error start position 3. Found position: %v", err.StartPosition)
 	}
-	if err.EndPosition != 8 {
+	if err.EndPosition != 9 {
 		t.Fail()
-		t.Errorf("Expected error end position 8. Found position: %v", err.EndPosition)
+		t.Errorf("Expected error end position 9. Found position: %v", err.EndPosition)
 	}
 
 }
@@ -186,13 +186,13 @@ double(a + b)`)
 		t.Fail()
 		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
 	}
-	if err.Line != 1 {
+	if err.StartLine != 1 {
 		t.Fail()
-		t.Errorf("Expected error line 1. Found line: %v", err.Line)
+		t.Errorf("Expected error line 1. Found line: %v", err.StartLine)
 	}
-	if err.StartPosition != 0 {
+	if err.StartPosition != 1 {
 		t.Fail()
-		t.Errorf("Expected error start position 0. Found position: %v", err.StartPosition)
+		t.Errorf("Expected error start position 1. Found position: %v", err.StartPosition)
 	}
 	if err.EndPosition != 1 {
 		t.Fail()
@@ -225,13 +225,13 @@ double((a + b)`)
 		t.Fail()
 		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
 	}
-	if err.Line != 2 {
+	if err.StartLine != 2 {
 		t.Fail()
-		t.Errorf("Expected error line 1. Found line: %v", err.Line)
+		t.Errorf("Expected error line 2. Found line: %v", err.StartLine)
 	}
-	if err.StartPosition != 22 {
+	if err.StartPosition != 23 {
 		t.Fail()
-		t.Errorf("Expected error start position 22. Found position: %v", err.StartPosition)
+		t.Errorf("Expected error start position 23. Found position: %v", err.StartPosition)
 	}
 	if err.EndPosition != 23 {
 		t.Fail()
@@ -242,20 +242,63 @@ double((a + b)`)
 		t.Fail()
 		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
 	}
-	if err.Line != 3 {
+	if err.StartLine != 3 {
 		t.Fail()
-		t.Errorf("Expected error line 3. Found line: %v", err.Line)
+		t.Errorf("Expected error line 3. Found line: %v", err.StartLine)
 	}
 	if err.StartPosition != 15 {
 		t.Fail()
-		t.Errorf("Expected error start position 14. Found position: %v", err.StartPosition)
+		t.Errorf("Expected error start position 15. Found position: %v", err.StartPosition)
 	}
 	if err.EndPosition != 16 {
 		t.Fail()
-		t.Errorf("Expected error end position 15. Found position: %v", err.EndPosition)
+		t.Errorf("Expected error end position 16. Found position: %v", err.EndPosition)
 	}
 
 }
 
+func TestMultiLineError(t *testing.T) {
+	reader := bytes.NewBufferString(
+`a := 1 * 5 + 7
+b := 3.45 * 44.21 / 4" \ercec
+gevhvrh  " + a) 'A Simple Expression
+double(a + b)`)
+	bufreader := bufio.NewReader(reader)
+	ts := NewTokenSet()
+	ns := NewNodeSet()
+	logfilename := "TestMultiLineError.log"
+    logfile, fileErr := os.Create(logfilename)
+    if fileErr != nil {
+		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
+	}
+	_, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+
+	if len(errs) != 1 {
+		t.Fail()
+		t.Error("Should report exactly 1 error")
+	}
+	err := errs[0];
+	if err.Code != dsl.TOKEN_EXPECTED_NOT_FOUND {
+		t.Fail()
+		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
+	}
+	if err.StartLine != 2 {
+		t.Fail()
+		t.Errorf("Expected error start line 3. Found line: %v", err.StartLine)
+	}
+	if err.StartPosition != 22 {
+		t.Fail()
+		t.Errorf("Expected error start position 22. Found position: %v", err.StartPosition)
+	}
+	if err.EndLine != 3 {
+		t.Fail()
+		t.Errorf("Expected error end line 1. Found line: %v", err.StartLine)
+	}
+	if err.EndPosition != 10 {
+		t.Fail()
+		t.Errorf("Expected error end position 10. Found position: %v", err.EndPosition)
+	}
+
+}
 
 
