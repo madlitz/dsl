@@ -78,39 +78,46 @@ double(a + b)`)
 		{Type: "TERMINAL", Tokens: []dsl.Token{{"VARIABLE", "b", 3, 12}}},
 		{Type: "EXPRESSION", Tokens: []dsl.Token{{"PLUS", "+", 3, 10}}},
 		{Type: "CALL", Tokens: []dsl.Token{{"VARIABLE", "double", 3, 1}}},
-		{Type: "ROOT", Tokens: []dsl.Token{{"", "", 0, 0}}},
+		{Type: "ROOT", Tokens: []dsl.Token{}},
 	}
 	count := 0
 	ast.Inspect(func(node *dsl.Node)(){
 		if count > len(cases) - 1{
 			t.Fatalf("Too many nodes.")
+			ast.Print()
 		}
 		if cases[count].Type != node.Type{
 			t.Errorf("Line: %v:%v Node: \"%v\" Wanted node type %v, found %v", cases[count].Tokens[0].Line, cases[count].Tokens[0].Position, 
-                node.Type, cases[count].Type, node.Type)
+        node.Type, cases[count].Type, node.Type)
 		}
-        for i, token := range node.Tokens{
-           if cases[count].Tokens[i].ID != token.ID{
+		if len(cases[count].Tokens) !=  len(node.Tokens) {
+			t.Errorf("Case %v: Expected %v tokens, found %v", count, len(cases[count].Tokens) , len(node.Tokens))
+			return
+		}
+		
+    for i, token := range node.Tokens{
+				if cases[count].Tokens[i].ID != token.ID{
 			 t.Errorf("Line: %v:%v Token: \"%v\" Wanted token ID %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position, 
-                token.Literal, cases[count].Tokens[i].ID, token.ID)
+          token.Literal, cases[count].Tokens[i].ID, token.ID)
 		   }
-           if cases[count].Tokens[i].Literal != token.Literal{
+      if cases[count].Tokens[i].Literal != token.Literal{
 			 t.Errorf("Line: %v:%v ID: \"%v\" Wanted token literal \"%v\", found \"%v\"", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position, 
-                token.ID, cases[count].Tokens[i].Literal, token.Literal)
+          token.ID, cases[count].Tokens[i].Literal, token.Literal)
 		   }
-           if cases[count].Tokens[i].Line != token.Line{
+      if cases[count].Tokens[i].Line != token.Line{
 			 t.Errorf("Line: %v:%v Token: \"%v\" Wanted token line %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position, 
-                token.Literal, cases[count].Tokens[i].Line, token.Line)
+          token.Literal, cases[count].Tokens[i].Line, token.Line)
 		   }
-           if cases[count].Tokens[i].Position != token.Position{
+      if cases[count].Tokens[i].Position != token.Position{
 			 t.Errorf("Line: %v:%v Token: \"%v\" Wanted token position %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position, 
-                token.Literal, cases[count].Tokens[i].Position, token.Position)
+          token.Literal, cases[count].Tokens[i].Position, token.Position)
 		   } 
         }
 		count++
 	})
 	if count != len(cases){
-		t.Errorf("Not enough nodes.")
+		t.Errorf("Not enough nodes. Expected %v, found %v", len(cases), count)
+		ast.Print()
 	}
 
 	if errs != nil {

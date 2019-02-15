@@ -81,7 +81,6 @@ type ScanOptions struct {
 	Optional bool
 	Multiple bool
 	Invert   bool
-	Skip     bool
     Error    func(*Scanner)
 }
 
@@ -150,7 +149,7 @@ func (s *Scanner) Expect(expect ExpectRune) {
 		for _, branch := range expect.Branches {
 			if branch.Rn == rn {
 				if !expect.Options.Invert{
-					s.consume(rn, found1orMore, expect.Options.Skip)
+					s.consume(rn, found1orMore)
 				}
 				found1orMore = true
 				found = true
@@ -162,7 +161,7 @@ func (s *Scanner) Expect(expect ExpectRune) {
 			for _, branch := range expect.BranchRanges {
 				if branch.StartRn <= rn && rn <= branch.EndRn {
 					if !expect.Options.Invert {
-						s.consume(rn, found1orMore, expect.Options.Skip)
+						s.consume(rn, found1orMore)
 					}
 					found1orMore = true
 					found = true
@@ -176,7 +175,7 @@ func (s *Scanner) Expect(expect ExpectRune) {
 			break
 		}
 		if expect.Options.Invert && !found {
-			s.consume(rn, found1inverted, expect.Options.Skip)
+			s.consume(rn, found1inverted)
 			found1inverted = true
 		}
 		if !expect.Options.Multiple{
@@ -196,7 +195,7 @@ func (s *Scanner) Expect(expect ExpectRune) {
 	return
 }
 
-func (s *Scanner) consume(rn rune, found1orMore bool, skip bool) {
+func (s *Scanner) consume(rn rune, found1orMore bool) {
 	if logenb{
         if !found1orMore {
 			s.log(fmt.Sprintf("Pos:%v ", s.curPos), NO_PREFIX)
@@ -207,9 +206,7 @@ func (s *Scanner) consume(rn rune, found1orMore bool, skip bool) {
             s.log(sanitize(string(rn), true), NO_PREFIX)
         }
 	}
-	if !skip {
-		s.expRunes = append(s.expRunes, rn)
-	}
+	s.expRunes = append(s.expRunes, rn)
 	s.curPos++
 	
     if rn == '\n' {
@@ -479,9 +476,6 @@ func getScanOptions(opts ScanOptions) string {
 	}
 	if opts.Multiple {
 		buf.WriteString("Multiple ")
-	}
-	if opts.Skip {
-		buf.WriteString("Skip ")
 	}
 	buf.WriteRune(')')
 	return buf.String()

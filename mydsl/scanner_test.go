@@ -16,9 +16,9 @@ func Scan(s *dsl.Scanner) dsl.Token {
 
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
-			{' ', nil},
-			{'\t', nil}},
-		Options: dsl.ScanOptions{Multiple: true, Optional: true, Skip: true}})
+			{' ', whitespace},
+			{'\t', whitespace}},
+		Options: dsl.ScanOptions{Optional: true}})
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{'-', nil},
@@ -48,12 +48,21 @@ func Scan(s *dsl.Scanner) dsl.Token {
 		Branches: []dsl.Branch{
 			{' ', nil},
 			{'\t', nil}},
-		Options: dsl.ScanOptions{Multiple: true, Optional: true, Skip: true}})
+		Options: dsl.ScanOptions{Multiple: true, Optional: true}})
 	return s.Exit()
 }
 
 func eof(s *dsl.Scanner) {
 	s.Match([]dsl.Match{{"", "EOF"}})
+}
+
+func whitespace(s *dsl.Scanner) {
+	s.Expect(dsl.ExpectRune{
+		Branches: []dsl.Branch{
+			{' ', nil},
+			{'\t', nil}},
+		Options: dsl.ScanOptions{Optional: true, Multiple: true}})
+	s.Match([]dsl.Match{{"", "WS"}})
 }
 
 func variable(s *dsl.Scanner) {

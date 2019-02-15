@@ -17,6 +17,7 @@ func NewTokenSet() dsl.TokenSet{
 		"VARIABLE",
 		"COMMENT",
 		"NL",
+		"WS",
 		"EOF",
 	)
 }
