@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Des Little <deslittle@gmail.com>
+// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
 // All rights reserved. Use of this source code is governed by a LGPL v3
 // license that can be found in the LICENSE file.
 
@@ -20,24 +20,24 @@ package dsl
 import (
 	"bufio"
 	"fmt"
-    "io"
+	"io"
+	"log"
 	"os"
-    "log"
 )
 
 var (
-    logenb bool
+	logenb bool
 )
+
 // ParseFile sets up the bufio.Reader by accessing a file with the corresponding
 // filename. If the file cannot be found an error will be returned at Error[0] and
 // the AST will be nil.
 //
 // If the bufio.Reader was set up correctly it will be passed to the Parse function.
-//
 func ParseFile(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, inputfilename string) (AST, []Error) {
 	inputfile, err := os.Open(inputfilename)
 	if err != nil {
-		return AST{}, []Error{{Code: FILE_NOT_FOUND, Error: fmt.Errorf("File '%v', not found.", inputfilename)}}
+		return AST{}, []Error{{Code: FILE_NOT_FOUND, Error: fmt.Errorf("file '%v', not found", inputfilename)}}
 	}
 	r := bufio.NewReader(inputfile)
 	return Parse(pf, sf, ts, ns, r)
@@ -50,7 +50,6 @@ func ParseFile(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, inputfilename
 // len(Errors) > 0 to determine if the input was correctly formed. The
 // log is provided to diagnose errors in the parsing/scanning logic and can
 // be ignored once the parse/scan functions have been proven correct.
-//
 func Parse(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, r *bufio.Reader) (AST, []Error) {
 	s := newScanner(sf, r, nil)
 	a := newAST(ns)
@@ -60,36 +59,36 @@ func Parse(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, r *bufio.Reader) 
 
 func execute(p *Parser) (AST, []Error) {
 	pf := p.fn
-    if logenb {
-       p.log("Line 1: ", NO_PREFIX)
-	   p.log("Parsing: "+getFuncName(pf), NEWLINE)
-    }
+	if logenb {
+		p.log("Line 1: ", NO_PREFIX)
+		p.log("Parsing: "+getFuncName(pf), NEWLINE)
+	}
 	ast, errors := pf(p)
-    if logenb {
-	   p.log("Returning: "+getFuncName(pf), DECREMENT)
-    }
+	if logenb {
+		p.log("Returning: "+getFuncName(pf), DECREMENT)
+	}
 
 	return ast, errors
 }
 
 func ParseFileAndLog(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, inputfilename string, logfilename string) (AST, []Error) {
 	logfile, err := os.Create(logfilename)
-    if err != nil {
-		return AST{}, []Error{{Code: COULD_NOT_CREATE_FILE, Error: fmt.Errorf("Could not create file '%v'.", logfilename)}}
+	if err != nil {
+		return AST{}, []Error{{Code: COULD_NOT_CREATE_FILE, Error: fmt.Errorf("could not create file '%v'", logfilename)}}
 	}
 	defer logfile.Close()
-    //input, err := ioutil.ReadFile(inputfilename)
-    inputfile, err := os.Open(inputfilename)
+	//input, err := ioutil.ReadFile(inputfilename)
+	inputfile, err := os.Open(inputfilename)
 	if err != nil {
-		return AST{}, []Error{{Code: FILE_NOT_FOUND, Error: fmt.Errorf("File '%v', not found.", inputfilename)}}
+		return AST{}, []Error{{Code: FILE_NOT_FOUND, Error: fmt.Errorf("file '%v', not found", inputfilename)}}
 	}
 	r := bufio.NewReader(inputfile)
 	return ParseAndLog(pf, sf, ts, ns, r, logfile)
 }
 
 func ParseAndLog(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, r *bufio.Reader, logfile io.Writer) (AST, []Error) {
-    logenb = true
-    l := log.New(logfile,"",0)
+	logenb = true
+	l := log.New(logfile, "", 0)
 	s := newScanner(sf, r, l)
 	a := newAST(ns)
 	p := newParser(pf, ts, s, a)

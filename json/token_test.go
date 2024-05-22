@@ -1,21 +1,21 @@
 package json
 
 import (
-    "github.com/madlitz/go-dsl"
+	"github.com/madlitz/go-dsl"
 )
 
-func NewTokenSet() dsl.TokenSet{
-    return dsl.NewTokenSet(
+func NewTokenSet() dsl.TokenSet {
+	return dsl.NewTokenSet(
 		"NUMBER",
 		"STRING",
 		"TRUE",
-        "FALSE",
+		"FALSE",
 		"NULL",
 		"OPEN_ARRAY",
 		"CLOSE_ARRAY",
 		"OPEN_OBJECT",
 		"CLOSE_OBJECT",
 		"EOF",
-        "ILLEGAL"
+		"ILLEGAL",
 	)
 }

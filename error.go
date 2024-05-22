@@ -1,12 +1,12 @@
-// Copyright (c) 2015 Des Little <deslittle@gmail.com>
+// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
 // All rights reserved. Use of this source code is governed by a LGPL v3
 // license that can be found in the LICENSE file.
 
 package dsl
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 	"strings"
 )
 
@@ -25,20 +25,20 @@ const (
 // Errors contain the error text, the line and positions the error occurred on, and
 // a string containing the input text from that line
 type Error struct {
-	Code       		ErrorCode
-	Error      		error
-	LineString 		string
-	StartLine       int
-	StartPosition   int
-	EndLine			int
-	EndPosition		int
+	Code          ErrorCode
+	Error         error
+	LineString    string
+	StartLine     int
+	StartPosition int
+	EndLine       int
+	EndPosition   int
 }
 
-func (e *Error) String() string{
+func (e *Error) String() string {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("\nError Line:%v %v\n", e.StartLine, e.Error))
 	buf.WriteString(e.LineString + "\n")
-	for i := 1; i < e.StartPosition - 1; i++ {
+	for i := 1; i < e.StartPosition-1; i++ {
 		if e.LineString[i] == '\t' {
 			buf.WriteString("\t")
 		} else {
@@ -46,16 +46,16 @@ func (e *Error) String() string{
 		}
 	}
 	buf.WriteString("^")
-	if e.StartLine != e.EndLine{
+	if e.StartLine != e.EndLine {
 		for i := e.StartPosition; i < strings.Count(e.LineString, ""); i++ {
 			buf.WriteString("-")
 		}
-	}else{
-		for i := e.StartPosition; i < e.EndPosition - 1; i++ {
+	} else {
+		for i := e.StartPosition; i < e.EndPosition-1; i++ {
 			buf.WriteString("-")
 		}
 	}
-	
+
 	buf.WriteString("^\n")
 	return buf.String()
 }

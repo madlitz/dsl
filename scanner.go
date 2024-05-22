@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Des Little <deslittle@gmail.com>
+// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
 // All rights reserved. Use of this source code is governed by a LGPL v3
 // license that can be found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 // When a Scanner is created it takes a bufio.Reader as the source of
 // the text, scans a number of characters (runes) as defined by the
 // user ScanFunc and returns a token to the Parser.
-//
 package dsl
 
 import (
@@ -16,45 +15,45 @@ import (
 	"log"
 )
 
-type dslLogger struct{
-    indent     int
-    log        *log.Logger
-    buf        []interface{}
+type dslLogger struct {
+	indent int
+	log    *log.Logger
+	buf    []interface{}
 }
+
 // The Scanner contains a reference to the user scan function, the
 // user input buffer, various state variables and the parser log.
-//
 type Scanner struct {
 	fn  ScanFunc
 	r   *bufio.Reader
 	buf struct {
-		runes     []rune
-		unread    int
+		runes  []rune
+		unread int
 	}
 	curLineBuffer bytes.Buffer
-	startLine	  int
+	startLine     int
 	curLine       int
-	startPos	  int
+	startPos      int
 	curPos        int
 	options       ScanOptions
 	expRunes      []rune
 	tok           Token
 	error         *Error
-    logger        *dslLogger
+	logger        *dslLogger
 	eof           bool
 }
 
 // NewScanner returns a new instance of Scanner.
 func newScanner(sf ScanFunc, r *bufio.Reader, l *log.Logger) *Scanner {
-    s := &Scanner{
-            fn: sf,
-            r: r, 
-            curLine: 1,
-            curPos: 1,
-        }
-    if l != nil{
-        s.logger = &dslLogger{log: l}
-    }
+	s := &Scanner{
+		fn:      sf,
+		r:       r,
+		curLine: 1,
+		curPos:  1,
+	}
+	if l != nil {
+		s.logger = &dslLogger{log: l}
+	}
 	return s
 }
 
@@ -76,12 +75,11 @@ type ScanFunc func(*Scanner) Token
 //
 // If ScanOptions is omitted when creating ExpectRune{}, all options will be set to
 // false.
-//
 type ScanOptions struct {
 	Optional bool
 	Multiple bool
 	Invert   bool
-    Error    func(*Scanner)
+	Error    func(*Scanner)
 }
 
 type ExpectRune struct {
@@ -111,9 +109,7 @@ type Match struct {
 	ID      string
 }
 
-
 // The user scan function should return the result of Exit()
-//
 func (s *Scanner) Exit() Token {
 	if s.tok.ID == "" {
 		return Token{"UNKNOWN", "UNKNOWN", s.curLine, s.curPos}
@@ -131,24 +127,23 @@ func (s *Scanner) Exit() Token {
 // any of the branch functions, but still consumes the rune.
 //
 // Any runes that are read but not consumed or skipped will be unread.
-//
 func (s *Scanner) Expect(expect ExpectRune) {
 	var found1orMore bool
 	var found1inverted bool
 	var found bool
 	var rn rune
 
-    if logenb{
-       s.log(fmt.Sprintf("Expect %v ", getScanOptions(expect.Options)), NEWLINE) //TODO Custom Print Function
-	   s.log(fmt.Sprintf("Rune: %v ", branchesToStrings(expect.Branches)), NO_PREFIX)
-	   s.log(fmt.Sprintf("Range: %v ", branchRangesToStrings(expect.BranchRanges)), NO_PREFIX)
-    }
+	if logenb {
+		s.log(fmt.Sprintf("Expect %v ", getScanOptions(expect.Options)), NEWLINE) //TODO Custom Print Function
+		s.log(fmt.Sprintf("Rune: %v ", branchesToStrings(expect.Branches)), NO_PREFIX)
+		s.log(fmt.Sprintf("Range: %v ", branchRangesToStrings(expect.BranchRanges)), NO_PREFIX)
+	}
 	for {
 		found = false
 		rn = s.read()
 		for _, branch := range expect.Branches {
 			if branch.Rn == rn {
-				if !expect.Options.Invert{
+				if !expect.Options.Invert {
 					s.consume(rn, found1orMore)
 				}
 				found1orMore = true
@@ -178,7 +173,7 @@ func (s *Scanner) Expect(expect ExpectRune) {
 			s.consume(rn, found1inverted)
 			found1inverted = true
 		}
-		if !expect.Options.Multiple{
+		if !expect.Options.Multiple {
 			break
 		}
 	}
@@ -196,47 +191,47 @@ func (s *Scanner) Expect(expect ExpectRune) {
 }
 
 func (s *Scanner) consume(rn rune, found1orMore bool) {
-	if logenb{
-        if !found1orMore {
+	if logenb {
+		if !found1orMore {
 			s.log(fmt.Sprintf("Pos:%v ", s.curPos), NO_PREFIX)
-            s.log("Found: ", NO_PREFIX)
+			s.log("Found: ", NO_PREFIX)
 			s.log(sanitize(string(rn), true), NO_PREFIX)
-        } else {
-            s.log(", ", NO_PREFIX)
-            s.log(sanitize(string(rn), true), NO_PREFIX)
-        }
+		} else {
+			s.log(", ", NO_PREFIX)
+			s.log(sanitize(string(rn), true), NO_PREFIX)
+		}
 	}
 	s.expRunes = append(s.expRunes, rn)
 	s.curPos++
-	
-    if rn == '\n' {
-       s.curLine++
-	   s.curPos = 1
-	   s.curLineBuffer.Reset()
-	   if logenb{
-		 s.log(fmt.Sprintf("Line %v:", s.curLine), STARTLINE)
-	   }
-	}else {
+
+	if rn == '\n' {
+		s.curLine++
+		s.curPos = 1
+		s.curLineBuffer.Reset()
+		if logenb {
+			s.log(fmt.Sprintf("Line %v:", s.curLine), STARTLINE)
+		}
+	} else {
 		s.curLineBuffer.WriteRune(rn)
 	}
 }
 
 func (s *Scanner) Call(fn func(*Scanner)) {
-    if logenb{
+	if logenb {
 		s.log("Call", NEWLINE)
 	}
-    s.callFn(fn)
+	s.callFn(fn)
 }
 
 func (s *Scanner) callFn(fn func(*Scanner)) {
 	if fn != nil {
-        if logenb{
-            s.log("Scanning: "+getFuncName(fn), INCREMENT)
-        }
+		if logenb {
+			s.log("Scanning: "+getFuncName(fn), INCREMENT)
+		}
 		fn(s)
-		if logenb{
-            s.log("Returning: "+getFuncName(fn), DECREMENT)
-        }
+		if logenb {
+			s.log("Returning: "+getFuncName(fn), DECREMENT)
+		}
 	}
 }
 
@@ -250,19 +245,18 @@ func (s *Scanner) callFn(fn func(*Scanner)) {
 // function has matched a token, any subsequent calls to Match will
 // do nothing until the user scan function returns and is called again
 // and reset (by s.init()) by the parser.
-//
 func (s *Scanner) Match(matches []Match) {
-	if s.tok.ID != ""{
+	if s.tok.ID != "" {
 		return
 	}
-    expString := runesToString(s.expRunes)
+	expString := runesToString(s.expRunes)
 	for _, match := range matches {
 		if expString == match.Literal || match.Literal == "" {
-			if logenb{
-                s.log("Matched: "+match.ID, NEWLINE)
-                s.log(" - ", NO_PREFIX)
-                s.log(sanitize(expString,true), NO_PREFIX)
-            }
+			if logenb {
+				s.log("Matched: "+match.ID, NEWLINE)
+				s.log(" - ", NO_PREFIX)
+				s.log(sanitize(expString, true), NO_PREFIX)
+			}
 			s.tok = Token{match.ID, expString, s.curLine, s.curPos - len(expString)}
 			break
 		}
@@ -270,27 +264,26 @@ func (s *Scanner) Match(matches []Match) {
 }
 
 func (s *Scanner) SkipRune() {
-    if logenb {
-        s.log("Skip Rune: ", NEWLINE)    
-    }
+	if logenb {
+		s.log("Skip Rune: ", NEWLINE)
+	}
 	if len(s.expRunes) > 0 {
-        rn := s.expRunes[len(s.expRunes)-1]
+		rn := s.expRunes[len(s.expRunes)-1]
 		s.expRunes = s.expRunes[:len(s.expRunes)-1]
-        if logenb {
-            s.log(sanitize(string(rn), true) + ", ", NO_PREFIX)
-        }
+		if logenb {
+			s.log(sanitize(string(rn), true)+", ", NO_PREFIX)
+		}
 	} else {
-        if logenb {
-		  s.log("Warning: No Runes to Skip", ERROR)
-        }
+		if logenb {
+			s.log("Warning: No Runes to Skip", ERROR)
+		}
 	}
 }
 
 // Creates a new error and passes it to the parser. Only one error is generated by the
 // scanner as it exits immediately after an error
-//
 func (s *Scanner) newError(code ErrorCode, err error) *Error {
-	if logenb{
+	if logenb {
 		s.log(err.Error(), ERROR)
 	}
 	lineString := s.getLine()
@@ -305,37 +298,35 @@ func (s *Scanner) newError(code ErrorCode, err error) *Error {
 			s.curLine,
 			s.curPos,
 		}
-	} 
+	}
 	return nil
 }
 
 // scan is the entry point from the parser.
-//
 func (s *Scanner) scan() (Token, *Error) {
 	s.init()
-    if logenb{
-	   s.log("Scanning: "+getFuncName(s.fn), INCREMENT) 
-	   defer s.log("Returning: "+getFuncName(s.fn), DECREMENT) // use defer keyword to log after the fn has returned
-    }
-    return s.fn(s), s.error                                 // Call the user ScanFunc with a reference to the p.s scanner
+	if logenb {
+		s.log("Scanning: "+getFuncName(s.fn), INCREMENT)
+		defer s.log("Returning: "+getFuncName(s.fn), DECREMENT) // use defer keyword to log after the fn has returned
+	}
+	return s.fn(s), s.error // Call the user ScanFunc with a reference to the p.s scanner
 }
 
 // read reads the next rune from the bufferred reader. Only read from the
 // bufio reader s.r if it hasn't already been read. Using another buffer
 // s.buf means we can read and unread as many runes as we like.
-//
 func (s *Scanner) read() rune {
 
-	if s.buf.unread > 0{
+	if s.buf.unread > 0 {
 		rn := s.buf.runes[len(s.buf.runes)-s.buf.unread]
 		s.buf.unread--
 		return rn
 	}
-	
+
 	rn, _, err := s.r.ReadRune() // We don't use s.r.UnreadRune as it can only be called once
-    
+
 	s.buf.runes = append(s.buf.runes, rn)
-    
+
 	// Assume an err means we have reached End of File
 	if err != nil {
 		return rune(0)
@@ -351,7 +342,6 @@ func (s *Scanner) unread() {
 }
 
 // Reset the scanner after every s.callFn() call
-//
 func (s *Scanner) init() {
 	s.tok.ID = ""
 	s.expRunes = nil
@@ -362,20 +352,19 @@ func (s *Scanner) init() {
 
 // log is where all lines are added to the log.
 // It is invoked with a number of indent options.
-//
 func (s *Scanner) log(msg string, indent indent) {
-    if s.logger == nil {
+	if s.logger == nil {
 		return
 	}
-    l := s.logger
+	l := s.logger
 	switch indent {
 	case INCREMENT:
 		{
-			if l.buf != nil{
-                l.log.Print(l.buf...)
-                l.buf = nil
-            }
-            l.indent++
+			if l.buf != nil {
+				l.log.Print(l.buf...)
+				l.buf = nil
+			}
+			l.indent++
 			prefix := ""
 			for i := 0; i < l.indent; i++ {
 				prefix += "\t"
@@ -384,64 +373,63 @@ func (s *Scanner) log(msg string, indent indent) {
 		}
 	case DECREMENT:
 		{
-            if l.buf != nil{
-                l.log.Print(l.buf...)
-                l.buf = nil
-            }
+			if l.buf != nil {
+				l.log.Print(l.buf...)
+				l.buf = nil
+			}
 			l.indent--
 			prefix := ""
 			for i := 0; i < l.indent; i++ {
 				prefix += "\t"
 			}
-            l.log.Print(msg)
-            l.log.SetPrefix(prefix)
-            return
+			l.log.Print(msg)
+			l.log.SetPrefix(prefix)
+			return
 		}
 	case NEWLINE:
 		{
-			if l.buf != nil{
-                l.log.Print(l.buf...)
-                l.buf = nil
-            }
+			if l.buf != nil {
+				l.log.Print(l.buf...)
+				l.buf = nil
+			}
 		}
 	case NO_PREFIX:
 		{
-            //noop
+			//noop
 		}
 	case STARTLINE:
 		{
-            if l.buf != nil{
-                l.log.Print(l.buf...)
-                l.buf = nil
-            }
-            prefix := l.log.Prefix()
-            l.log.SetPrefix("")
-            l.log.Print(msg)
-            l.log.SetPrefix(prefix)
-            return
+			if l.buf != nil {
+				l.log.Print(l.buf...)
+				l.buf = nil
+			}
+			prefix := l.log.Prefix()
+			l.log.SetPrefix("")
+			l.log.Print(msg)
+			l.log.SetPrefix(prefix)
+			return
 		}
 	case ERROR:
-		{           
-            if l.buf != nil{
-                l.log.Print(l.buf...)
-                l.buf = nil
-            }
-            prefix := l.log.Prefix()
-            l.log.SetPrefix("***")
-            l.log.Print(msg)
-            l.log.SetPrefix(prefix)
-            return
+		{
+			if l.buf != nil {
+				l.log.Print(l.buf...)
+				l.buf = nil
+			}
+			prefix := l.log.Prefix()
+			l.log.SetPrefix("***")
+			l.log.Print(msg)
+			l.log.SetPrefix(prefix)
+			return
 		}
 	}
-	l.buf = append(l.buf,msg)
+	l.buf = append(l.buf, msg)
 }
 
 // getLine is used to scan the rest of the current line to display in the Error
-//
 func (s *Scanner) getLine() string {
 	var numRunes int
 	var tempBuffer bytes.Buffer
-	
+
 	tempBuffer.WriteString(s.curLineBuffer.String())
 
 	for {
@@ -457,7 +445,7 @@ func (s *Scanner) getLine() string {
 	for i := 0; i < numRunes; i++ {
 		s.unread()
 	}
-	s.unread()     // Unread the rune that was skipped
+	s.unread() // Unread the rune that was skipped
 
 	return tempBuffer.String()
 }

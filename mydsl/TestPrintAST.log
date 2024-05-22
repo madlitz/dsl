@@ -1,20 +1,20 @@
-Line 1:
+Line 1: 
 Parsing: github.com/madlitz/go-dsl/mydsl.Parse
-Expect Token (Multiple ): [WS VARIABLE EOF]
+Expect Token (Multiple ): [WS VARIABLE EOF] 
 	Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-	Expect (Optional ) Rune: [WS TAB] Range: []
+	Expect (Optional ) Rune: [WS TAB] Range: [] 
 	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:1 Found: a
 		Scanning: github.com/madlitz/go-dsl/mydsl.variable
-		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z]
+		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
 		Matched: VARIABLE - a
 		Returning: github.com/madlitz/go-dsl/mydsl.variable
 	Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:2 Found: WS
 	Returning: github.com/madlitz/go-dsl/mydsl.Scan
 Found: VARIABLE
 	Parsing: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
-	Expect Token (Optional ): [WS]
+	Expect Token (Optional ): [WS] 
 		Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-		Expect (Optional ) Rune: [WS TAB] Range: []
+		Expect (Optional ) Rune: [WS TAB] Range: [] 
 		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:3 Found: :
 			Scanning: github.com/madlitz/go-dsl/mydsl.assign
 			Expect () Rune: [=] Range: [] Pos:4 Found: =
@@ -22,96 +22,96 @@ Found: VARIABLE
 			Returning: github.com/madlitz/go-dsl/mydsl.assign
 		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:5 Found: WS
 		Returning: github.com/madlitz/go-dsl/mydsl.Scan
-	Expect Token (): [ASSIGN OPEN_PAREN]
+	Expect Token (): [ASSIGN OPEN_PAREN] 
 	Found: ASSIGN
 		Parsing: github.com/madlitz/go-dsl/mydsl.assignment
-		AST Skip Token: ASSIGN - :=,
+		AST Skip Token: ASSIGN - :=, 
 		AST Add Node: ASSIGNMENT
-		AST Add Tokens: VARIABLE - a,
-		Expect Token (Optional ): [WS]
+		AST Add Tokens: VARIABLE - a, 
+		Expect Token (Optional ): [WS] 
 			Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-			Expect (Optional ) Rune: [WS TAB] Range: []
+			Expect (Optional ) Rune: [WS TAB] Range: [] 
 			Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:6 Found: 1
 				Scanning: github.com/madlitz/go-dsl/mydsl.literal
-				Expect (Optional Multiple ) Rune: [] Range: [0-9]
-				Expect (Optional ) Rune: [.] Range: []
+				Expect (Optional Multiple ) Rune: [] Range: [0-9] 
+				Expect (Optional ) Rune: [.] Range: [] 
 				Matched: LITERAL - 1
 				Returning: github.com/madlitz/go-dsl/mydsl.literal
 			Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:7 Found: WS
 			Returning: github.com/madlitz/go-dsl/mydsl.Scan
-		Expect Token (): [VARIABLE LITERAL OPEN_PAREN]
+		Expect Token (): [VARIABLE LITERAL OPEN_PAREN] 
 		Found: LITERAL
 			Parsing: github.com/madlitz/go-dsl/mydsl.operator
 			AST Add Node: TERMINAL
-			AST Add Tokens: LITERAL - 1,
+			AST Add Tokens: LITERAL - 1, 
 			AST Walk Up
-			Expect Token (Optional ): [WS]
+			Expect Token (Optional ): [WS] 
 				Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-				Expect (Optional ) Rune: [WS TAB] Range: []
+				Expect (Optional ) Rune: [WS TAB] Range: [] 
 				Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:8 Found: *
 				Matched: MULTIPLY - *
 				Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:9 Found: WS
 				Returning: github.com/madlitz/go-dsl/mydsl.Scan
-			Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+			Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 			Found: MULTIPLY
 				Parsing: github.com/madlitz/go-dsl/mydsl.expression
 				AST Add Node: EXPRESSION
-				AST Add Tokens: MULTIPLY - *,
-				Expect Token (Optional ): [WS]
+				AST Add Tokens: MULTIPLY - *, 
+				Expect Token (Optional ): [WS] 
 					Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-					Expect (Optional ) Rune: [WS TAB] Range: []
+					Expect (Optional ) Rune: [WS TAB] Range: [] 
 					Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:10 Found: 5
 						Scanning: github.com/madlitz/go-dsl/mydsl.literal
-						Expect (Optional Multiple ) Rune: [] Range: [0-9]
-						Expect (Optional ) Rune: [.] Range: []
+						Expect (Optional Multiple ) Rune: [] Range: [0-9] 
+						Expect (Optional ) Rune: [.] Range: [] 
 						Matched: LITERAL - 5
 						Returning: github.com/madlitz/go-dsl/mydsl.literal
 					Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:11 Found: WS
 					Returning: github.com/madlitz/go-dsl/mydsl.Scan
-				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN]
+				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
 				Found: LITERAL
 					Parsing: github.com/madlitz/go-dsl/mydsl.operator
 					AST Add Node: TERMINAL
-					AST Add Tokens: LITERAL - 5,
+					AST Add Tokens: LITERAL - 5, 
 					AST Walk Up
-					Expect Token (Optional ): [WS]
+					Expect Token (Optional ): [WS] 
 						Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-						Expect (Optional ) Rune: [WS TAB] Range: []
+						Expect (Optional ) Rune: [WS TAB] Range: [] 
 						Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:12 Found: +
 						Matched: PLUS - +
 						Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:13 Found: WS
 						Returning: github.com/madlitz/go-dsl/mydsl.Scan
-					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 					Found: PLUS
 						Parsing: github.com/madlitz/go-dsl/mydsl.expression
 						AST Add Node: EXPRESSION
-						AST Add Tokens: PLUS - +,
-						Expect Token (Optional ): [WS]
+						AST Add Tokens: PLUS - +, 
+						Expect Token (Optional ): [WS] 
 							Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-							Expect (Optional ) Rune: [WS TAB] Range: []
+							Expect (Optional ) Rune: [WS TAB] Range: [] 
 							Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:14 Found: 7
 								Scanning: github.com/madlitz/go-dsl/mydsl.literal
-								Expect (Optional Multiple ) Rune: [] Range: [0-9]
-								Expect (Optional ) Rune: [.] Range: []
+								Expect (Optional Multiple ) Rune: [] Range: [0-9] 
+								Expect (Optional ) Rune: [.] Range: [] 
 								Matched: LITERAL - 7
 								Returning: github.com/madlitz/go-dsl/mydsl.literal
-							Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+							Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 							Returning: github.com/madlitz/go-dsl/mydsl.Scan
-						Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN]
+						Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
 						Found: LITERAL
 							Parsing: github.com/madlitz/go-dsl/mydsl.operator
 							AST Add Node: TERMINAL
-							AST Add Tokens: LITERAL - 7,
+							AST Add Tokens: LITERAL - 7, 
 							AST Walk Up
-							Expect Token (Optional ): [WS]
+							Expect Token (Optional ): [WS] 
 								Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-								Expect (Optional ) Rune: [WS TAB] Range: []
+								Expect (Optional ) Rune: [WS TAB] Range: [] 
 								Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:15 Found: NL
 Line 2:
 								Matched: NL - NL
 								Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:1 Found: TAB, TAB
 								Returning: github.com/madlitz/go-dsl/mydsl.Scan
-							Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+							Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 							AST Walk Up
 							Returning: github.com/madlitz/go-dsl/mydsl.operator
 						Returning: github.com/madlitz/go-dsl/mydsl.expression
@@ -121,28 +121,28 @@ Line 2:
 			AST Walk Up
 			Returning: github.com/madlitz/go-dsl/mydsl.operator
 		Returning: github.com/madlitz/go-dsl/mydsl.assignment
-	Expect Token (Optional ): [WS]
-	Expect Token (Optional ): [COMMENT]
-	Expect Token (): [NL EOF]
+	Expect Token (Optional ): [WS] 
+	Expect Token (Optional ): [COMMENT] 
+	Expect Token (): [NL EOF] 
 	Found: NL
 		Parsing: github.com/madlitz/go-dsl/mydsl.skipWhitespace
-		AST Skip Token: NL - NL,
+		AST Skip Token: NL - NL, 
 		Returning: github.com/madlitz/go-dsl/mydsl.skipWhitespace
 	Returning: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
 	Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-	Expect (Optional ) Rune: [WS TAB] Range: []
+	Expect (Optional ) Rune: [WS TAB] Range: [] 
 	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:3 Found: b
 		Scanning: github.com/madlitz/go-dsl/mydsl.variable
-		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z]
+		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
 		Matched: VARIABLE - b
 		Returning: github.com/madlitz/go-dsl/mydsl.variable
 	Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:4 Found: WS
 	Returning: github.com/madlitz/go-dsl/mydsl.Scan
 Found: VARIABLE
 	Parsing: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
-	Expect Token (Optional ): [WS]
+	Expect Token (Optional ): [WS] 
 		Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-		Expect (Optional ) Rune: [WS TAB] Range: []
+		Expect (Optional ) Rune: [WS TAB] Range: [] 
 		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:5 Found: :
 			Scanning: github.com/madlitz/go-dsl/mydsl.assign
 			Expect () Rune: [=] Range: [] Pos:6 Found: =
@@ -150,18 +150,18 @@ Found: VARIABLE
 			Returning: github.com/madlitz/go-dsl/mydsl.assign
 		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:7 Found: WS
 		Returning: github.com/madlitz/go-dsl/mydsl.Scan
-	Expect Token (): [ASSIGN OPEN_PAREN]
+	Expect Token (): [ASSIGN OPEN_PAREN] 
 	Found: ASSIGN
 		Parsing: github.com/madlitz/go-dsl/mydsl.assignment
-		AST Skip Token: ASSIGN - :=,
+		AST Skip Token: ASSIGN - :=, 
 		AST Add Node: ASSIGNMENT
-		AST Add Tokens: VARIABLE - b,
-		Expect Token (Optional ): [WS]
+		AST Add Tokens: VARIABLE - b, 
+		Expect Token (Optional ): [WS] 
 			Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-			Expect (Optional ) Rune: [WS TAB] Range: []
+			Expect (Optional ) Rune: [WS TAB] Range: [] 
 			Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:8 Found: 3
 				Scanning: github.com/madlitz/go-dsl/mydsl.literal
-				Expect (Optional Multiple ) Rune: [] Range: [0-9]
+				Expect (Optional Multiple ) Rune: [] Range: [0-9] 
 				Expect (Optional ) Rune: [.] Range: [] Pos:9 Found: .
 					Scanning: github.com/madlitz/go-dsl/mydsl.fraction
 					Expect (Multiple ) Rune: [] Range: [0-9] Pos:10 Found: 4, 5
@@ -170,27 +170,27 @@ Found: VARIABLE
 				Returning: github.com/madlitz/go-dsl/mydsl.literal
 			Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:12 Found: WS
 			Returning: github.com/madlitz/go-dsl/mydsl.Scan
-		Expect Token (): [VARIABLE LITERAL OPEN_PAREN]
+		Expect Token (): [VARIABLE LITERAL OPEN_PAREN] 
 		Found: LITERAL
 			Parsing: github.com/madlitz/go-dsl/mydsl.operator
 			AST Add Node: TERMINAL
-			AST Add Tokens: LITERAL - 3.45,
+			AST Add Tokens: LITERAL - 3.45, 
 			AST Walk Up
-			Expect Token (Optional ): [WS]
+			Expect Token (Optional ): [WS] 
 				Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-				Expect (Optional ) Rune: [WS TAB] Range: []
+				Expect (Optional ) Rune: [WS TAB] Range: [] 
 				Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:13 Found: *
 				Matched: MULTIPLY - *
 				Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:14 Found: WS
 				Returning: github.com/madlitz/go-dsl/mydsl.Scan
-			Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+			Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 			Found: MULTIPLY
 				Parsing: github.com/madlitz/go-dsl/mydsl.expression
 				AST Add Node: EXPRESSION
-				AST Add Tokens: MULTIPLY - *,
-				Expect Token (Optional ): [WS]
+				AST Add Tokens: MULTIPLY - *, 
+				Expect Token (Optional ): [WS] 
 					Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-					Expect (Optional ) Rune: [WS TAB] Range: []
+					Expect (Optional ) Rune: [WS TAB] Range: [] 
 					Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:15 Found: 4
 						Scanning: github.com/madlitz/go-dsl/mydsl.literal
 						Expect (Optional Multiple ) Rune: [] Range: [0-9] Pos:16 Found: 4
@@ -202,116 +202,116 @@ Found: VARIABLE
 						Returning: github.com/madlitz/go-dsl/mydsl.literal
 					Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:20 Found: WS
 					Returning: github.com/madlitz/go-dsl/mydsl.Scan
-				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN]
+				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
 				Found: LITERAL
 					Parsing: github.com/madlitz/go-dsl/mydsl.operator
 					AST Add Node: TERMINAL
-					AST Add Tokens: LITERAL - 44.21,
+					AST Add Tokens: LITERAL - 44.21, 
 					AST Walk Up
-					Expect Token (Optional ): [WS]
+					Expect Token (Optional ): [WS] 
 						Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-						Expect (Optional ) Rune: [WS TAB] Range: []
+						Expect (Optional ) Rune: [WS TAB] Range: [] 
 						Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:21 Found: /
 						Matched: DIVIDE - /
 						Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:22 Found: WS
 						Returning: github.com/madlitz/go-dsl/mydsl.Scan
-					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 					Found: DIVIDE
 						Parsing: github.com/madlitz/go-dsl/mydsl.expression
 						AST Add Node: EXPRESSION
-						AST Add Tokens: DIVIDE - /,
-						Expect Token (Optional ): [WS]
+						AST Add Tokens: DIVIDE - /, 
+						Expect Token (Optional ): [WS] 
 							Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-							Expect (Optional ) Rune: [WS TAB] Range: []
+							Expect (Optional ) Rune: [WS TAB] Range: [] 
 							Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:23 Found: (
 							Matched: OPEN_PAREN - (
-							Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+							Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 							Returning: github.com/madlitz/go-dsl/mydsl.Scan
-						Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN]
+						Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
 						Found: OPEN_PAREN
 							Parsing: github.com/madlitz/go-dsl/mydsl.paren_expression
-							Peek: [[], ]
+							Peek: [[], ] 
 								Parsing: github.com/madlitz/go-dsl/mydsl.expression
 								AST Add Node: EXPRESSION
-								AST Add Tokens: OPEN_PAREN - (,
-								Expect Token (Optional ): [WS]
+								AST Add Tokens: OPEN_PAREN - (, 
+								Expect Token (Optional ): [WS] 
 									Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-									Expect (Optional ) Rune: [WS TAB] Range: []
+									Expect (Optional ) Rune: [WS TAB] Range: [] 
 									Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:24 Found: 4
 										Scanning: github.com/madlitz/go-dsl/mydsl.literal
-										Expect (Optional Multiple ) Rune: [] Range: [0-9]
-										Expect (Optional ) Rune: [.] Range: []
+										Expect (Optional Multiple ) Rune: [] Range: [0-9] 
+										Expect (Optional ) Rune: [.] Range: [] 
 										Matched: LITERAL - 4
 										Returning: github.com/madlitz/go-dsl/mydsl.literal
 									Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:25 Found: WS
 									Returning: github.com/madlitz/go-dsl/mydsl.Scan
-								Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN]
+								Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
 								Found: LITERAL
 									Parsing: github.com/madlitz/go-dsl/mydsl.operator
 									AST Add Node: TERMINAL
-									AST Add Tokens: LITERAL - 4,
+									AST Add Tokens: LITERAL - 4, 
 									AST Walk Up
-									Expect Token (Optional ): [WS]
+									Expect Token (Optional ): [WS] 
 										Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-										Expect (Optional ) Rune: [WS TAB] Range: []
+										Expect (Optional ) Rune: [WS TAB] Range: [] 
 										Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:26 Found: +
 										Matched: PLUS - +
 										Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:27 Found: WS
 										Returning: github.com/madlitz/go-dsl/mydsl.Scan
-									Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+									Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 									Found: PLUS
 										Parsing: github.com/madlitz/go-dsl/mydsl.expression
 										AST Add Node: EXPRESSION
-										AST Add Tokens: PLUS - +,
-										Expect Token (Optional ): [WS]
+										AST Add Tokens: PLUS - +, 
+										Expect Token (Optional ): [WS] 
 											Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-											Expect (Optional ) Rune: [WS TAB] Range: []
+											Expect (Optional ) Rune: [WS TAB] Range: [] 
 											Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:28 Found: a
 												Scanning: github.com/madlitz/go-dsl/mydsl.variable
-												Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z]
+												Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
 												Matched: VARIABLE - a
 												Returning: github.com/madlitz/go-dsl/mydsl.variable
-											Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+											Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 											Returning: github.com/madlitz/go-dsl/mydsl.Scan
-										Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN]
+										Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
 										Found: VARIABLE
 											Parsing: github.com/madlitz/go-dsl/mydsl.operator
 											AST Add Node: TERMINAL
-											AST Add Tokens: VARIABLE - a,
+											AST Add Tokens: VARIABLE - a, 
 											AST Walk Up
-											Expect Token (Optional ): [WS]
+											Expect Token (Optional ): [WS] 
 												Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-												Expect (Optional ) Rune: [WS TAB] Range: []
+												Expect (Optional ) Rune: [WS TAB] Range: [] 
 												Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:29 Found: )
 												Matched: CLOSE_PAREN - )
 												Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:30 Found: WS
 												Returning: github.com/madlitz/go-dsl/mydsl.Scan
-											Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+											Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 											AST Walk Up
 											Returning: github.com/madlitz/go-dsl/mydsl.operator
 										Returning: github.com/madlitz/go-dsl/mydsl.expression
 									AST Walk Up
 									Returning: github.com/madlitz/go-dsl/mydsl.operator
 								Returning: github.com/madlitz/go-dsl/mydsl.expression
-							Expect Token (Optional ): [WS]
-							Expect Token (): [CLOSE_PAREN]
+							Expect Token (Optional ): [WS] 
+							Expect Token (): [CLOSE_PAREN] 
 							Found: CLOSE_PAREN
 								Parsing: github.com/madlitz/go-dsl/mydsl.operator
 								AST Add Node: TERMINAL
-								AST Add Tokens: CLOSE_PAREN - ),
+								AST Add Tokens: CLOSE_PAREN - ), 
 								AST Walk Up
-								Expect Token (Optional ): [WS]
+								Expect Token (Optional ): [WS] 
 									Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-									Expect (Optional ) Rune: [WS TAB] Range: []
+									Expect (Optional ) Rune: [WS TAB] Range: [] 
 									Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:31 Found: '
 										Scanning: github.com/madlitz/go-dsl/mydsl.comment
-										Skip Rune: ',
+										Skip Rune: ', 
 										Expect (Invert Optional Multiple ) Rune: [EOF NL] Range: [] Pos:32 Found: A, WS, S, i, m, p, l, e, WS, E, x, p, r, e, s, s, i, o, n
 										Matched: COMMENT - A Simple Expression
 										Returning: github.com/madlitz/go-dsl/mydsl.comment
-									Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+									Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 									Returning: github.com/madlitz/go-dsl/mydsl.Scan
-								Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+								Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 								AST Walk Up
 								Returning: github.com/madlitz/go-dsl/mydsl.operator
 							Returning: github.com/madlitz/go-dsl/mydsl.paren_expression
@@ -322,17 +322,17 @@ Found: VARIABLE
 			AST Walk Up
 			Returning: github.com/madlitz/go-dsl/mydsl.operator
 		Returning: github.com/madlitz/go-dsl/mydsl.assignment
-	Expect Token (Optional ): [WS]
-	Expect Token (Optional ): [COMMENT]
+	Expect Token (Optional ): [WS] 
+	Expect Token (Optional ): [COMMENT] 
 	Found: COMMENT
 		Parsing: github.com/madlitz/go-dsl/mydsl.addcomment
 		AST Add Node: COMMENT
-		AST Add Tokens: COMMENT - A Simple Expression,
+		AST Add Tokens: COMMENT - A Simple Expression, 
 		AST Walk Up
 		Returning: github.com/madlitz/go-dsl/mydsl.addcomment
-	Expect Token (): [NL EOF]
+	Expect Token (): [NL EOF] 
 		Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-		Expect (Optional ) Rune: [WS TAB] Range: []
+		Expect (Optional ) Rune: [WS TAB] Range: [] 
 		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:51 Found: NL
 Line 3:
 		Matched: NL - NL
@@ -340,109 +340,109 @@ Line 3:
 		Returning: github.com/madlitz/go-dsl/mydsl.Scan
 	Found: NL
 		Parsing: github.com/madlitz/go-dsl/mydsl.skipWhitespace
-		AST Skip Token: NL - NL,
+		AST Skip Token: NL - NL, 
 		Returning: github.com/madlitz/go-dsl/mydsl.skipWhitespace
 	Returning: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
 	Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-	Expect (Optional ) Rune: [WS TAB] Range: []
+	Expect (Optional ) Rune: [WS TAB] Range: [] 
 	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:3 Found: d
 		Scanning: github.com/madlitz/go-dsl/mydsl.variable
 		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] Pos:4 Found: o, u, b, l, e
 		Matched: VARIABLE - double
 		Returning: github.com/madlitz/go-dsl/mydsl.variable
-	Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+	Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 	Returning: github.com/madlitz/go-dsl/mydsl.Scan
 Found: VARIABLE
 	Parsing: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
-	Expect Token (Optional ): [WS]
+	Expect Token (Optional ): [WS] 
 		Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-		Expect (Optional ) Rune: [WS TAB] Range: []
+		Expect (Optional ) Rune: [WS TAB] Range: [] 
 		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:9 Found: (
 		Matched: OPEN_PAREN - (
-		Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 		Returning: github.com/madlitz/go-dsl/mydsl.Scan
-	Expect Token (): [ASSIGN OPEN_PAREN]
+	Expect Token (): [ASSIGN OPEN_PAREN] 
 	Found: OPEN_PAREN
 		Parsing: github.com/madlitz/go-dsl/mydsl.call
-		AST Skip Token: OPEN_PAREN - (,
+		AST Skip Token: OPEN_PAREN - (, 
 		AST Add Node: CALL
-		AST Add Tokens: VARIABLE - double,
-		Expect Token (Optional ): [WS]
+		AST Add Tokens: VARIABLE - double, 
+		Expect Token (Optional ): [WS] 
 			Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-			Expect (Optional ) Rune: [WS TAB] Range: []
+			Expect (Optional ) Rune: [WS TAB] Range: [] 
 			Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:10 Found: a
 				Scanning: github.com/madlitz/go-dsl/mydsl.variable
-				Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z]
+				Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
 				Matched: VARIABLE - a
 				Returning: github.com/madlitz/go-dsl/mydsl.variable
 			Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:11 Found: WS
 			Returning: github.com/madlitz/go-dsl/mydsl.Scan
-		Expect Token (): [VARIABLE LITERAL OPEN_PAREN]
+		Expect Token (): [VARIABLE LITERAL OPEN_PAREN] 
 		Found: VARIABLE
 			Parsing: github.com/madlitz/go-dsl/mydsl.operator
 			AST Add Node: TERMINAL
-			AST Add Tokens: VARIABLE - a,
+			AST Add Tokens: VARIABLE - a, 
 			AST Walk Up
-			Expect Token (Optional ): [WS]
+			Expect Token (Optional ): [WS] 
 				Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-				Expect (Optional ) Rune: [WS TAB] Range: []
+				Expect (Optional ) Rune: [WS TAB] Range: [] 
 				Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:12 Found: +
 				Matched: PLUS - +
 				Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:13 Found: WS
 				Returning: github.com/madlitz/go-dsl/mydsl.Scan
-			Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+			Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 			Found: PLUS
 				Parsing: github.com/madlitz/go-dsl/mydsl.expression
 				AST Add Node: EXPRESSION
-				AST Add Tokens: PLUS - +,
-				Expect Token (Optional ): [WS]
+				AST Add Tokens: PLUS - +, 
+				Expect Token (Optional ): [WS] 
 					Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-					Expect (Optional ) Rune: [WS TAB] Range: []
+					Expect (Optional ) Rune: [WS TAB] Range: [] 
 					Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:14 Found: b
 						Scanning: github.com/madlitz/go-dsl/mydsl.variable
-						Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z]
+						Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
 						Matched: VARIABLE - b
 						Returning: github.com/madlitz/go-dsl/mydsl.variable
-					Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+					Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 					Returning: github.com/madlitz/go-dsl/mydsl.Scan
-				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN]
+				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
 				Found: VARIABLE
 					Parsing: github.com/madlitz/go-dsl/mydsl.operator
 					AST Add Node: TERMINAL
-					AST Add Tokens: VARIABLE - b,
+					AST Add Tokens: VARIABLE - b, 
 					AST Walk Up
-					Expect Token (Optional ): [WS]
+					Expect Token (Optional ): [WS] 
 						Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-						Expect (Optional ) Rune: [WS TAB] Range: []
+						Expect (Optional ) Rune: [WS TAB] Range: [] 
 						Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:15 Found: )
 						Matched: CLOSE_PAREN - )
-						Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+						Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 						Returning: github.com/madlitz/go-dsl/mydsl.Scan
-					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN]
+					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
 					AST Walk Up
 					Returning: github.com/madlitz/go-dsl/mydsl.operator
 				Returning: github.com/madlitz/go-dsl/mydsl.expression
 			AST Walk Up
 			Returning: github.com/madlitz/go-dsl/mydsl.operator
-		Expect Token (Optional ): [WS]
-		Expect Token (): [CLOSE_PAREN]
+		Expect Token (Optional ): [WS] 
+		Expect Token (): [CLOSE_PAREN] 
 		Found: CLOSE_PAREN
 			Parsing: github.com/madlitz/go-dsl/mydsl.closecall
-			AST Skip Token: CLOSE_PAREN - ),
+			AST Skip Token: CLOSE_PAREN - ), 
 			AST Walk Up
 			Returning: github.com/madlitz/go-dsl/mydsl.closecall
 		Returning: github.com/madlitz/go-dsl/mydsl.call
-	Expect Token (Optional ): [WS]
+	Expect Token (Optional ): [WS] 
 		Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-		Expect (Optional ) Rune: [WS TAB] Range: []
+		Expect (Optional ) Rune: [WS TAB] Range: [] 
 		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:16 Found: EOF
 			Scanning: github.com/madlitz/go-dsl/mydsl.eof
 			Matched: EOF - EOF
 			Returning: github.com/madlitz/go-dsl/mydsl.eof
-		Expect (Optional Multiple ) Rune: [WS TAB] Range: []
+		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 		Returning: github.com/madlitz/go-dsl/mydsl.Scan
-	Expect Token (Optional ): [COMMENT]
-	Expect Token (): [NL EOF]
+	Expect Token (Optional ): [COMMENT] 
+	Expect Token (): [NL EOF] 
 	Found: EOF
 	Returning: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
 Returning: github.com/madlitz/go-dsl/mydsl.Parse

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Des Little <deslittle@gmail.com>
+// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
 // All rights reserved. Use of this source code is governed by a LGPL v3
 // license that can be found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 // function using three basic functions; p.AddNode(), p.AddToken() and
 // p.WalkUp(). AST node types are defined by the user.
 //
-// The AST is made up of Nodes (more accurately Node pointers), each of
+// The AST is made up of nodes (more accurately Node pointers), each of
 // which contains a slice of Node children and a reference to it's parent.
-// The Nodes are made available to the user so they can walk up and down
+// The nodes are made available to the user so they can walk up and down
 // the tree once it is returned from the parser.
-//
 package dsl
 
 import (
@@ -20,16 +19,35 @@ import (
 
 // RootNode is the entry point to the tree. curNode is used internally
 // to keep track of where the next node should be added.
-//
 type AST struct {
-	ns       NodeSet	`json:"-"`
-	RootNode *Node		`json:"root"`
-	curNode  *Node		`json:"-"`
+	ns       NodeSet `json:"-"`
+	RootNode *Node   `json:"root"`
+	curNode  *Node   `json:"-"`
+}
+
+// A Node can contain multiple Tokens which can be useful if the user knows how
+// many Tokens belong to a particular Node type. Otherwise, the user should only
+// add one token per node.
+type Node struct {
+	Type     string  `json:"type"`
+	Tokens   []Token `json:"tokens"`
+	Parent   *Node   `json:"-"`
+	Children []Node  `json:"children"`
+}
+
+type NodeSet map[string]int
+
+func NewNodeSet(userTypes ...string) NodeSet {
+	ns := make(map[string]int)
+	ns["ROOT"] = 1
+	for i, id := range userTypes {
+		ns[id] = i + 2
+	}
+	return ns
 }
 
 // newAST returns a new instance of AST. The RootNode has the
 // builtin node type AST_ROOT.
-//
 func newAST(ns NodeSet) AST {
 	rootNode := &Node{Type: "ROOT"}
 	return AST{ns: ns, RootNode: rootNode, curNode: rootNode}
@@ -48,24 +66,19 @@ func newAST(ns NodeSet) AST {
 
 // Inspect traverses an AST in depth-first order: It starts by calling
 // f(node);
-//
 func (a *AST) Inspect(fn func(*Node)) {
 	visit(a.RootNode, fn)
 }
 
 func visit(node *Node, fn func(*Node)) {
-	for _, child := range node.Children{
-		visit(child, fn)
+	for _, child := range node.Children {
+		visit(&child, fn)
 	}
 	fn(node)
-	return
 }
-
-
 
 // Prints the entire AST tree. It does so by recursively calling Print() on
 // each node in the tree in a depth first approach.
-//
 func (a *AST) Print() {
 	a.RootNode.Print("", true)
 	fmt.Println()
@@ -74,21 +87,16 @@ func (a *AST) Print() {
 // Called by Parser.AddNode() in the user parse function. Creates a new node and
 // builds the two-way reference to its parent. Also moves the AST curNode
 // down the tree to the new node.
-//
 func (a *AST) addNode(nt string) {
-	curNode := a.curNode
-	newNode := &Node{Type: nt, Parent: curNode}
-	nodes := append(curNode.Children, newNode)
-	a.curNode.Children = nodes
-	a.curNode = newNode
+	a.curNode.Children = append(a.curNode.Children, Node{Type: nt, Parent: a.curNode})
+	a.curNode = &a.curNode.Children[len(a.curNode.Children)-1]
 }
 
 // Called by Parser.AddToken() in the user parse function. Adds a token to the
 // end of the Token slice belonging to the current node.
 //
 // If Parser.AddToken() is called without any tokens available on the Parser.toks buffer
-// the call to AddToken will be looged but no tokens will be added to the node.
-//
+// the call to AddToken will be logged but no tokens will be added to the node.
 func (a *AST) addToken(toks []Token) {
 	if toks != nil {
 		tokens := append(a.curNode.Tokens, toks...)
@@ -98,7 +106,6 @@ func (a *AST) addToken(toks []Token) {
 
 // Called by Parser.WalkUp() in the user parse function. Moves the AST
 // curNode to its parent.
-//
 func (a *AST) walkUp() {
 	if a.ns[a.curNode.Type] != a.ns["ROOT"] {
 		a.curNode = a.curNode.Parent
@@ -111,7 +118,6 @@ func (a *AST) walkUp() {
 //
 // A user can print the entire tree using AST.Print() or only print a sub-branch
 // by calling Print() on any node in the tree.
-//
 func (n *Node) Print(prefix string, isTail bool) {
 	fmt.Printf("\n%v", prefix)
 	if isTail {

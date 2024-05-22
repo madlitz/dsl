@@ -1,9 +1,8 @@
-// Copyright (c) 2015 Des Little <deslittle@gmail.com>
+// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
 // All rights reserved. Use of this source code is governed by a LGPL v3
 // license that can be found in the LICENSE file.
 
 // token.go defines what a Token is and the token ID interface
-//
 package dsl
 
 import "fmt"
@@ -12,7 +11,6 @@ import "fmt"
 // position (or column) the Token was found. This information is used when
 // displaying errors but could also be useful to the user for things like
 // syntax highlighting and debugging if they were to implement it.
-//
 type Token struct {
 	ID       string
 	Literal  string
