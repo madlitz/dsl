@@ -1,7 +1,7 @@
 package json
 
 import (
-    "github.com/deslittle/go-dsl"
+    "github.com/madlitz/go-dsl"
 )
 
 func NewTokenSet() dsl.TokenSet{

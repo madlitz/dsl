@@ -1,8 +1,9 @@
 package mydsl
 
-import(
-    "github.com/Autoblocks/go-dsl"
+import (
+	"github.com/madlitz/go-dsl"
 )
+
 var recover bool
 
 func Parse(p *dsl.Parser) (dsl.AST, []dsl.Error) {

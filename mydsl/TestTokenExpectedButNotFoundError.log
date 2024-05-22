@@ -1,34 +1,34 @@
-Line 1: 
-Parsing: github.com/Autoblocks/go-dsl/mydsl.Parse
-Expect Token (Multiple ): [WS VARIABLE EOF] 
-	Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-	Expect (Optional ) Rune: [WS TAB] Range: [] 
+Line 1:
+Parsing: github.com/madlitz/go-dsl/mydsl.Parse
+Expect Token (Multiple ): [WS VARIABLE EOF]
+	Scanning: github.com/madlitz/go-dsl/mydsl.Scan
+	Expect (Optional ) Rune: [WS TAB] Range: []
 	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:1 Found: a
-		Scanning: github.com/Autoblocks/go-dsl/mydsl.variable
-		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
+		Scanning: github.com/madlitz/go-dsl/mydsl.variable
+		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z]
 		Matched: VARIABLE - a
-		Returning: github.com/Autoblocks/go-dsl/mydsl.variable
+		Returning: github.com/madlitz/go-dsl/mydsl.variable
 	Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:2 Found: WS
-	Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
+	Returning: github.com/madlitz/go-dsl/mydsl.Scan
 Found: VARIABLE
-	Parsing: github.com/Autoblocks/go-dsl/mydsl.assignmentOrCall
-	Expect Token (Optional ): [WS] 
-		Scanning: github.com/Autoblocks/go-dsl/mydsl.Scan
-		Expect (Optional ) Rune: [WS TAB] Range: [] 
+	Parsing: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
+	Expect Token (Optional ): [WS]
+		Scanning: github.com/madlitz/go-dsl/mydsl.Scan
+		Expect (Optional ) Rune: [WS TAB] Range: []
 		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:3 Found: e
-			Scanning: github.com/Autoblocks/go-dsl/mydsl.variable
+			Scanning: github.com/madlitz/go-dsl/mydsl.variable
 			Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] Pos:4 Found: r, r, o, r
 			Matched: VARIABLE - error
-			Returning: github.com/Autoblocks/go-dsl/mydsl.variable
+			Returning: github.com/madlitz/go-dsl/mydsl.variable
 		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:8 Found: WS
-		Returning: github.com/Autoblocks/go-dsl/mydsl.Scan
-	Expect Token (): [ASSIGN OPEN_PAREN] 
+		Returning: github.com/madlitz/go-dsl/mydsl.Scan
+	Expect Token (): [ASSIGN OPEN_PAREN]
 ***Found [VARIABLE], expected any of [ASSIGN OPEN_PAREN]
-	Expect Token (Optional ): [WS] 
+	Expect Token (Optional ): [WS]
 	Skipping Expect as error already found.
-	Expect Token (Optional ): [COMMENT] 
+	Expect Token (Optional ): [COMMENT]
 	Skipping Expect as error already found.
-	Expect Token (): [NL EOF] 
+	Expect Token (): [NL EOF]
 	Skipping Expect as error already found.
-	Returning: github.com/Autoblocks/go-dsl/mydsl.assignmentOrCall
-Returning: github.com/Autoblocks/go-dsl/mydsl.Parse
+	Returning: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
+Returning: github.com/madlitz/go-dsl/mydsl.Parse

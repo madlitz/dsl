@@ -1,10 +1,11 @@
 package mydsl
 
-import(
-    "github.com/Autoblocks/go-dsl"
+import (
+	"github.com/madlitz/go-dsl"
 )
+
 func Scan(s *dsl.Scanner) dsl.Token {
-	if recover{
+	if recover {
 		s.Expect(dsl.ExpectRune{
 			Branches: []dsl.Branch{
 				{rune(0), nil},
@@ -99,6 +100,7 @@ func stringliteral(s *dsl.Scanner) {
 	s.SkipRune()
 	s.Match([]dsl.Match{{"", "LITERAL"}})
 }
+
 // ScanFn -> number -> fraction
 func fraction(s *dsl.Scanner) {
 	s.Expect(dsl.ExpectRune{
@@ -118,7 +120,7 @@ func assign(s *dsl.Scanner) {
 
 // ScanFn -> comment
 func comment(s *dsl.Scanner) {
-    s.SkipRune()
+	s.SkipRune()
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{rune(0), nil},

@@ -1,11 +1,11 @@
 package json
 
-import(
-    "github.com/deslittle/go-dsl"
+import (
+	"github.com/madlitz/go-dsl"
 )
 
-func NewNodeSet() dsl.NodeSet{
-    return dsl.NewNodeSet(
+func NewNodeSet() dsl.NodeSet {
+	return dsl.NewNodeSet(
 		"OBJECT",
 		"ARRAY",
 		"KEY",

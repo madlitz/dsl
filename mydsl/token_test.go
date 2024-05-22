@@ -1,11 +1,11 @@
 package mydsl
 
 import (
-    "github.com/Autoblocks/go-dsl"
+	"github.com/madlitz/go-dsl"
 )
 
-func NewTokenSet() dsl.TokenSet{
-    return dsl.NewTokenSet(
+func NewTokenSet() dsl.TokenSet {
+	return dsl.NewTokenSet(
 		"LITERAL",
 		"PLUS",
 		"MINUS",

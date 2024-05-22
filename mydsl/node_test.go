@@ -1,11 +1,11 @@
 package mydsl
 
-import(
-    "github.com/Autoblocks/go-dsl"
+import (
+	"github.com/madlitz/go-dsl"
 )
 
-func NewNodeSet() dsl.NodeSet{
-    return dsl.NewNodeSet(
+func NewNodeSet() dsl.NodeSet {
+	return dsl.NewNodeSet(
 		"COMMENT",
 		"EXPRESSION",
 		"ASSIGNMENT",
