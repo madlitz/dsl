@@ -11,6 +11,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/madlitz/go-dsl"
 )
 
@@ -31,14 +33,293 @@ func TestPrintAST(t *testing.T) {
 	logfile.Close()
 
 	astjson, _ := json.Marshal(ast)
-	expectedJson := `{"root":{"type":"ROOT","tokens":null,"children":[{"type":"ASSIGNMENT","tokens":[{"ID":"VARIABLE","Literal":"a","Line":1,"Position":1}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"1","Line":1,"Position":6}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"MULTIPLY","Literal":"*","Line":1,"Position":8}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"5","Line":1,"Position":10}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"PLUS","Literal":"+","Line":1,"Position":12}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"7","Line":1,"Position":14}],"children":null}]}]}]},{"type":"ASSIGNMENT","tokens":[{"ID":"VARIABLE","Literal":"b","Line":2,"Position":3}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"3.45","Line":2,"Position":8}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"MULTIPLY","Literal":"*","Line":2,"Position":13}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"44.21","Line":2,"Position":15}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"DIVIDE","Literal":"/","Line":2,"Position":21}],"children":[{"type":"EXPRESSION","tokens":[{"ID":"OPEN_PAREN","Literal":"(","Line":2,"Position":23}],"children":[{"type":"TERMINAL","tokens":[{"ID":"LITERAL","Literal":"4","Line":2,"Position":24}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"PLUS","Literal":"+","Line":2,"Position":26}],"children":[{"type":"TERMINAL","tokens":[{"ID":"VARIABLE","Literal":"a","Line":2,"Position":28}],"children":null}]}]},{"type":"TERMINAL","tokens":[{"ID":"CLOSE_PAREN","Literal":")","Line":2,"Position":29}],"children":null}]}]}]},{"type":"COMMENT","tokens":[{"ID":"COMMENT","Literal":"A Simple Expression","Line":2,"Position":32}],"children":null},{"type":"CALL","tokens":[{"ID":"VARIABLE","Literal":"double","Line":3,"Position":3}],"children":[{"type":"TERMINAL","tokens":[{"ID":"VARIABLE","Literal":"a","Line":3,"Position":10}],"children":null},{"type":"EXPRESSION","tokens":[{"ID":"PLUS","Literal":"+","Line":3,"Position":12}],"children":[{"type":"TERMINAL","tokens":[{"ID":"VARIABLE","Literal":"b","Line":3,"Position":14}],"children":null}]}]}]}}`
-	if string(astjson) != expectedJson {
-		t.Errorf("Expected: %v\nFound: %v", expectedJson, string(astjson))
+	expectedJson := `{
+		"root": {
+			"type": "ROOT",
+			"tokens": null,
+			"children": [
+				{
+					"type": "ASSIGNMENT",
+					"tokens": [
+						{
+							"ID": "VARIABLE",
+							"Literal": "a",
+							"Line": 1,
+							"Position": 1
+						}
+					],
+					"children": [
+						{
+							"type": "TERMINAL",
+							"tokens": [
+								{
+									"ID": "LITERAL",
+									"Literal": "1",
+									"Line": 1,
+									"Position": 6
+								}
+							],
+							"children": null
+						},
+						{
+							"type": "EXPRESSION",
+							"tokens": [
+								{
+									"ID": "MULTIPLY",
+									"Literal": "*",
+									"Line": 1,
+									"Position": 8
+								}
+							],
+							"children": [
+								{
+									"type": "TERMINAL",
+									"tokens": [
+										{
+											"ID": "LITERAL",
+											"Literal": "5",
+											"Line": 1,
+											"Position": 10
+										}
+									],
+									"children": null
+								},
+								{
+									"type": "EXPRESSION",
+									"tokens": [
+										{
+											"ID": "PLUS",
+											"Literal": "+",
+											"Line": 1,
+											"Position": 12
+										}
+									],
+									"children": [
+										{
+											"type": "TERMINAL",
+											"tokens": [
+												{
+													"ID": "LITERAL",
+													"Literal": "7",
+													"Line": 1,
+													"Position": 14
+												}
+											],
+											"children": null
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "ASSIGNMENT",
+					"tokens": [
+						{
+							"ID": "VARIABLE",
+							"Literal": "b",
+							"Line": 2,
+							"Position": 3
+						}
+					],
+					"children": [
+						{
+							"type": "TERMINAL",
+							"tokens": [
+								{
+									"ID": "LITERAL",
+									"Literal": "3.45",
+									"Line": 2,
+									"Position": 8
+								}
+							],
+							"children": null
+						},
+						{
+							"type": "EXPRESSION",
+							"tokens": [
+								{
+									"ID": "MULTIPLY",
+									"Literal": "*",
+									"Line": 2,
+									"Position": 13
+								}
+							],
+							"children": [
+								{
+									"type": "TERMINAL",
+									"tokens": [
+										{
+											"ID": "LITERAL",
+											"Literal": "44.21",
+											"Line": 2,
+											"Position": 15
+										}
+									],
+									"children": null
+								},
+								{
+									"type": "EXPRESSION",
+									"tokens": [
+										{
+											"ID": "DIVIDE",
+											"Literal": "/",
+											"Line": 2,
+											"Position": 21
+										}
+									],
+									"children": [
+										{
+											"type": "EXPRESSION",
+											"tokens": [
+												{
+													"ID": "OPEN_PAREN",
+													"Literal": "(",
+													"Line": 2,
+													"Position": 23
+												}
+											],
+											"children": [
+												{
+													"type": "TERMINAL",
+													"tokens": [
+														{
+															"ID": "LITERAL",
+															"Literal": "4",
+															"Line": 2,
+															"Position": 24
+														}
+													],
+													"children": null
+												},
+												{
+													"type": "EXPRESSION",
+													"tokens": [
+														{
+															"ID": "PLUS",
+															"Literal": "+",
+															"Line": 2,
+															"Position": 26
+														}
+													],
+													"children": [
+														{
+															"type": "TERMINAL",
+															"tokens": [
+																{
+																	"ID": "VARIABLE",
+																	"Literal": "a",
+																	"Line": 2,
+																	"Position": 28
+																}
+															],
+															"children": null
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "TERMINAL",
+											"tokens": [
+												{
+													"ID": "CLOSE_PAREN",
+													"Literal": ")",
+													"Line": 2,
+													"Position": 29
+												}
+											],
+											"children": null
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "COMMENT",
+					"tokens": [
+						{
+							"ID": "COMMENT",
+							"Literal": "A Simple Expression",
+							"Line": 2,
+							"Position": 32
+						}
+					],
+					"children": null
+				},
+				{
+					"type": "CALL",
+					"tokens": [
+						{
+							"ID": "VARIABLE",
+							"Literal": "double",
+							"Line": 3,
+							"Position": 3
+						}
+					],
+					"children": [
+						{
+							"type": "TERMINAL",
+							"tokens": [
+								{
+									"ID": "VARIABLE",
+									"Literal": "a",
+									"Line": 3,
+									"Position": 10
+								}
+							],
+							"children": null
+						},
+						{
+							"type": "EXPRESSION",
+							"tokens": [
+								{
+									"ID": "PLUS",
+									"Literal": "+",
+									"Line": 3,
+									"Position": 12
+								}
+							],
+							"children": [
+								{
+									"type": "TERMINAL",
+									"tokens": [
+										{
+											"ID": "VARIABLE",
+											"Literal": "b",
+											"Line": 3,
+											"Position": 14
+										}
+									],
+									"children": null
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	}`
+
+	var actual interface{}
+	if err := json.Unmarshal(astjson, &actual); err != nil {
+		t.Fatal("Error: Could not unmarshal AST JSON: " + err.Error())
+	}
+
+	var expected interface{}
+	if err := json.Unmarshal([]byte(expectedJson), &expected); err != nil {
+		t.Fatal("Error: Could not unmarshal expected JSON: " + err.Error())
+	}
+
+	if diff := cmp.Diff(expected, actual); diff != "" {
+		t.Errorf("JSON mismatch (-expected +actual):\n%s", diff)
 	}
 }
 
 func TestDSL(t *testing.T) {
-
 	reader := bytes.NewBufferString(
 		`a := 1 * 5 + 7
 b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
@@ -57,77 +338,166 @@ double(a + b)`)
 		t.Fail()
 		t.Error("Should report exactly 0 errors")
 	}
-	cases := []dsl.Node{
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "1", 1, 6}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "5", 1, 10}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "7", 1, 14}}},
-		{Type: "EXPRESSION", Tokens: []dsl.Token{{"PLUS", "+", 1, 12}}},
-		{Type: "EXPRESSION", Tokens: []dsl.Token{{"MULTIPLY", "*", 1, 8}}},
-		{Type: "ASSIGNMENT", Tokens: []dsl.Token{{"VARIABLE", "a", 1, 1}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "3.45", 2, 6}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "44.21", 2, 13}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "4", 2, 22}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"VARIABLE", "a", 2, 26}}},
-		{Type: "EXPRESSION", Tokens: []dsl.Token{{"PLUS", "+", 2, 24}}},
-		{Type: "EXPRESSION", Tokens: []dsl.Token{{"OPEN_PAREN", "(", 2, 21}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"CLOSE_PAREN", ")", 2, 27}}},
-		{Type: "EXPRESSION", Tokens: []dsl.Token{{"DIVIDE", "/", 2, 19}}},
-		{Type: "EXPRESSION", Tokens: []dsl.Token{{"MULTIPLY", "*", 2, 11}}},
-		{Type: "ASSIGNMENT", Tokens: []dsl.Token{{"VARIABLE", "b", 2, 1}}},
-		{Type: "COMMENT", Tokens: []dsl.Token{{"COMMENT", "A Simple Expression", 2, 30}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"VARIABLE", "a", 3, 8}}},
-		{Type: "TERMINAL", Tokens: []dsl.Token{{"VARIABLE", "b", 3, 12}}},
-		{Type: "EXPRESSION", Tokens: []dsl.Token{{"PLUS", "+", 3, 10}}},
-		{Type: "CALL", Tokens: []dsl.Token{{"VARIABLE", "double", 3, 1}}},
-		{Type: "ROOT", Tokens: []dsl.Token{}},
-	}
-	count := 0
-	ast.Inspect(func(node *dsl.Node) {
-		if count > len(cases)-1 {
-			t.Fatalf("Too many nodes.")
-			ast.Print()
-		}
-		if cases[count].Type != node.Type {
-			t.Errorf("Line: %v:%v Node: \"%v\" Wanted node type %v, found %v", cases[count].Tokens[0].Line, cases[count].Tokens[0].Position,
-				node.Type, cases[count].Type, node.Type)
-		}
-		if len(cases[count].Tokens) != len(node.Tokens) {
-			t.Errorf("Case %v: Expected %v tokens, found %v", count, len(cases[count].Tokens), len(node.Tokens))
-			return
-		}
 
-		for i, token := range node.Tokens {
-			if cases[count].Tokens[i].ID != token.ID {
-				t.Errorf("Line: %v:%v Token: \"%v\" Wanted token ID %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position,
-					token.Literal, cases[count].Tokens[i].ID, token.ID)
-			}
-			if cases[count].Tokens[i].Literal != token.Literal {
-				t.Errorf("Line: %v:%v ID: \"%v\" Wanted token literal \"%v\", found \"%v\"", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position,
-					token.ID, cases[count].Tokens[i].Literal, token.Literal)
-			}
-			if cases[count].Tokens[i].Line != token.Line {
-				t.Errorf("Line: %v:%v Token: \"%v\" Wanted token line %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position,
-					token.Literal, cases[count].Tokens[i].Line, token.Line)
-			}
-			if cases[count].Tokens[i].Position != token.Position {
-				t.Errorf("Line: %v:%v Token: \"%v\" Wanted token position %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position,
-					token.Literal, cases[count].Tokens[i].Position, token.Position)
-			}
-		}
-		count++
-	})
-	if count != len(cases) {
-		t.Errorf("Not enough nodes. Expected %v, found %v", len(cases), count)
-		ast.Print()
+	expectedNodes := dsl.Node{
+		Type: dsl.NODE_ROOT,
+		Children: []dsl.Node{
+			{
+				Type: NODE_ASSIGNMENT,
+				Tokens: []dsl.Token{
+					{ID: TOKEN_VARIABLE, Literal: "a", Line: 1, Position: 1},
+				},
+				Children: []dsl.Node{
+					{
+						Type: NODE_TERMINAL,
+						Tokens: []dsl.Token{
+							{ID: TOKEN_LITERAL, Literal: "1", Line: 1, Position: 6},
+						},
+					},
+					{
+						Type: NODE_EXPRESSION,
+						Tokens: []dsl.Token{
+							{ID: TOKEN_MULTIPLY, Literal: "*", Line: 1, Position: 8},
+						},
+						Children: []dsl.Node{
+							{
+								Type: NODE_TERMINAL,
+								Tokens: []dsl.Token{
+									{ID: TOKEN_LITERAL, Literal: "5", Line: 1, Position: 10},
+								},
+							},
+							{
+								Type: NODE_EXPRESSION,
+								Tokens: []dsl.Token{
+									{ID: TOKEN_PLUS, Literal: "+", Line: 1, Position: 12},
+								},
+								Children: []dsl.Node{
+									{
+										Type: NODE_TERMINAL,
+										Tokens: []dsl.Token{
+											{ID: TOKEN_LITERAL, Literal: "7", Line: 1, Position: 14},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				Type: NODE_ASSIGNMENT,
+				Tokens: []dsl.Token{
+					{ID: TOKEN_VARIABLE, Literal: "b", Line: 2, Position: 1},
+				},
+				Children: []dsl.Node{
+					{
+						Type: NODE_TERMINAL,
+						Tokens: []dsl.Token{
+							{ID: TOKEN_LITERAL, Literal: "3.45", Line: 2, Position: 6},
+						},
+					},
+					{
+						Type: NODE_EXPRESSION,
+						Tokens: []dsl.Token{
+							{ID: TOKEN_MULTIPLY, Literal: "*", Line: 2, Position: 11},
+						},
+						Children: []dsl.Node{
+							{
+								Type: NODE_TERMINAL,
+								Tokens: []dsl.Token{
+									{ID: TOKEN_LITERAL, Literal: "44.21", Line: 2, Position: 13},
+								},
+							},
+							{
+								Type: NODE_EXPRESSION,
+								Tokens: []dsl.Token{
+									{ID: TOKEN_DIVIDE, Literal: "/", Line: 2, Position: 19},
+								},
+								Children: []dsl.Node{
+									{
+										Type: NODE_EXPRESSION,
+										Tokens: []dsl.Token{
+											{ID: TOKEN_OPEN_PAREN, Literal: "(", Line: 2, Position: 21},
+										},
+										Children: []dsl.Node{
+											{
+												Type: NODE_TERMINAL,
+												Tokens: []dsl.Token{
+													{ID: TOKEN_LITERAL, Literal: "4", Line: 2, Position: 22},
+												},
+											},
+											{
+												Type: NODE_EXPRESSION,
+												Tokens: []dsl.Token{
+													{ID: TOKEN_PLUS, Literal: "+", Line: 2, Position: 24},
+												},
+												Children: []dsl.Node{
+													{
+														Type: NODE_TERMINAL,
+														Tokens: []dsl.Token{
+															{ID: TOKEN_VARIABLE, Literal: "a", Line: 2, Position: 26},
+														},
+													},
+												},
+											},
+										},
+									},
+									{
+										Type: NODE_TERMINAL,
+										Tokens: []dsl.Token{
+											{ID: TOKEN_CLOSE_PAREN, Literal: ")", Line: 2, Position: 27},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				Type: NODE_COMMENT,
+				Tokens: []dsl.Token{
+					{ID: TOKEN_COMMENT, Literal: "A Simple Expression", Line: 2, Position: 30},
+				},
+			},
+			{
+				Type: NODE_CALL,
+				Tokens: []dsl.Token{
+					{ID: TOKEN_VARIABLE, Literal: "double", Line: 3, Position: 1},
+				},
+				Children: []dsl.Node{
+					{
+						Type: NODE_TERMINAL,
+						Tokens: []dsl.Token{
+							{ID: TOKEN_VARIABLE, Literal: "a", Line: 3, Position: 8},
+						},
+					},
+					{
+						Type: NODE_EXPRESSION,
+						Tokens: []dsl.Token{
+							{ID: TOKEN_PLUS, Literal: "+", Line: 3, Position: 10},
+						},
+						Children: []dsl.Node{
+							{
+								Type: NODE_TERMINAL,
+								Tokens: []dsl.Token{
+									{ID: TOKEN_VARIABLE, Literal: "b", Line: 3, Position: 12},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
-	if errs != nil {
-		t.Fail()
-		for _, err := range errs {
-			t.Error(err.String())
-		}
+	if diff := cmp.Diff(
+		expectedNodes,
+		*ast.RootNode,
+		cmpopts.IgnoreFields(dsl.Node{}, "Parent"), // Ignore Parent field as this is a pointer
+	); diff != "" {
+		t.Errorf("AST mismatch (-expected +actual):\n%s", diff)
 	}
-	//ast.Print()
 
 }
 
