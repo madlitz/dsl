@@ -12,17 +12,27 @@ import "fmt"
 // displaying errors but could also be useful to the user for things like
 // syntax highlighting and debugging if they were to implement it.
 type Token struct {
-	ID       string
+	ID       TokenType
 	Literal  string
 	Line     int
 	Position int
 }
 
-type TokenSet map[string]int
+type TokenSet map[TokenType]int
 
-func NewTokenSet(userIds ...string) TokenSet {
-	ts := make(map[string]int)
-	ts["UNKNOWN"] = 1
+type TokenType string
+
+const (
+	TOKEN_UNKNOWN TokenType = "UNKNOWN"
+)
+
+func (tt TokenType) String() string {
+	return string(tt)
+}
+
+func NewTokenSet(userIds ...TokenType) TokenSet {
+	ts := make(map[TokenType]int)
+	ts[TOKEN_UNKNOWN] = 1
 	for i, id := range userIds {
 		if ts[id] != 0 {
 			panic(fmt.Sprintf("Duplicate token ID found (%v)", id))

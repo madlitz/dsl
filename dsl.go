@@ -37,7 +37,7 @@ var (
 func ParseFile(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, inputfilename string) (AST, []Error) {
 	inputfile, err := os.Open(inputfilename)
 	if err != nil {
-		return AST{}, []Error{{Code: FILE_NOT_FOUND, Error: fmt.Errorf("file '%v', not found", inputfilename)}}
+		return AST{}, []Error{{Code: ERROR_FILE_NOT_FOUND, Error: fmt.Errorf("file '%v', not found", inputfilename)}}
 	}
 	r := bufio.NewReader(inputfile)
 	return Parse(pf, sf, ts, ns, r)
@@ -74,13 +74,13 @@ func execute(p *Parser) (AST, []Error) {
 func ParseFileAndLog(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, inputfilename string, logfilename string) (AST, []Error) {
 	logfile, err := os.Create(logfilename)
 	if err != nil {
-		return AST{}, []Error{{Code: COULD_NOT_CREATE_FILE, Error: fmt.Errorf("could not create file '%v'", logfilename)}}
+		return AST{}, []Error{{Code: ERROR_COULD_NOT_CREATE_FILE, Error: fmt.Errorf("could not create file '%v'", logfilename)}}
 	}
 	defer logfile.Close()
 	//input, err := ioutil.ReadFile(inputfilename)
 	inputfile, err := os.Open(inputfilename)
 	if err != nil {
-		return AST{}, []Error{{Code: FILE_NOT_FOUND, Error: fmt.Errorf("file '%v', not found", inputfilename)}}
+		return AST{}, []Error{{Code: ERROR_FILE_NOT_FOUND, Error: fmt.Errorf("file '%v', not found", inputfilename)}}
 	}
 	r := bufio.NewReader(inputfile)
 	return ParseAndLog(pf, sf, ts, ns, r, logfile)

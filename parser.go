@@ -8,7 +8,7 @@
 //
 // When the user calls functions such as p.Expect() in their user parse
 // function, the Parser makes calls to the Scanner to ask for a token
-// and to the AST to create noDez and store the tokens.
+// and to the AST to create nodes and store the tokens.
 package dsl
 
 import (
@@ -49,12 +49,12 @@ type ExpectToken struct {
 
 // ID is an interface implemented by to user so they can use their own token ID's
 type BranchToken struct {
-	ID string
+	Id TokenType
 	Fn func(*Parser)
 }
 
 type PeekToken struct {
-	IDs []string
+	IDs []TokenType
 	Fn  func(*Parser)
 }
 
@@ -122,21 +122,21 @@ func (p *Parser) Expect(expect ExpectToken) {
 			return
 		}
 		for _, branch := range expect.Branches {
-			if p.ts[branch.ID] == 0 {
+			if p.ts[branch.Id] == 0 {
 				if logenb {
-					p.log(fmt.Sprintf("Error: Expected token [%v], not found in Token Set.", branch.ID), ERROR)
+					p.log(fmt.Sprintf("Error: Expected token [%v], not found in Token Set.", branch.Id), ERROR)
 				}
-				p.newError(EXPECTED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("token %v, not found in Token Set", branch.ID))
+				p.newError(ERROR_EXPECTED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("token %v, not found in Token Set", branch.Id))
 				break
 			}
 			if p.ts[tok.ID] == 0 {
 				if logenb {
 					p.log(fmt.Sprintf("Error: Scanned token [%v], not found in Token Set.", tok.ID), ERROR)
 				}
-				p.newError(SCANNED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("scanned token [%v], not found in Token Set", tok.ID))
+				p.newError(ERROR_SCANNED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("scanned token [%v], not found in Token Set", tok.ID))
 				break
 			}
-			if p.ts[tok.ID] == p.ts[branch.ID] && !expect.Options.Invert {
+			if p.ts[tok.ID] == p.ts[branch.Id] && !expect.Options.Invert {
 				if !expect.Options.Invert {
 					p.consume(tok, expect.Options.Skip)
 				}
@@ -157,9 +157,9 @@ func (p *Parser) Expect(expect ExpectToken) {
 		}
 	}
 	if !found && !expect.Options.Optional && !expect.Options.Invert {
-		p.newError(TOKEN_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any of %v", tok.ID, branchTokensToStrings(expect.Branches)))
+		p.newError(ERROR_TOKEN_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any of %v", tok.ID, branchTokensToStrings(expect.Branches)))
 	} else if !found && !expect.Options.Optional && expect.Options.Invert {
-		p.newError(TOKEN_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any except %v", tok.ID, branchTokensToStrings(expect.Branches)))
+		p.newError(ERROR_TOKEN_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any except %v", tok.ID, branchTokensToStrings(expect.Branches)))
 	}
 }
 
@@ -178,22 +178,22 @@ func (p *Parser) callFn(fn func(*Parser)) {
 func (p *Parser) consume(tok Token, skip bool) {
 	if logenb {
 		p.log("Found: ", NEWLINE)
-		p.log(tok.ID, NO_PREFIX)
+		p.log(tok.ID.String(), NO_PREFIX)
 	}
 	if !skip {
 		p.tokens = append(p.tokens, tok)
 	}
 }
 
-func (p *Parser) AddNode(nt string) {
+func (p *Parser) AddNode(nt NodeType) {
 	if logenb {
-		p.log("AST Add Node: "+nt, NEWLINE)
+		p.log("AST Add Node: "+nt.String(), NEWLINE)
 	}
 	if p.ast.ns[nt] == 0 {
 		if logenb {
 			p.log(fmt.Sprintf("Error: Node to add [%v], not found in NodeSet.", nt), ERROR)
 		}
-		p.newError(NODE_NOT_IN_NODESET, fmt.Errorf("node to add [%v], not found in NodeSet", nt))
+		p.newError(ERROR_NODE_NOT_IN_NODESET, fmt.Errorf("node to add [%v], not found in NodeSet", nt))
 	}
 	p.ast.addNode(nt)
 }
@@ -205,7 +205,7 @@ func (p *Parser) AddTokens() {
 	if len(p.tokens) > 0 {
 		if logenb {
 			for _, token := range p.tokens {
-				p.log(token.ID+" - ", NO_PREFIX)
+				p.log(token.ID.String()+" - ", NO_PREFIX)
 				for _, rn := range token.Literal {
 					p.log(sanitize(string(rn), false), NO_PREFIX)
 				}
@@ -229,7 +229,7 @@ func (p *Parser) SkipToken() {
 		token := p.tokens[len(p.tokens)-1]
 		p.tokens = p.tokens[:len(p.tokens)-1]
 		if logenb {
-			p.log(token.ID+" - ", NO_PREFIX)
+			p.log(token.ID.String()+" - ", NO_PREFIX)
 			p.log(sanitize(token.Literal, true)+", ", NO_PREFIX)
 		}
 	} else {
@@ -372,7 +372,7 @@ func peekTokensToStrings(branches []PeekToken) (literals []string) {
 // Used to print tokens passed to Expect() to an Error or to the log
 func branchTokensToStrings(branches []BranchToken) (literals []string) {
 	for _, branch := range branches {
-		literals = append(literals, branch.ID)
+		literals = append(literals, branch.Id.String())
 	}
 	return
 }

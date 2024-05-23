@@ -29,17 +29,27 @@ type AST struct {
 // many Tokens belong to a particular Node type. Otherwise, the user should only
 // add one token per node.
 type Node struct {
-	Type     string  `json:"type"`
-	Tokens   []Token `json:"tokens"`
-	Parent   *Node   `json:"-"`
-	Children []Node  `json:"children"`
+	Type     NodeType `json:"type"`
+	Tokens   []Token  `json:"tokens"`
+	Parent   *Node    `json:"-"`
+	Children []Node   `json:"children"`
 }
 
-type NodeSet map[string]int
+type NodeSet map[NodeType]int
 
-func NewNodeSet(userTypes ...string) NodeSet {
-	ns := make(map[string]int)
-	ns["ROOT"] = 1
+type NodeType string
+
+func (nt NodeType) String() string {
+	return string(nt)
+}
+
+const (
+	NODE_ROOT NodeType = "ROOT"
+)
+
+func NewNodeSet(userTypes ...NodeType) NodeSet {
+	ns := make(map[NodeType]int)
+	ns[NODE_ROOT] = 1
 	for i, id := range userTypes {
 		ns[id] = i + 2
 	}
@@ -49,7 +59,7 @@ func NewNodeSet(userTypes ...string) NodeSet {
 // newAST returns a new instance of AST. The RootNode has the
 // builtin node type AST_ROOT.
 func newAST(ns NodeSet) AST {
-	rootNode := &Node{Type: "ROOT"}
+	rootNode := &Node{Type: NODE_ROOT}
 	return AST{ns: ns, RootNode: rootNode, curNode: rootNode}
 }
 
@@ -87,7 +97,7 @@ func (a *AST) Print() {
 // Called by Parser.AddNode() in the user parse function. Creates a new node and
 // builds the two-way reference to its parent. Also moves the AST curNode
 // down the tree to the new node.
-func (a *AST) addNode(nt string) {
+func (a *AST) addNode(nt NodeType) {
 	a.curNode.Children = append(a.curNode.Children, Node{Type: nt, Parent: a.curNode})
 	a.curNode = &a.curNode.Children[len(a.curNode.Children)-1]
 }
@@ -107,7 +117,7 @@ func (a *AST) addToken(toks []Token) {
 // Called by Parser.WalkUp() in the user parse function. Moves the AST
 // curNode to its parent.
 func (a *AST) walkUp() {
-	if a.ns[a.curNode.Type] != a.ns["ROOT"] {
+	if a.ns[a.curNode.Type] != a.ns[NODE_ROOT] {
 		a.curNode = a.curNode.Parent
 	}
 }

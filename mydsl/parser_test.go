@@ -9,10 +9,12 @@ var recover bool
 func Parse(p *dsl.Parser) (dsl.AST, []dsl.Error) {
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace},
-			{"VARIABLE", assignmentOrCall},
-			{"EOF", nil}},
-		Options: dsl.ParseOptions{Multiple: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+			{Id: TOKEN_VARIABLE, Fn: assignmentOrCall},
+			{Id: TOKEN_EOF, Fn: nil},
+		},
+		Options: dsl.ParseOptions{Multiple: true},
+	})
 
 	return p.Exit()
 }
@@ -25,63 +27,85 @@ func skipWhitespace(p *dsl.Parser) {
 func assignmentOrCall(p *dsl.Parser) {
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"ASSIGN", assignment},
-			{"OPEN_PAREN", call}}})
+			{Id: TOKEN_ASSIGN, Fn: assignment},
+			{Id: TOKEN_OPEN_PAREN, Fn: call},
+		},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"COMMENT", addcomment}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_COMMENT, Fn: addcomment},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"NL", skipWhitespace},
-			{"EOF", nil}}})
+			{Id: TOKEN_NL, Fn: skipWhitespace},
+			{Id: TOKEN_EOF, Fn: nil},
+		},
+	})
 }
 
 // parse -> assignmentOrCall -> assignment
 func assignment(p *dsl.Parser) {
 	p.SkipToken()
-	p.AddNode("ASSIGNMENT")
+	p.AddNode(NODE_ASSIGNMENT)
 	p.AddTokens()
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"VARIABLE", operator},
-			{"LITERAL", operator},
-			{"OPEN_PAREN", paren_expression}}})
+			{Id: TOKEN_VARIABLE, Fn: operator},
+			{Id: TOKEN_LITERAL, Fn: operator},
+			{Id: TOKEN_OPEN_PAREN, Fn: parenExpression},
+		},
+	})
 }
 
 // parse -> assignmentOrCall -> call
 func call(p *dsl.Parser) {
 	p.SkipToken()
-	p.AddNode("CALL")
+	p.AddNode(NODE_CALL)
 	p.AddTokens()
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"VARIABLE", operator},
-			{"LITERAL", operator},
-			{"OPEN_PAREN", paren_expression}}})
+			{Id: TOKEN_VARIABLE, Fn: operator},
+			{Id: TOKEN_LITERAL, Fn: operator},
+			{Id: TOKEN_OPEN_PAREN, Fn: parenExpression},
+		},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"CLOSE_PAREN", closecall}}})
+			{Id: TOKEN_CLOSE_PAREN, Fn: closecall},
+		},
+	})
 }
 
 // parse -> assignmentOrCall -> call -> [expression] -> closecall
@@ -93,39 +117,46 @@ func closecall(p *dsl.Parser) {
 // parse -> assignmentOrCall -> assignment -> [operator, expression]
 // parse -> assignmentOrCall -> call -> [operator, expression]
 func expression(p *dsl.Parser) {
-	p.AddNode("EXPRESSION")
+	p.AddNode(NODE_EXPRESSION)
 	p.AddTokens()
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"VARIABLE", operator},
-			{"LITERAL", operator},
-			{"OPEN_PAREN", paren_expression},
-			{"CLOSE_PAREN", operator}}})
-
+			{Id: TOKEN_VARIABLE, Fn: operator},
+			{Id: TOKEN_LITERAL, Fn: operator},
+			{Id: TOKEN_OPEN_PAREN, Fn: parenExpression},
+			{Id: TOKEN_CLOSE_PAREN, Fn: operator},
+		},
+	})
 }
 
 // parse -> assignmentOrCall -> assignment -> [expression, operator]
 // parse -> assignmentOrCall -> call -> [expression, operator]
 func operator(p *dsl.Parser) {
-	p.AddNode("TERMINAL")
+	p.AddNode(NODE_TERMINAL)
 	p.AddTokens()
 	p.WalkUp()
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"PLUS", expression},
-			{"MINUS", expression},
-			{"DIVIDE", expression},
-			{"MULTIPLY", expression},
-			{"OPEN_PAREN", paren_expression}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_PLUS, Fn: expression},
+			{Id: TOKEN_MINUS, Fn: expression},
+			{Id: TOKEN_DIVIDE, Fn: expression},
+			{Id: TOKEN_MULTIPLY, Fn: expression},
+			{Id: TOKEN_OPEN_PAREN, Fn: parenExpression},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.WalkUp()
 }
 
@@ -133,22 +164,27 @@ func operator(p *dsl.Parser) {
 // parse -> assignmentOrCall -> assignment -> paren_expression
 // parse -> assignmentOrCall -> call -> [expression, operator] -> paren_expression
 // parse -> assignmentOrCall -> call -> paren_expression
-func paren_expression(p *dsl.Parser) {
+func parenExpression(p *dsl.Parser) {
 	p.Peek([]dsl.PeekToken{
-		{[]string{}, expression}})
+		{IDs: []dsl.TokenType{}, Fn: expression},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"WS", skipWhitespace}},
-		Options: dsl.ParseOptions{Optional: true}})
+			{Id: TOKEN_WS, Fn: skipWhitespace},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"CLOSE_PAREN", operator}}})
+			{Id: TOKEN_CLOSE_PAREN, Fn: operator},
+		},
+	})
 	p.Recover(skipUntilLineBreak)
 }
 
 // parse -> assignmentOrCall -> [expression] -> addcomment
 func addcomment(p *dsl.Parser) {
-	p.AddNode("COMMENT")
+	p.AddNode(NODE_COMMENT)
 	p.AddTokens()
 	p.WalkUp()
 }
@@ -157,6 +193,8 @@ func skipUntilLineBreak(p *dsl.Parser) {
 	recover = true
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{"UNKNOWN", nil}}})
+			{Id: dsl.TOKEN_UNKNOWN, Fn: nil},
+		},
+	})
 	recover = false
 }

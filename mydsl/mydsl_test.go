@@ -11,7 +11,6 @@ import (
 	"os"
 	"testing"
 
-	//"fmt"
 	"github.com/madlitz/go-dsl"
 )
 
@@ -23,7 +22,7 @@ func TestPrintAST(t *testing.T) {
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
-	logfilename := "TestPrintAST.log"
+	logfilename := "logs/TestPrintAST.log"
 	logfile, err := os.Create(logfilename)
 	if err != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + err.Error())
@@ -47,7 +46,7 @@ double(a + b)`)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
-	logfilename := "TestDSL.log"
+	logfilename := "logs/TestDSL.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
@@ -140,7 +139,7 @@ double(a + b)  `)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
-	logfilename := "TestTokenExpectedButNotFoundError.log"
+	logfilename := "logs/TestTokenExpectedButNotFoundError.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
@@ -152,7 +151,7 @@ double(a + b)  `)
 		t.Error("Should report exactly 1 error")
 	}
 	err := errs[0]
-	if err.Code != dsl.TOKEN_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
 		t.Fail()
 		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
 	}
@@ -179,7 +178,7 @@ double(a + b)`)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
-	logfilename := "TestRuneExpectedButNotFoundError.log"
+	logfilename := "logs/TestRuneExpectedButNotFoundError.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
@@ -191,7 +190,7 @@ double(a + b)`)
 		t.Error("Should report exactly 1 error")
 	}
 	err := errs[0]
-	if err.Code != dsl.RUNE_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ERROR_RUNE_EXPECTED_NOT_FOUND {
 		t.Fail()
 		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
 	}
@@ -218,7 +217,7 @@ double((a + b)`)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
-	logfilename := "TestErrorThenRecovery.log"
+	logfilename := "logs/TestErrorThenRecovery.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
@@ -230,7 +229,7 @@ double((a + b)`)
 		t.Error("Should report exactly 2 errors")
 	}
 	err := errs[0]
-	if err.Code != dsl.RUNE_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ERROR_RUNE_EXPECTED_NOT_FOUND {
 		t.Fail()
 		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
 	}
@@ -247,7 +246,7 @@ double((a + b)`)
 		t.Errorf("Expected error end position 23. Found position: %v", err.EndPosition)
 	}
 	err = errs[1]
-	if err.Code != dsl.TOKEN_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
 		t.Fail()
 		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
 	}
@@ -275,7 +274,7 @@ double(a + b)`)
 	bufreader := bufio.NewReader(reader)
 	ts := NewTokenSet()
 	ns := NewNodeSet()
-	logfilename := "TestMultiLineError.log"
+	logfilename := "logs/TestMultiLineError.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
@@ -287,7 +286,7 @@ double(a + b)`)
 		t.Error("Should report exactly 1 error")
 	}
 	err := errs[0]
-	if err.Code != dsl.TOKEN_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
 		t.Fail()
 		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
 	}

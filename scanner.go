@@ -106,13 +106,18 @@ type BranchString struct {
 
 type Match struct {
 	Literal string
-	ID      string
+	ID      TokenType
 }
 
 // The user scan function should return the result of Exit()
 func (s *Scanner) Exit() Token {
 	if s.tok.ID == "" {
-		return Token{"UNKNOWN", "UNKNOWN", s.curLine, s.curPos}
+		return Token{
+			ID:       TOKEN_UNKNOWN,
+			Literal:  "UNKNOWN",
+			Line:     s.curLine,
+			Position: s.curPos,
+		}
 	}
 	return s.tok
 }
@@ -180,14 +185,13 @@ func (s *Scanner) Expect(expect ExpectRune) {
 	if !expect.Options.Invert && !found1orMore && !expect.Options.Optional {
 		s.expRunes = append(s.expRunes, rn)
 		strings := append(branchesToStrings(expect.Branches), branchRangesToStrings(expect.BranchRanges)...)
-		s.error = s.newError(RUNE_EXPECTED_NOT_FOUND, fmt.Errorf("Found [%v], expected any of %v", string(rn), strings))
+		s.error = s.newError(ERROR_RUNE_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any of %v", string(rn), strings))
 	} else if expect.Options.Invert && !found1inverted && !expect.Options.Optional {
 		s.expRunes = append(s.expRunes, rn)
 		strings := append(branchesToStrings(expect.Branches), branchRangesToStrings(expect.BranchRanges)...)
-		s.error = s.newError(RUNE_EXPECTED_NOT_FOUND, fmt.Errorf("Found [%v], expected any except %v", string(rn), strings))
+		s.error = s.newError(ERROR_RUNE_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any except %v", string(rn), strings))
 	}
 
-	return
 }
 
 func (s *Scanner) consume(rn rune, found1orMore bool) {
@@ -253,7 +257,7 @@ func (s *Scanner) Match(matches []Match) {
 	for _, match := range matches {
 		if expString == match.Literal || match.Literal == "" {
 			if logenb {
-				s.log("Matched: "+match.ID, NEWLINE)
+				s.log("Matched: "+match.ID.String(), NEWLINE)
 				s.log(" - ", NO_PREFIX)
 				s.log(sanitize(expString, true), NO_PREFIX)
 			}
