@@ -1,7 +1,3 @@
-// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
-// All rights reserved. Use of this source code is governed by a LGPL v3
-// license that can be found in the LICENSE file.
-
 // scanner.go implements a Scanner for any DSL source text.
 // When a Scanner is created it takes a bufio.Reader as the source of
 // the text, scans a number of characters (runes) as defined by the
@@ -295,7 +291,7 @@ func (s *Scanner) newError(code ErrorCode, err error) *Error {
 	if s.error == nil {
 		return &Error{
 			code,
-			err,
+			err.Error(),
 			lineString,
 			s.startLine,
 			s.startPos,

@@ -1,13 +1,8 @@
-// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
-// All rights reserved. Use of this source code is governed by a LGPL v3
-// license that can be found in the LICENSE file.
-
 package dsl
 
 import (
 	"bytes"
 	"fmt"
-	"strings"
 )
 
 type ErrorCode int
@@ -22,11 +17,11 @@ const (
 	ERROR_NODE_NOT_IN_NODESET
 )
 
-// Errors contain the error text, the line and positions the error occurred on, and
-// a string containing the input text from that line
+// Error contains the error text, the line and positions the error occurred on, and
+// a string containing the input text from that line.
 type Error struct {
 	Code          ErrorCode
-	Error         error
+	Message       string
 	LineString    string
 	StartLine     int
 	StartPosition int
@@ -34,12 +29,13 @@ type Error struct {
 	EndPosition   int
 }
 
-func (e *Error) String() string {
+// Error implements the error interface.
+func (e *Error) Error() string {
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("\nError Line:%v %v\n", e.StartLine, e.Error))
+	buf.WriteString(fmt.Sprintf("\nError Line:%v %v\n", e.StartLine, e.Message))
 	buf.WriteString(e.LineString + "\n")
-	for i := 1; i < e.StartPosition-1; i++ {
-		if e.LineString[i] == '\t' {
+	for i := 0; i < e.StartPosition-1; i++ {
+		if i < len(e.LineString) && e.LineString[i] == '\t' {
 			buf.WriteString("\t")
 		} else {
 			buf.WriteString(" ")
@@ -47,7 +43,7 @@ func (e *Error) String() string {
 	}
 	buf.WriteString("^")
 	if e.StartLine != e.EndLine {
-		for i := e.StartPosition; i < strings.Count(e.LineString, ""); i++ {
+		for i := e.StartPosition; i < len(e.LineString); i++ {
 			buf.WriteString("-")
 		}
 	} else {
@@ -55,7 +51,19 @@ func (e *Error) String() string {
 			buf.WriteString("-")
 		}
 	}
-
 	buf.WriteString("^\n")
 	return buf.String()
+}
+
+// NewError creates a new Error instance.
+func NewError(code ErrorCode, message, lineString string, startLine, startPosition, endLine, endPosition int) *Error {
+	return &Error{
+		Code:          code,
+		Message:       message,
+		LineString:    lineString,
+		StartLine:     startLine,
+		StartPosition: startPosition,
+		EndLine:       endLine,
+		EndPosition:   endPosition,
+	}
 }

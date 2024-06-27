@@ -1,7 +1,3 @@
-// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
-// All rights reserved. Use of this source code is governed by a LGPL v3
-// license that can be found in the LICENSE file.
-
 // ast.go implements an Abstract Syntax Tree for use by the DSL parser.
 // The user tells the AST to add nodes and tokens inside the user parse
 // function using three basic functions; p.AddNode(), p.AddToken() and

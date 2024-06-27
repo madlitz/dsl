@@ -1,101 +1,117 @@
-// // Copyright (c) 2024 Dez Little <deslittle@gmail.com>
-// // All rights reserved. Use of this source code is governed by a LGPL v3
-// // license that can be found in the LICENSE file.
-
 package json
 
-// import (
-// 	"bufio"
-// 	"bytes"
-// 	"os"
-// 	"testing"
+import (
+	"bufio"
+	"bytes"
+	"os"
+	"testing"
 
-// 	"github.com/madlitz/go-dsl"
-// )
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
-// func TestDSL(t *testing.T) {
+	"github.com/madlitz/go-dsl"
+)
 
-// 	reader := bytes.NewBufferString(
-// 		`a := 1 * 5 + 7
-// b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
-// double(a + b)`)
-// 	bufreader := bufio.NewReader(reader)
-// 	ts := NewTokenSet()
-// 	ns := NewNodeSet()
+func TestJSONParser(t *testing.T) {
+	reader := bytes.NewBufferString(`{
+"key1": "value1",
+	"key2": 42,
+"key3": true,
+	"key4": null,
+	"key5": {
+		"nestedKey": "nestedValue"
+	},
+	"key6": [1, 2, 3, "four"]
+}`)
+	bufreader := bufio.NewReader(reader)
+	ts := NewTokenSet()
+	ns := NewNodeSet()
 
-// 	logfilename := "json.log"
-// 	logfile, err := os.Create(logfilename)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+	logfilename := "logs/json.log"
+	logfile, err := os.Create(logfilename)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-// 	ast, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
-// 	if len(errs) > 0 && errs[0].Error != nil {
-// 		t.Fatal(errs[0].Error.Error())
-// 	}
-// 	cases := []dsl.Node{
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "1", 1, 6}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "5", 1, 10}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "7", 1, 14}}},
-// 		{Type: "EXPRESSION", Tokens: []dsl.Token{{"PLUS", "+", 1, 12}}},
-// 		{Type: "EXPRESSION", Tokens: []dsl.Token{{"MULTIPLY", "*", 1, 8}}},
-// 		{Type: "ASSIGNMENT", Tokens: []dsl.Token{{"VARIABLE", "a", 1, 1}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "3.45", 2, 6}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "44.21", 2, 13}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"LITERAL", "4", 2, 22}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"VARIABLE", "a", 2, 26}}},
-// 		{Type: "EXPRESSION", Tokens: []dsl.Token{{"PLUS", "+", 2, 24}}},
-// 		{Type: "EXPRESSION", Tokens: []dsl.Token{{"OPEN_PAREN", "(", 2, 21}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"CLOSE_PAREN", ")", 2, 27}}},
-// 		{Type: "EXPRESSION", Tokens: []dsl.Token{{"DIVIDE", "/", 2, 19}}},
-// 		{Type: "EXPRESSION", Tokens: []dsl.Token{{"MULTIPLY", "*", 2, 11}}},
-// 		{Type: "ASSIGNMENT", Tokens: []dsl.Token{{"VARIABLE", "b", 2, 1}}},
-// 		{Type: "COMMENT", Tokens: []dsl.Token{{"COMMENT", "A Simple Expression", 2, 30}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"VARIABLE", "a", 3, 8}}},
-// 		{Type: "TERMINAL", Tokens: []dsl.Token{{"VARIABLE", "b", 3, 12}}},
-// 		{Type: "EXPRESSION", Tokens: []dsl.Token{{"PLUS", "+", 3, 10}}},
-// 		{Type: "CALL", Tokens: []dsl.Token{{"VARIABLE", "double", 3, 1}}},
-// 		{Type: "ROOT", Tokens: []dsl.Token{{"", "", 0, 0}}},
-// 	}
-// 	count := 0
-// 	ast.Print()
-// 	ast.Inspect(func(node *dsl.Node) {
-// 		if count > len(cases)-1 {
-// 			t.Fatalf("Too many nodes.")
-// 		}
-// 		if cases[count].Type != node.Type {
-// 			t.Errorf("Line: %v:%v Node: \"%v\" Wanted node type %v, found %v", cases[count].Tokens[0].Line, cases[count].Tokens[0].Position,
-// 				node.Type, cases[count].Type, node.Type)
-// 		}
-// 		for i, token := range node.Tokens {
-// 			if cases[count].Tokens[i].ID != token.ID {
-// 				t.Errorf("Line: %v:%v Token: \"%v\" Wanted token ID %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position,
-// 					token.Literal, cases[count].Tokens[i].ID, token.ID)
-// 			}
-// 			if cases[count].Tokens[i].Literal != token.Literal {
-// 				t.Errorf("Line: %v:%v ID: \"%v\" Wanted token literal \"%v\", found \"%v\"", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position,
-// 					token.ID, cases[count].Tokens[i].Literal, token.Literal)
-// 			}
-// 			if cases[count].Tokens[i].Line != token.Line {
-// 				t.Errorf("Line: %v:%v Token: \"%v\" Wanted token line %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position,
-// 					token.Literal, cases[count].Tokens[i].Line, token.Line)
-// 			}
-// 			if cases[count].Tokens[i].Position != token.Position {
-// 				t.Errorf("Line: %v:%v Token: \"%v\" Wanted token position %v, found %v", cases[count].Tokens[i].Line, cases[count].Tokens[i].Position,
-// 					token.Literal, cases[count].Tokens[i].Position, token.Position)
-// 			}
-// 		}
-// 		count++
-// 	})
-// 	if count != len(cases) {
-// 		t.Errorf("Not enough nodes.")
-// 	}
+	ast, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	if len(errs) > 0 {
+		t.Fail()
+		for _, err := range errs {
+			t.Error(err.Error())
+		}
+	}
 
-// 	if errs != nil {
-// 		t.Fail()
-// 		for _, err := range errs {
-// 			t.Error(err.String())
-// 		}
-// 	}
+	expected := []dsl.Node{
+		{
+			Type: NODE_OBJECT,
+			Children: []dsl.Node{
+				{
+					Type:   NODE_MEMBER,
+					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key1", Line: 2, Position: 2}},
+					Children: []dsl.Node{
+						{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "value1", Line: 2, Position: 10}}},
+					},
+				},
+				{
+					Type:   NODE_MEMBER,
+					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key2", Line: 3, Position: 3}},
+					Children: []dsl.Node{
+						{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NUMBER, Literal: "42", Line: 3, Position: 10}}},
+					},
+				},
+				{
+					Type:   NODE_MEMBER,
+					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key3", Line: 4, Position: 2}},
+					Children: []dsl.Node{
+						{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_TRUE, Literal: "true", Line: 4, Position: 9}}},
+					},
+				},
+				{
+					Type:   NODE_MEMBER,
+					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key4", Line: 5, Position: 3}},
+					Children: []dsl.Node{
+						{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NULL, Literal: "null", Line: 5, Position: 10}}},
+					},
+				},
+				{
+					Type:   NODE_MEMBER,
+					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key5", Line: 6, Position: 3}},
+					Children: []dsl.Node{
+						{
+							Type: NODE_OBJECT,
+							Children: []dsl.Node{
+								{
+									Type:   NODE_MEMBER,
+									Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "nestedKey", Line: 7, Position: 4}},
+									Children: []dsl.Node{
+										{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "nestedValue", Line: 7, Position: 17}}},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					Type:   NODE_MEMBER,
+					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key6", Line: 9, Position: 3}},
+					Children: []dsl.Node{
+						{
+							Type: NODE_ARRAY,
+							Children: []dsl.Node{
+								{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NUMBER, Literal: "1", Line: 9, Position: 11}}},
+								{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NUMBER, Literal: "2", Line: 9, Position: 14}}},
+								{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NUMBER, Literal: "3", Line: 9, Position: 17}}},
+								{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "four", Line: 9, Position: 21}}},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
 
-// }
+	if diff := cmp.Diff(expected, ast.RootNode.Children, cmpopts.IgnoreFields(dsl.Node{}, "Parent")); diff != "" {
+		t.Errorf("AST mismatch (-got +want):\n%s", diff)
+	}
+
+}

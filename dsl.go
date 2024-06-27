@@ -1,7 +1,3 @@
-// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
-// All rights reserved. Use of this source code is governed by a LGPL v3
-// license that can be found in the LICENSE file.
-
 // Package dsl implements a set of helper and wrapper functions to allow an
 // end user to create a parser for their Domain Specific Language. The user
 // provides the Scan and Parse functions along with the input source. The
@@ -37,7 +33,7 @@ var (
 func ParseFile(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, inputfilename string) (AST, []Error) {
 	inputfile, err := os.Open(inputfilename)
 	if err != nil {
-		return AST{}, []Error{{Code: ERROR_FILE_NOT_FOUND, Error: fmt.Errorf("file '%v', not found", inputfilename)}}
+		return AST{}, []Error{{Code: ERROR_FILE_NOT_FOUND, Message: fmt.Sprintf("file '%v', not found", inputfilename)}}
 	}
 	r := bufio.NewReader(inputfile)
 	return Parse(pf, sf, ts, ns, r)
@@ -74,13 +70,13 @@ func execute(p *Parser) (AST, []Error) {
 func ParseFileAndLog(pf ParseFunc, sf ScanFunc, ts TokenSet, ns NodeSet, inputfilename string, logfilename string) (AST, []Error) {
 	logfile, err := os.Create(logfilename)
 	if err != nil {
-		return AST{}, []Error{{Code: ERROR_COULD_NOT_CREATE_FILE, Error: fmt.Errorf("could not create file '%v'", logfilename)}}
+		return AST{}, []Error{{Code: ERROR_COULD_NOT_CREATE_FILE, Message: fmt.Sprintf("could not create file '%v'", logfilename)}}
 	}
 	defer logfile.Close()
 	//input, err := ioutil.ReadFile(inputfilename)
 	inputfile, err := os.Open(inputfilename)
 	if err != nil {
-		return AST{}, []Error{{Code: ERROR_FILE_NOT_FOUND, Error: fmt.Errorf("file '%v', not found", inputfilename)}}
+		return AST{}, []Error{{Code: ERROR_FILE_NOT_FOUND, Message: fmt.Sprintf("file '%v', not found", inputfilename)}}
 	}
 	r := bufio.NewReader(inputfile)
 	return ParseAndLog(pf, sf, ts, ns, r, logfile)

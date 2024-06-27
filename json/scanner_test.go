@@ -1,155 +1,87 @@
 package json
 
-// import(
-//     "github.com/madlitz/go-dsl"
-// )
-// func Scan(s *dsl.Scanner) dsl.Token {
-// 	s.Expect(dsl.ExpectRune{
-// 		Branches: []dsl.Branch{
-// 			{' ', nil},
-// 			{'\t', nil},
-//             {'\n', nil},
-//             {'\r', nil}},
-// 		Options: dsl.ScanOptions{Multiple: true, Optional: true, Skip: true}})
-//     s.Expect(dsl.ExpectRune{
-//         Branches: []dsl.Branch{
-// 			{'"', fnString},
-//             {'-', fnInteger},
-//             {':', nil},
-//             {',', nil},
-//             {'{', nil},
-//             {'}', nil},
-//             {'[', nil},
-//             {']', nil},
-//             {'0', fnFraction},
-//             {rune(0), fnEOF}},
-//         BranchRanges: []dsl.BranchRange{
-// 			{'1', '9', fnInteger},
-//             {'a', 'z', fnKeyword},
-//     s.Match([]dsl.Match{
-//         {"{", "OPEN_OBJECT"},
-//         {"}", "CLOSE_OBJECT"},
-//         {"[", "OPEN_ARRAY"},
-//         {"]", "CLOSE_ARRAY"},
-//         {":", "COLON"},
-//         {",", "COMMA"},
-//         {"", "ILLEGAL"}})
-// 	return s.Exit()
-// }
+import (
+	"github.com/madlitz/go-dsl"
+)
 
-// // Scan -> fnKeyword
-// func fnKeyword(s *dsl.Scanner) {
-//     s.Expect(dsl.ExpectRune{
-//         BranchRanges: []dsl.BranchRange{
-// 			{'a', 'z', nil}},
-// 		Options: dsl.ScanOptions{Multiple: true, Optional: true}})
-//     s.Match([]dsl.Match{
-//         {"true", "TRUE"},
-//         {"false", "FALSE"},
-//         {"null", "NULL"},
-//         {"", "ILLEGAL"}})
-// }
+func Scan(s *dsl.Scanner) dsl.Token {
+	// Skip all whitespace at the beginning of the input
+	s.Expect(dsl.ExpectRune{
+		Branches: []dsl.Branch{
+			{Rn: ' ', Fn: skipWhitespace},
+			{Rn: '\t', Fn: skipWhitespace},
+			{Rn: '\n', Fn: skipWhitespace},
+			{Rn: '\r', Fn: skipWhitespace},
+		},
+		Options: dsl.ScanOptions{Multiple: true, Optional: true},
+	})
 
-// // Scan -> fnInteger
-// func fnInteger(s *dsl.Scanner) {
-//     s.Expect(dsl.ExpectRune{
-//         BranchRanges: []dsl.BranchRange{
-// 			{'0', '9', nil}},
-// 		Options: dsl.ScanOptions{Multiple: true, Optional: true}})
-//     s.Call(fnFraction)
-// }
+	s.Expect(dsl.ExpectRune{
+		Branches: []dsl.Branch{
+			{Rn: '{', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: "{", ID: TOKEN_LBRACE}}) }},
+			{Rn: '}', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: "}", ID: TOKEN_RBRACE}}) }},
+			{Rn: '[', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: "[", ID: TOKEN_LBRACKET}}) }},
+			{Rn: ']', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: "]", ID: TOKEN_RBRACKET}}) }},
+			{Rn: ':', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: ":", ID: TOKEN_COLON}}) }},
+			{Rn: ',', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: ",", ID: TOKEN_COMMA}}) }},
+			{Rn: '"', Fn: stringLiteral},
+		},
+		BranchRanges: []dsl.BranchRange{
+			{StartRn: '0', EndRn: '9', Fn: number},
+			{StartRn: 'a', EndRn: 'z', Fn: literal},
+			{StartRn: 'A', EndRn: 'Z', Fn: literal},
+		},
+		Options: dsl.ScanOptions{Optional: true},
+	})
 
-// // Scan -> fnInteger -> fnFraction
-// // Scan -> fnFraction
-// func fnFraction(s *dsl.Scanner) {
-//     s.Expect(dsl.ExpectRune{
-//         Branches: []dsl.Branch{
-// 			{'.', fnFractionalPart},
-//         Options: dsl.ScanOptions{Optional: true}})
-//     s.Expect(dsl.ExpectRune{
-//         Branches: []dsl.Branch{
-// 			{'e', fnExponent},
-//             {'E', fnExponent},
-//         Options: dsl.ScanOptions{Optional: true}})
-//     s.Match([]dsl.Match{{"", "NUMBER"}})
-// }
+	return s.Exit()
+}
 
-// // Scan -> fnInteger -> fnFraction -> fnFractionalPart
-// func fnFractionalPart(s *dsl.Scanner) {
-//     s.Expect(dsl.ExpectRune{
-//         BranchRanges: []dsl.BranchRange{
-// 			{'0', '9', nil}},
-//         Options: dsl.ScanOptions{Multiple: true})
-// }
+func skipWhitespace(s *dsl.Scanner) {
+	s.SkipRune()
+}
 
-// // Scan -> fnInteger, fnFraction -> fnExponent
-// func fnExponent(s *dsl.Scanner) {
-//     s.Expect(dsl.ExpectRune{
-//         Branches: []dsl.BranchToken{
-// 			{'+', nil},
-//             {'-', nil}},
-//         Options: dsl.ScanOptions{Optional: true})
-//     s.Expect(dsl.ExpectRune{
-//         BranchRanges: []dsl.BranchRange{
-// 			{'0', '9', nil}},
-//         Options: dsl.ScanOptions{Multiple: true})
-// }
+func stringLiteral(s *dsl.Scanner) {
+	s.SkipRune() // Skip the opening quote
+	s.Expect(dsl.ExpectRune{
+		Branches: []dsl.Branch{
+			{Rn: '"', Fn: nil}, // Closing quote
+		},
+		Options: dsl.ScanOptions{Multiple: true, Invert: true},
+	})
 
-// // Scan -> fnString
-// func fnString(s *dsl.Scanner) {
-//     s.Expect(dsl.ExpectRune{
-//         Branches: []dsl.Branch{
-// 			{'\', fnControl},
-//         BranchRanges: []dsl.BranchRange{
-// 			{rune(32), rune(127), nil},
-//             {rune(160), rune(0x7FFFFFFF), nil}},
-//         Options: dsl.ScanOptions{Multiple: true, Optional: true}})
-//     s.Expect(dsl.ExpectRune{
-//         Branches: []dsl.Branch{
-// 			{'"', nil}}})
-//     s.Match([]dsl.Match{{"", "STRING"}})
-// }
+	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_STRING}})
 
-// // Scan -> fnString -> fnControl
-// func fnControl(s *dsl.Scanner) {
-//      s.Expect(dsl.ExpectRune{
-//         Branches: []dsl.Branch{
-// 			{'"', nil},
-//             {'\', nil},
-//             {'/', nil},
-//             {'b', nil},
-//             {'f', nil},
-//             {'n', nil},
-//             {'r', nil},
-//             {'t', nil},
-//             {'u', fnHex}}})
-// }
+	s.Expect(dsl.ExpectRune{
+		Branches: []dsl.Branch{
+			{Rn: '"', Fn: nil}, // Closing quote
+		},
+	})
+	s.SkipRune() // Skip the closing quote
+}
 
-// // Scan -> fnString -> fnHex
-// func fnHex(s *dsl.Scanner) {
-//     s.Expect(dsl.ExpectRune{
-//         BranchRanges: []dsl.BranchRange{
-// 			{'0', '9', nil},
-//             {'A', 'F', nil},
-//             {'a', 'f', nil}}})
-//     s.Expect(dsl.ExpectRune{
-//         BranchRanges: []dsl.BranchRange{
-// 			{'0', '9', nil},
-//             {'A', 'F', nil},
-//             {'a', 'f', nil}}})
-//     s.Expect(dsl.ExpectRune{
-//         BranchRanges: []dsl.BranchRange{
-// 			{'0', '9', nil},
-//             {'A', 'F', nil},
-//             {'a', 'f', nil}}})
-//     s.Expect(dsl.ExpectRune{
-//         BranchRanges: []dsl.BranchRange{
-// 			{'0', '9', nil},
-//             {'A', 'F', nil},
-//             {'a', 'f', nil}}})
-// }
+func number(s *dsl.Scanner) {
+	s.Expect(dsl.ExpectRune{
+		BranchRanges: []dsl.BranchRange{
+			{StartRn: '0', EndRn: '9', Fn: nil},
+		},
+		Options: dsl.ScanOptions{Multiple: true, Optional: true},
+	})
+	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_NUMBER}})
+}
 
-// // Scan -> fnEOF
-// func fnEOF(s *dsl.Scanner) {
-//     s.Match([]dsl.Match{{"", "EOF"}})
-// }
+func literal(s *dsl.Scanner) {
+	s.Expect(dsl.ExpectRune{
+		BranchRanges: []dsl.BranchRange{
+			{StartRn: 'a', EndRn: 'z', Fn: nil},
+			{StartRn: 'A', EndRn: 'Z', Fn: nil},
+		},
+		Options: dsl.ScanOptions{Multiple: true, Optional: true},
+	})
+
+	s.Match([]dsl.Match{
+		{Literal: "true", ID: TOKEN_TRUE},
+		{Literal: "false", ID: TOKEN_FALSE},
+		{Literal: "null", ID: TOKEN_NULL},
+	})
+}

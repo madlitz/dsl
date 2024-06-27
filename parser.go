@@ -1,7 +1,3 @@
-// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
-// All rights reserved. Use of this source code is governed by a LGPL v3
-// license that can be found in the LICENSE file.
-
 // parser.go implements the Parser for any DSL text. On construction it
 // creates a new Scanner and AST and keeps a reference to them, then
 // calls the users parser function.

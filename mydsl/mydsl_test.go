@@ -1,7 +1,3 @@
-// Copyright (c) 2024 Dez Little <deslittle@gmail.com>
-// All rights reserved. Use of this source code is governed by a LGPL v3
-// license that can be found in the LICENSE file.
-
 package mydsl
 
 import (
@@ -523,7 +519,7 @@ double(a + b)  `)
 	err := errs[0]
 	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
 		t.Fail()
-		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
+		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err)
 	}
 	if err.StartLine != 1 {
 		t.Fail()
@@ -562,7 +558,7 @@ double(a + b)`)
 	err := errs[0]
 	if err.Code != dsl.ERROR_RUNE_EXPECTED_NOT_FOUND {
 		t.Fail()
-		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
+		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err)
 	}
 	if err.StartLine != 1 {
 		t.Fail()
@@ -601,7 +597,7 @@ double((a + b)`)
 	err := errs[0]
 	if err.Code != dsl.ERROR_RUNE_EXPECTED_NOT_FOUND {
 		t.Fail()
-		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err.Error)
+		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err)
 	}
 	if err.StartLine != 2 {
 		t.Fail()
@@ -618,7 +614,7 @@ double((a + b)`)
 	err = errs[1]
 	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
 		t.Fail()
-		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
+		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err)
 	}
 	if err.StartLine != 3 {
 		t.Fail()
@@ -658,7 +654,7 @@ double(a + b)`)
 	err := errs[0]
 	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
 		t.Fail()
-		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err.Error)
+		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err)
 	}
 	if err.StartLine != 2 {
 		t.Fail()
