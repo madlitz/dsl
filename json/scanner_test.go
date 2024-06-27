@@ -4,6 +4,22 @@ import (
 	"github.com/madlitz/go-dsl"
 )
 
+const (
+	TOKEN_STRING   dsl.TokenType = "STRING"
+	TOKEN_NUMBER   dsl.TokenType = "NUMBER"
+	TOKEN_TRUE     dsl.TokenType = "TRUE"
+	TOKEN_FALSE    dsl.TokenType = "FALSE"
+	TOKEN_NULL     dsl.TokenType = "NULL"
+	TOKEN_LBRACE   dsl.TokenType = "LBRACE"
+	TOKEN_RBRACE   dsl.TokenType = "RBRACE"
+	TOKEN_LBRACKET dsl.TokenType = "LBRACKET"
+	TOKEN_RBRACKET dsl.TokenType = "RBRACKET"
+	TOKEN_COLON    dsl.TokenType = "COLON"
+	TOKEN_COMMA    dsl.TokenType = "COMMA"
+	TOKEN_WS       dsl.TokenType = "WS"
+	TOKEN_EOF      dsl.TokenType = "EOF"
+)
+
 func Scan(s *dsl.Scanner) dsl.Token {
 	// Skip all whitespace at the beginning of the input
 	s.Expect(dsl.ExpectRune{

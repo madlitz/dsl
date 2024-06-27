@@ -24,16 +24,13 @@ func TestJSONParser(t *testing.T) {
 	"key6": [1, 2, 3, "four"]
 }`)
 	bufreader := bufio.NewReader(reader)
-	ts := NewTokenSet()
-	ns := NewNodeSet()
-
 	logfilename := "logs/json.log"
 	logfile, err := os.Create(logfilename)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ast, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	ast, errs := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
 	if len(errs) > 0 {
 		t.Fail()
 		for _, err := range errs {

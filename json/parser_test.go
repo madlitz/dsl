@@ -4,6 +4,14 @@ import (
 	"github.com/madlitz/go-dsl"
 )
 
+// NodeType represents the type of a node in the AST.
+const (
+	NODE_OBJECT dsl.NodeType = "OBJECT"
+	NODE_ARRAY  dsl.NodeType = "ARRAY"
+	NODE_MEMBER dsl.NodeType = "MEMBER"
+	NODE_VALUE  dsl.NodeType = "VALUE"
+)
+
 func Parse(p *dsl.Parser) (dsl.AST, []dsl.Error) {
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{

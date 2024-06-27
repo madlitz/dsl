@@ -1,10 +1,3 @@
-Line 1: 
-Parsing: github.com/madlitz/go-dsl/mydsl.Parse
-Expect Token (Multiple ): [WS VARIABLE EOF] 
-	Scanning: github.com/madlitz/go-dsl/mydsl.Scan
-	Expect (Optional ) Rune: [WS TAB] Range: [] 
-	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] 
 ***found [_], expected any of [- + * / ( ) NL : ' " EOF 0-9 A-Z a-z]
-	Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
 	Returning: github.com/madlitz/go-dsl/mydsl.Scan
 Returning: github.com/madlitz/go-dsl/mydsl.Parse

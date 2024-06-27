@@ -3,8 +3,8 @@
 // function using three basic functions; p.AddNode(), p.AddToken() and
 // p.WalkUp(). AST node types are defined by the user.
 //
-// The AST is made up of nodes (more accurately Node pointers), each of
-// which contains a slice of Node children and a reference to it's parent.
+// The AST is made up of nodes, each of which contains a slice of Node
+// children and a reference to it's parent.
 // The nodes are made available to the user so they can walk up and down
 // the tree once it is returned from the parser.
 package dsl
@@ -16,9 +16,8 @@ import (
 // RootNode is the entry point to the tree. curNode is used internally
 // to keep track of where the next node should be added.
 type AST struct {
-	ns       NodeSet `json:"-"`
-	RootNode *Node   `json:"root"`
-	curNode  *Node   `json:"-"`
+	RootNode *Node `json:"root"`
+	curNode  *Node `json:"-"`
 }
 
 // A Node can contain multiple Tokens which can be useful if the user knows how
@@ -31,32 +30,17 @@ type Node struct {
 	Children []Node   `json:"children"`
 }
 
-type NodeSet map[NodeType]int
-
 type NodeType string
-
-func (nt NodeType) String() string {
-	return string(nt)
-}
 
 const (
 	NODE_ROOT NodeType = "ROOT"
 )
 
-func NewNodeSet(userTypes ...NodeType) NodeSet {
-	ns := make(map[NodeType]int)
-	ns[NODE_ROOT] = 1
-	for i, id := range userTypes {
-		ns[id] = i + 2
-	}
-	return ns
-}
-
 // newAST returns a new instance of AST. The RootNode has the
 // builtin node type AST_ROOT.
-func newAST(ns NodeSet) AST {
+func newAST() AST {
 	rootNode := &Node{Type: NODE_ROOT}
-	return AST{ns: ns, RootNode: rootNode, curNode: rootNode}
+	return AST{RootNode: rootNode, curNode: rootNode}
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -113,7 +97,7 @@ func (a *AST) addToken(toks []Token) {
 // Called by Parser.WalkUp() in the user parse function. Moves the AST
 // curNode to its parent.
 func (a *AST) walkUp() {
-	if a.ns[a.curNode.Type] != a.ns[NODE_ROOT] {
+	if a.curNode.Type != NODE_ROOT {
 		a.curNode = a.curNode.Parent
 	}
 }

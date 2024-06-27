@@ -18,14 +18,12 @@ func TestPrintAST(t *testing.T) {
 		b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
 		double(a + b)`)
 	bufreader := bufio.NewReader(reader)
-	ts := NewTokenSet()
-	ns := NewNodeSet()
 	logfilename := "logs/TestPrintAST.log"
 	logfile, err := os.Create(logfilename)
 	if err != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + err.Error())
 	}
-	ast, _ := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	ast, _ := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
 	logfile.Close()
 
 	astjson, _ := json.Marshal(ast)
@@ -321,18 +319,15 @@ func TestDSL(t *testing.T) {
 b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
 double(a + b)`)
 	bufreader := bufio.NewReader(reader)
-	ts := NewTokenSet()
-	ns := NewNodeSet()
 	logfilename := "logs/TestDSL.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
 	}
-	ast, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	ast, errs := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
 	logfile.Close()
 	if len(errs) != 0 {
-		t.Fail()
-		t.Error("Should report exactly 0 errors")
+		t.Fatalf("Should report exactly 0 errors: got %d", len(errs))
 	}
 
 	expectedNodes := dsl.Node{
@@ -503,18 +498,15 @@ func TestTokenExpectedButNotFoundError(t *testing.T) {
 b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
 double(a + b)  `)
 	bufreader := bufio.NewReader(reader)
-	ts := NewTokenSet()
-	ns := NewNodeSet()
 	logfilename := "logs/TestTokenExpectedButNotFoundError.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
 	}
-	_, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	_, errs := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
 
 	if len(errs) != 1 {
-		t.Fail()
-		t.Error("Should report exactly 1 error")
+		t.Fatalf("Should report exactly 1 error: got %d", len(errs))
 	}
 	err := errs[0]
 	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
@@ -542,18 +534,15 @@ func TestRuneExpectedButNotFoundError(t *testing.T) {
 b := 3.45 * 44.21 / (4 + a) 'A Simple Expression
 double(a + b)`)
 	bufreader := bufio.NewReader(reader)
-	ts := NewTokenSet()
-	ns := NewNodeSet()
 	logfilename := "logs/TestRuneExpectedButNotFoundError.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
 	}
-	_, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	_, errs := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
 
 	if len(errs) != 1 {
-		t.Fail()
-		t.Error("Should report exactly 1 error")
+		t.Fatalf("Should report exactly 1 error: got %d", len(errs))
 	}
 	err := errs[0]
 	if err.Code != dsl.ERROR_RUNE_EXPECTED_NOT_FOUND {
@@ -581,18 +570,15 @@ func TestErrorThenRecovery(t *testing.T) {
 b := 3.45 * 44.21 / (4; + a) 'A Simple Expression
 double((a + b)`)
 	bufreader := bufio.NewReader(reader)
-	ts := NewTokenSet()
-	ns := NewNodeSet()
 	logfilename := "logs/TestErrorThenRecovery.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
 	}
-	_, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	_, errs := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
 
 	if len(errs) != 2 {
-		t.Fail()
-		t.Error("Should report exactly 2 errors")
+		t.Fatalf("Should report exactly 2 errors: got %d", len(errs))
 	}
 	err := errs[0]
 	if err.Code != dsl.ERROR_RUNE_EXPECTED_NOT_FOUND {
@@ -638,18 +624,15 @@ b := 3.45 * 44.21 / 4" \ercec
 gevhvrh  " + a) 'A Simple Expression
 double(a + b)`)
 	bufreader := bufio.NewReader(reader)
-	ts := NewTokenSet()
-	ns := NewNodeSet()
 	logfilename := "logs/TestMultiLineError.log"
 	logfile, fileErr := os.Create(logfilename)
 	if fileErr != nil {
 		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
 	}
-	_, errs := dsl.ParseAndLog(Parse, Scan, ts, ns, bufreader, logfile)
+	_, errs := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
 
 	if len(errs) != 1 {
-		t.Fail()
-		t.Error("Should report exactly 1 error")
+		t.Fatalf("Should report exactly 1 error: got %d", len(errs))
 	}
 	err := errs[0]
 	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {

@@ -4,6 +4,15 @@ import (
 	"github.com/madlitz/go-dsl"
 )
 
+// NodeType represents the type of a node in the AST.
+const (
+	NODE_ASSIGNMENT dsl.NodeType = "ASSIGNMENT"
+	NODE_CALL       dsl.NodeType = "CALL"
+	NODE_EXPRESSION dsl.NodeType = "EXPRESSION"
+	NODE_TERMINAL   dsl.NodeType = "TERMINAL"
+	NODE_COMMENT    dsl.NodeType = "COMMENT"
+)
+
 var recover bool
 
 func Parse(p *dsl.Parser) (dsl.AST, []dsl.Error) {

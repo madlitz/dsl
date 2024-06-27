@@ -16,7 +16,6 @@ import (
 // AST, Errors to return and other state variables.
 type Parser struct {
 	fn  ParseFunc
-	ts  TokenSet
 	s   *Scanner
 	ast AST      // AST is just 2 pointers so no need to use another pointer
 	buf struct { // buf holds unread tokens so we don't have to make repeat calls to the Scanner
@@ -30,8 +29,8 @@ type Parser struct {
 }
 
 // newParser returns an instance of a Parser
-func newParser(pf ParseFunc, ts TokenSet, s *Scanner, a AST) *Parser {
-	return &Parser{fn: pf, ts: ts, s: s, ast: a}
+func newParser(pf ParseFunc, s *Scanner, a AST) *Parser {
+	return &Parser{fn: pf, s: s, ast: a}
 }
 
 // The user implements the ParseFunc and passes it to the Parser in dsl.Parse()
@@ -97,19 +96,15 @@ func (p *Parser) Expect(expect ExpectToken) {
 	var err *Error
 
 	//If we have previously found an error but have not yet recovered with p.Recover, skip any call to p.Expect.
-	if logenb {
-		p.log(fmt.Sprintf("Expect Token %v: %v ", getParseOptions(expect.Options), branchTokensToStrings(expect.Branches)), NEWLINE)
-	}
+	p.log(fmt.Sprintf("Expect Token %v: %v ", getParseOptions(expect.Options), branchTokensToStrings(expect.Branches)), NEWLINE)
 	if p.err {
-		if logenb {
-			p.log("Skipping Expect as error already found.", NEWLINE)
-		}
+		p.log("Skipping Expect as error already found.", NEWLINE)
 		return
 	}
 	for {
 		found = false
 		tok, err = p.scan()
-		if p.ts[tok.ID] == p.ts["EOF"] {
+		if tok.ID == TOKEN_EOF {
 			p.eof = true
 		}
 		if err != nil {
@@ -118,21 +113,7 @@ func (p *Parser) Expect(expect ExpectToken) {
 			return
 		}
 		for _, branch := range expect.Branches {
-			if p.ts[branch.Id] == 0 {
-				if logenb {
-					p.log(fmt.Sprintf("Error: Expected token [%v], not found in Token Set.", branch.Id), ERROR)
-				}
-				p.newError(ERROR_EXPECTED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("token %v, not found in Token Set", branch.Id))
-				break
-			}
-			if p.ts[tok.ID] == 0 {
-				if logenb {
-					p.log(fmt.Sprintf("Error: Scanned token [%v], not found in Token Set.", tok.ID), ERROR)
-				}
-				p.newError(ERROR_SCANNED_TOKEN_NOT_IN_TOKENSET, fmt.Errorf("scanned token [%v], not found in Token Set", tok.ID))
-				break
-			}
-			if p.ts[tok.ID] == p.ts[branch.Id] && !expect.Options.Invert {
+			if tok.ID == branch.Id && !expect.Options.Invert {
 				if !expect.Options.Invert {
 					p.consume(tok, expect.Options.Skip)
 				}
@@ -161,77 +142,51 @@ func (p *Parser) Expect(expect ExpectToken) {
 
 func (p *Parser) callFn(fn func(*Parser)) {
 	if fn != nil && !p.eof {
-		if logenb {
-			p.log("Parsing: "+getFuncName(fn), INCREMENT)
-		}
+		p.log("Parsing: "+getFuncName(fn), INCREMENT)
 		fn(p)
-		if logenb {
-			p.log("Returning: "+getFuncName(fn), DECREMENT)
-		}
+		p.log("Returning: "+getFuncName(fn), DECREMENT)
 	}
 }
 
 func (p *Parser) consume(tok Token, skip bool) {
-	if logenb {
-		p.log("Found: ", NEWLINE)
-		p.log(tok.ID.String(), NO_PREFIX)
-	}
+	p.log("Found: ", NEWLINE)
+	p.log(string(tok.ID), NO_PREFIX)
 	if !skip {
 		p.tokens = append(p.tokens, tok)
 	}
 }
 
 func (p *Parser) AddNode(nt NodeType) {
-	if logenb {
-		p.log("AST Add Node: "+nt.String(), NEWLINE)
-	}
-	if p.ast.ns[nt] == 0 {
-		if logenb {
-			p.log(fmt.Sprintf("Error: Node to add [%v], not found in NodeSet.", nt), ERROR)
-		}
-		p.newError(ERROR_NODE_NOT_IN_NODESET, fmt.Errorf("node to add [%v], not found in NodeSet", nt))
-	}
+	p.log("AST Add Node: "+string(nt), NEWLINE)
 	p.ast.addNode(nt)
 }
 
 func (p *Parser) AddTokens() {
-	if logenb {
-		p.log("AST Add Tokens: ", NEWLINE)
-	}
+	p.log("AST Add Tokens: ", NEWLINE)
 	if len(p.tokens) > 0 {
-		if logenb {
-			for _, token := range p.tokens {
-				p.log(token.ID.String()+" - ", NO_PREFIX)
-				for _, rn := range token.Literal {
-					p.log(sanitize(string(rn), false), NO_PREFIX)
-				}
-				p.log(", ", NO_PREFIX)
+		for _, token := range p.tokens {
+			p.log(string(token.ID)+" - ", NO_PREFIX)
+			for _, rn := range token.Literal {
+				p.log(sanitize(string(rn), false), NO_PREFIX)
 			}
+			p.log(", ", NO_PREFIX)
 		}
 		p.ast.addToken(p.tokens)
 		p.tokens = nil
 	} else {
-		if logenb {
-			p.log("Warning: No Tokens to Add", ERROR)
-		}
+		p.log("Warning: No Tokens to Add", ERROR)
 	}
 }
 
 func (p *Parser) SkipToken() {
-	if logenb {
-		p.log("AST Skip Token: ", NEWLINE)
-	}
+	p.log("AST Skip Token: ", NEWLINE)
 	if len(p.tokens) > 0 {
 		token := p.tokens[len(p.tokens)-1]
 		p.tokens = p.tokens[:len(p.tokens)-1]
-		if logenb {
-			p.log(token.ID.String()+" - ", NO_PREFIX)
-			p.log(sanitize(token.Literal, true)+", ", NO_PREFIX)
-		}
+		p.log(string(token.ID)+" - ", NO_PREFIX)
+		p.log(sanitize(token.Literal, true)+", ", NO_PREFIX)
 	} else {
-		if logenb {
-			p.log("Warning: No Tokens to Skip", ERROR)
-		}
+		p.log("Warning: No Tokens to Skip", ERROR)
 	}
 }
 
@@ -241,31 +196,23 @@ func (p *Parser) GetToken() Token {
 		return Token{"ERROR", "ERROR", p.s.curLine, p.s.curPos}
 	}
 	token := p.tokens[len(p.tokens)-1]
-	if logenb {
-		p.log("Get Last Token: ", NEWLINE)
-		p.log(sanitize(token.Literal, true), NO_PREFIX)
-	}
+	p.log("Get Last Token: ", NEWLINE)
+	p.log(sanitize(token.Literal, true), NO_PREFIX)
 	return token
 }
 
 func (p *Parser) WalkUp() {
-	if logenb {
-		p.log("AST Walk Up", NEWLINE)
-	}
+	p.log("AST Walk Up", NEWLINE)
 	p.ast.walkUp()
 }
 
 func (p *Parser) Call(fn func(*Parser)) {
-	if logenb {
-		p.log("Call", NEWLINE)
-	}
+	p.log("Call", NEWLINE)
 	p.callFn(fn)
 }
 
 func (p *Parser) Peek(branches []PeekToken) {
-	if logenb {
-		p.log(fmt.Sprintf("Peek: %v ", peekTokensToStrings(branches)), NEWLINE)
-	}
+	p.log(fmt.Sprintf("Peek: %v ", peekTokensToStrings(branches)), NEWLINE)
 	for _, branch := range branches {
 		tokensLen := len(branch.IDs)
 		bufLen := 0
@@ -275,7 +222,7 @@ func (p *Parser) Peek(branches []PeekToken) {
 			if err != nil {
 				p.errors = append(p.errors, *err)
 			}
-			if p.ts[tok.ID] != p.ts[branch.IDs[i]] {
+			if tok.ID != branch.IDs[i] {
 				break
 			}
 		}
@@ -328,9 +275,7 @@ func (p *Parser) Recover(Fn func(*Parser)) {
 	if !p.err {
 		return
 	}
-	if logenb {
-		p.log("Recovering....", NEWLINE)
-	}
+	p.log("Recovering....", NEWLINE)
 	p.err = false
 	p.callFn(Fn)
 }
@@ -368,7 +313,7 @@ func peekTokensToStrings(branches []PeekToken) (literals []string) {
 // Used to print tokens passed to Expect() to an Error or to the log
 func branchTokensToStrings(branches []BranchToken) (literals []string) {
 	for _, branch := range branches {
-		literals = append(literals, branch.Id.String())
+		literals = append(literals, string(branch.Id))
 	}
 	return
 }
