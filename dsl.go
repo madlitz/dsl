@@ -1,15 +1,13 @@
 // Package dsl implements a set of helper and wrapper functions to allow an
 // end user to create a parser for their Domain Specific Language. The user
 // provides the Scan and Parse functions along with the input source. The
-// package sets up and runs the parser, returning an AST.The output is an
-// abstract syntax tree (AST) representing the Go source. The parser is invoked
-// through one of the Parse* functions.
+// package sets up and runs the parser, returning an AST. The output is an
+// abstract syntax tree (AST) representing the DSL source.
 //
 // This file contains the exported entry points for invoking the parser.
-// The parser accepts either a bufio.Reader (Parse) or a string representing a
-// file name (ParseFile). Along with the AST, any errors will be returned in a
-// slice containing the line number and column. A log will also be produced to
-// track any mistakes in the Scan or Parse function logic.
+// Along with the AST, any errors will be returned in a slice containing the
+// line number and column. A log will also be produced to track any mistakes
+// in the Scan or Parse function logic including infinite loops.
 
 package dsl
 
@@ -51,18 +49,25 @@ func Parse(pf ParseFunc, sf ScanFunc, r *bufio.Reader, opts ...ParseOption) (AST
 		opt(config)
 	}
 
-	l := log.New(config.LogWriter, "", 0)
-	s := newScanner(sf, r, l)
+	var logger logger
+	logger = &dslNoLogger{}
+	if config.LogWriter != nil {
+		logger = &dslLogger{
+			logger: log.New(config.LogWriter, "", 0),
+		}
+	}
+
+	s := newScanner(sf, r, logger)
 	a := newAST()
-	p := newParser(pf, s, a)
+	p := newParser(pf, s, a, logger)
 	return execute(p)
 }
 
 func execute(p *Parser) (AST, []Error) {
 	pf := p.fn
-	p.log("Line 1: ", NO_PREFIX)
-	p.log("Parsing: "+getFuncName(pf), NEWLINE)
+	p.log("Line 1: ", prefixNone)
+	p.log("Parsing: "+getFuncName(pf), prefixNewline)
 	ast, errors := pf(p)
-	p.log("Returning: "+getFuncName(pf), DECREMENT)
+	p.log("Returning: "+getFuncName(pf), prefixDecrement)
 	return ast, errors
 }
