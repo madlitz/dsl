@@ -126,9 +126,9 @@ func (p *Parser) Expect(expect ExpectToken) {
 		}
 	}
 	if !found && !expect.Options.Optional && !expect.Options.Invert {
-		p.newError(ERROR_TOKEN_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any of %v", tok.ID, branchTokensToStrings(expect.Branches)))
+		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any of %v", tok.ID, branchTokensToStrings(expect.Branches)))
 	} else if !found && !expect.Options.Optional && expect.Options.Invert {
-		p.newError(ERROR_TOKEN_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any except %v", tok.ID, branchTokensToStrings(expect.Branches)))
+		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any except %v", tok.ID, branchTokensToStrings(expect.Branches)))
 	}
 }
 

@@ -17,22 +17,6 @@ import (
 	"log"
 )
 
-// ParseOption is a function type that modifies ParseConfig
-type ParseOption func(*ParseConfig)
-
-// ParseConfig holds the configuration for parsing
-type ParseConfig struct {
-	LogWriter io.Writer
-	// Add other configuration options here as needed
-}
-
-// WithLogger returns a ParseOption that sets the log writer
-func WithLogger(w io.Writer) ParseOption {
-	return func(c *ParseConfig) {
-		c.LogWriter = w
-	}
-}
-
 // Parse sets up the parser, scanner and AST ready to accept input from
 // the bufio.Reader and launches into the users entry parsing function.
 //
@@ -61,6 +45,22 @@ func Parse(pf ParseFunc, sf ScanFunc, r *bufio.Reader, opts ...ParseOption) (AST
 	a := newAST()
 	p := newParser(pf, s, a, logger)
 	return execute(p)
+}
+
+// ParseOption is a function type that modifies ParseConfig
+type ParseOption func(*ParseConfig)
+
+// ParseConfig holds the configuration for parsing
+type ParseConfig struct {
+	LogWriter io.Writer
+	// Add other configuration options here as needed
+}
+
+// WithLogger returns a ParseOption that sets the log writer
+func WithLogger(w io.Writer) ParseOption {
+	return func(c *ParseConfig) {
+		c.LogWriter = w
+	}
 }
 
 func execute(p *Parser) (AST, []Error) {

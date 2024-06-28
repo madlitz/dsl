@@ -8,13 +8,11 @@ import (
 type ErrorCode int
 
 const (
-	ERROR_FILE_NOT_FOUND ErrorCode = iota // 0
-	ERROR_COULD_NOT_CREATE_FILE
-	ERROR_TOKEN_EXPECTED_NOT_FOUND
-	ERROR_EXPECTED_TOKEN_NOT_IN_TOKENSET
-	ERROR_SCANNED_TOKEN_NOT_IN_TOKENSET
-	ERROR_RUNE_EXPECTED_NOT_FOUND
-	ERROR_NODE_NOT_IN_NODESET
+	ErrorFileNotFound ErrorCode = iota // 0
+	ErrorCouldNotCreateFile
+	ErrorTokenExpectedNotFound
+	ErrorRuneExpectedNotFound
+	ErrorNodeNotInNodeSet
 )
 
 // Error contains the error text, the line and positions the error occurred on, and

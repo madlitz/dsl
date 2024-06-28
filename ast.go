@@ -50,10 +50,6 @@ func newAST() AST {
 // is being constructed.
 //
 
-// Prints the entire AST tree. It does so by recursively calling Print() on
-// each node in the tree in a depth first approach.
-//
-
 // Inspect traverses an AST in depth-first order: It starts by calling
 // f(node);
 func (a *AST) Inspect(fn func(*Node)) {

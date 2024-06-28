@@ -509,7 +509,7 @@ double(a + b)  `)
 		t.Fatalf("Should report exactly 1 error: got %d", len(errs))
 	}
 	err := errs[0]
-	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ErrorTokenExpectedNotFound {
 		t.Fail()
 		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err)
 	}
@@ -545,7 +545,7 @@ double(a + b)`)
 		t.Fatalf("Should report exactly 1 error: got %d", len(errs))
 	}
 	err := errs[0]
-	if err.Code != dsl.ERROR_RUNE_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ErrorRuneExpectedNotFound {
 		t.Fail()
 		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err)
 	}
@@ -581,7 +581,7 @@ double((a + b)`)
 		t.Fatalf("Should report exactly 2 errors: got %d", len(errs))
 	}
 	err := errs[0]
-	if err.Code != dsl.ERROR_RUNE_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ErrorRuneExpectedNotFound {
 		t.Fail()
 		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err)
 	}
@@ -598,7 +598,7 @@ double((a + b)`)
 		t.Errorf("Expected error end position 23. Found position: %v", err.EndPosition)
 	}
 	err = errs[1]
-	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ErrorTokenExpectedNotFound {
 		t.Fail()
 		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err)
 	}
@@ -635,7 +635,7 @@ double(a + b)`)
 		t.Fatalf("Should report exactly 1 error: got %d", len(errs))
 	}
 	err := errs[0]
-	if err.Code != dsl.ERROR_TOKEN_EXPECTED_NOT_FOUND {
+	if err.Code != dsl.ErrorTokenExpectedNotFound {
 		t.Fail()
 		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err)
 	}

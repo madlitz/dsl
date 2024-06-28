@@ -172,11 +172,11 @@ func (s *Scanner) Expect(expect ExpectRune) {
 	if !expect.Options.Invert && !found1orMore && !expect.Options.Optional {
 		s.expRunes = append(s.expRunes, rn)
 		strings := append(branchesToStrings(expect.Branches), branchRangesToStrings(expect.BranchRanges)...)
-		s.error = s.newError(ERROR_RUNE_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any of %v", string(rn), strings))
+		s.error = s.newError(ErrorRuneExpectedNotFound, fmt.Errorf("found [%v], expected any of %v", string(rn), strings))
 	} else if expect.Options.Invert && !found1inverted && !expect.Options.Optional {
 		s.expRunes = append(s.expRunes, rn)
 		strings := append(branchesToStrings(expect.Branches), branchRangesToStrings(expect.BranchRanges)...)
-		s.error = s.newError(ERROR_RUNE_EXPECTED_NOT_FOUND, fmt.Errorf("found [%v], expected any except %v", string(rn), strings))
+		s.error = s.newError(ErrorRuneExpectedNotFound, fmt.Errorf("found [%v], expected any except %v", string(rn), strings))
 	}
 
 }
