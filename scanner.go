@@ -10,6 +10,11 @@ import (
 	"fmt"
 )
 
+type scanner interface {
+	scan() (Token, *Error)
+	newError(code ErrorCode, err error, log bool) *Error
+}
+
 // The Scanner contains a reference to the user scan function, the
 // user input buffer, various state variables and the parser log.
 type Scanner struct {

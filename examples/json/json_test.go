@@ -1,4 +1,4 @@
-package json
+package json_test
 
 import (
 	"bufio"
@@ -10,6 +10,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"github.com/madlitz/go-dsl"
+
+	. "github.com/madlitz/go-dsl/examples/json"
 )
 
 func TestJSONParser(t *testing.T) {

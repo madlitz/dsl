@@ -29,6 +29,27 @@ type Parser struct {
 	err    bool
 }
 
+// TokenType is a string that represents the type of token found in the source.
+// String is used to represent the token type as it is easier to print in logs.
+type TokenType string
+
+// Token is used to identify the token type and value after being added to the AST.
+// The extra information is used when displaying errors but could also be useful
+// to the user for things like syntax highlighting and debugging if they were to
+// implement it.
+type Token struct {
+	ID       TokenType
+	Literal  string
+	Line     int // Line is the line of the source text the Token was found.
+	Position int // Position is the position (or column) the Token was found.
+}
+
+const (
+	TOKEN_UNKNOWN TokenType = "UNKNOWN"
+	TOKEN_ERROR   TokenType = "ERROR"
+	TOKEN_EOF     TokenType = "EOF"
+)
+
 // newParser returns an instance of a Parser
 func newParser(pf ParseFunc, s *Scanner, ast AST, l logger) *Parser {
 	return &Parser{
@@ -185,7 +206,8 @@ func (p *Parser) SkipToken() {
 func (p *Parser) GetToken() Token {
 	if len(p.tokens) == 0 {
 		p.log("Error: No tokens to get.", prefixError)
-		return Token{"ERROR", "ERROR", p.s.curLine, p.s.curPos}
+		pErr := p.s.newError(ErrorNoTokensToGet, fmt.Errorf("No tokens to get"))
+		return Token{TOKEN_ERROR, "ERROR", pErr.EndLine, pErr.EndPosition}
 	}
 	token := p.tokens[len(p.tokens)-1]
 	p.log("Get Last Token: ", prefixNewline)

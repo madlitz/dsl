@@ -13,6 +13,7 @@ const (
 	ErrorTokenExpectedNotFound
 	ErrorRuneExpectedNotFound
 	ErrorNodeNotInNodeSet
+	ErrorNoTokensToGet
 )
 
 // Error contains the error text, the line and positions the error occurred on, and

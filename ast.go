@@ -36,13 +36,6 @@ const (
 	NODE_ROOT NodeType = "ROOT"
 )
 
-// newAST returns a new instance of AST. The RootNode has the
-// builtin node type AST_ROOT.
-func newAST() AST {
-	rootNode := &Node{Type: NODE_ROOT}
-	return AST{RootNode: rootNode, curNode: rootNode}
-}
-
 // ---------------------------------------------------------------------------------------------------------
 
 // The AST is made up entirely of Node instances connected in a tree pattern.
@@ -56,46 +49,11 @@ func (a *AST) Inspect(fn func(*Node)) {
 	visit(a.RootNode, fn)
 }
 
-func visit(node *Node, fn func(*Node)) {
-	for _, child := range node.Children {
-		visit(&child, fn)
-	}
-	fn(node)
-}
-
 // Prints the entire AST tree. It does so by recursively calling Print() on
 // each node in the tree in a depth first approach.
 func (a *AST) Print() {
 	a.RootNode.Print("", true)
 	fmt.Println()
-}
-
-// Called by Parser.AddNode() in the user parse function. Creates a new node and
-// builds the two-way reference to its parent. Also moves the AST curNode
-// down the tree to the new node.
-func (a *AST) addNode(nt NodeType) {
-	a.curNode.Children = append(a.curNode.Children, Node{Type: nt, Parent: a.curNode})
-	a.curNode = &a.curNode.Children[len(a.curNode.Children)-1]
-}
-
-// Called by Parser.AddToken() in the user parse function. Adds a token to the
-// end of the Token slice belonging to the current node.
-//
-// If Parser.AddToken() is called without any tokens available on the Parser.toks buffer
-// the call to AddToken will be logged but no tokens will be added to the node.
-func (a *AST) addToken(toks []Token) {
-	if toks != nil {
-		tokens := append(a.curNode.Tokens, toks...)
-		a.curNode.Tokens = tokens
-	}
-}
-
-// Called by Parser.WalkUp() in the user parse function. Moves the AST
-// curNode to its parent.
-func (a *AST) walkUp() {
-	if a.curNode.Type != NODE_ROOT {
-		a.curNode = a.curNode.Parent
-	}
 }
 
 // Print is a recursive function that keeps track of where in the tree the node
@@ -134,5 +92,49 @@ func (n *Node) Print(prefix string, isTail bool) {
 		} else {
 			n.Children[numNodes-1].Print(prefix+"│   ", true)
 		}
+	}
+}
+
+// ---------------------------------------------------------------------------------------------------------
+
+// newAST returns a new instance of AST. The RootNode has the
+// builtin node type AST_ROOT.
+func newAST() AST {
+	rootNode := &Node{Type: NODE_ROOT}
+	return AST{RootNode: rootNode, curNode: rootNode}
+}
+
+func visit(node *Node, fn func(*Node)) {
+	for _, child := range node.Children {
+		visit(&child, fn)
+	}
+	fn(node)
+}
+
+// Called by Parser.AddNode() in the user parse function. Creates a new node and
+// builds the two-way reference to its parent. Also moves the AST curNode
+// down the tree to the new node.
+func (a *AST) addNode(nt NodeType) {
+	a.curNode.Children = append(a.curNode.Children, Node{Type: nt, Parent: a.curNode})
+	a.curNode = &a.curNode.Children[len(a.curNode.Children)-1]
+}
+
+// Called by Parser.AddToken() in the user parse function. Adds a token to the
+// end of the Token slice belonging to the current node.
+//
+// If Parser.AddToken() is called without any tokens available on the Parser.toks buffer
+// the call to AddToken will be logged but no tokens will be added to the node.
+func (a *AST) addToken(toks []Token) {
+	if toks != nil {
+		tokens := append(a.curNode.Tokens, toks...)
+		a.curNode.Tokens = tokens
+	}
+}
+
+// Called by Parser.WalkUp() in the user parse function. Moves the AST
+// curNode to its parent.
+func (a *AST) walkUp() {
+	if a.curNode.Type != NODE_ROOT {
+		a.curNode = a.curNode.Parent
 	}
 }

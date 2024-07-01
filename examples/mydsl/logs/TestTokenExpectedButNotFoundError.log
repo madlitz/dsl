@@ -1,27 +1,27 @@
 Line 1: 
-Parsing: github.com/madlitz/go-dsl/mydsl.Parse
+Parsing: github.com/madlitz/go-dsl/examples/mydsl.Parse
 Expect Token (Multiple ): [WS VARIABLE EOF] 
-	Scanning: github.com/madlitz/go-dsl/mydsl.Scan
+	Scanning: github.com/madlitz/go-dsl/examples/mydsl.Scan
 	Expect (Optional ) Rune: [WS TAB] Range: [] 
 	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:1 Found: a
-		Scanning: github.com/madlitz/go-dsl/mydsl.variable
+		Scanning: github.com/madlitz/go-dsl/examples/mydsl.variable
 		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
 		Matched: VARIABLE - a
-		Returning: github.com/madlitz/go-dsl/mydsl.variable
+		Returning: github.com/madlitz/go-dsl/examples/mydsl.variable
 	Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:2 Found: WS
-	Returning: github.com/madlitz/go-dsl/mydsl.Scan
+	Returning: github.com/madlitz/go-dsl/examples/mydsl.Scan
 Found: VARIABLE
-	Parsing: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
+	Parsing: github.com/madlitz/go-dsl/examples/mydsl.assignmentOrCall
 	Expect Token (Optional ): [WS] 
-		Scanning: github.com/madlitz/go-dsl/mydsl.Scan
+		Scanning: github.com/madlitz/go-dsl/examples/mydsl.Scan
 		Expect (Optional ) Rune: [WS TAB] Range: [] 
 		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:3 Found: e
-			Scanning: github.com/madlitz/go-dsl/mydsl.variable
+			Scanning: github.com/madlitz/go-dsl/examples/mydsl.variable
 			Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] Pos:4 Found: r, r, o, r
 			Matched: VARIABLE - error
-			Returning: github.com/madlitz/go-dsl/mydsl.variable
+			Returning: github.com/madlitz/go-dsl/examples/mydsl.variable
 		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:8 Found: WS
-		Returning: github.com/madlitz/go-dsl/mydsl.Scan
+		Returning: github.com/madlitz/go-dsl/examples/mydsl.Scan
 	Expect Token (): [ASSIGN OPEN_PAREN] 
 ***found [VARIABLE], expected any of [ASSIGN OPEN_PAREN]
 	Expect Token (Optional ): [WS] 
@@ -30,5 +30,5 @@ Found: VARIABLE
 	Skipping Expect as error already found.
 	Expect Token (): [NL EOF] 
 	Skipping Expect as error already found.
-	Returning: github.com/madlitz/go-dsl/mydsl.assignmentOrCall
-Returning: github.com/madlitz/go-dsl/mydsl.Parse
+	Returning: github.com/madlitz/go-dsl/examples/mydsl.assignmentOrCall
+Returning: github.com/madlitz/go-dsl/examples/mydsl.Parse
