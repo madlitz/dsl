@@ -51,7 +51,7 @@ const (
 )
 
 // newParser returns an instance of a Parser
-func newParser(pf ParseFunc, s *DSLScanner, ast AST, l logger) *Parser {
+func newParser(pf ParseFunc, s *Scanner, ast AST, l logger) *Parser {
 	return &Parser{
 		fn:  pf,
 		s:   s,
@@ -104,7 +104,7 @@ type ParseOptions struct {
 // TODO: Detect infinite loops
 
 func (p *Parser) Expect(expect ExpectToken) {
-	var found bool
+	var found1orMore bool
 	var tok Token
 	var err *Error
 
@@ -115,7 +115,7 @@ func (p *Parser) Expect(expect ExpectToken) {
 		return
 	}
 	for {
-		found = false
+		found := false
 		tok, err = p.scan()
 		if tok.ID == TOKEN_EOF {
 			p.eof = true
@@ -131,6 +131,7 @@ func (p *Parser) Expect(expect ExpectToken) {
 					p.consume(tok, expect.Options.Skip)
 				}
 				found = true
+				found1orMore = true
 				p.callFn(branch.Fn)
 				break
 			}
@@ -141,14 +142,15 @@ func (p *Parser) Expect(expect ExpectToken) {
 		}
 		if expect.Options.Invert && !found {
 			p.consume(tok, expect.Options.Skip)
+			found1orMore = true
 		}
 		if !expect.Options.Multiple || p.eof || p.err {
 			break
 		}
 	}
-	if !found && !expect.Options.Optional && !expect.Options.Invert {
+	if !found1orMore && !expect.Options.Optional && !expect.Options.Invert {
 		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any of %v", tok.ID, branchTokensToStrings(expect.Branches)))
-	} else if !found && !expect.Options.Optional && expect.Options.Invert {
+	} else if !found1orMore && !expect.Options.Optional && expect.Options.Invert {
 		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any except %v", tok.ID, branchTokensToStrings(expect.Branches)))
 	}
 }

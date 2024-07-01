@@ -1,8 +1,8 @@
-Line 1:
+Line 1: 
 Parsing: github.com/madlitz/dsl/examples/json.Parse
-Expect Token (): [LBRACE LBRACKET]
+Expect Token (): [LBRACE LBRACKET] 
 	Scanning: github.com/madlitz/dsl/examples/json.Scan
-	Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+	Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 	Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:1 Found: {
 		Scanning: github.com/madlitz/dsl/examples/json.Scan.func1
 		Matched: LBRACE - {
@@ -10,65 +10,65 @@ Expect Token (): [LBRACE LBRACKET]
 	Returning: github.com/madlitz/dsl/examples/json.Scan
 Found: LBRACE
 	Parsing: github.com/madlitz/dsl/examples/json.parseObject
-	AST Skip Token: LBRACE - {,
+	AST Skip Token: LBRACE - {, 
 	AST Add Node: OBJECT
-	Peek: [[STRING], ]
+	Peek: [[STRING], ] 
 		Scanning: github.com/madlitz/dsl/examples/json.Scan
 		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:2 Found: NL
 Line 2:
 			Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-			Skip Rune: NL,
+			Skip Rune: NL, 
 			Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 		Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:1 Found: "
 			Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-			Skip Rune: ",
+			Skip Rune: ", 
 			Expect (Invert Multiple ) Rune: ["] Range: [] Pos:2 Found: k, e, y, 1
 			Matched: STRING - key1
 			Expect () Rune: ["] Range: [] Pos:6 Found: "
-			Skip Rune: ",
+			Skip Rune: ", 
 			Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 		Returning: github.com/madlitz/dsl/examples/json.Scan
 		Parsing: github.com/madlitz/dsl/examples/json.parseMember
-		Expect Token (): [STRING]
+		Expect Token (): [STRING] 
 		Found: STRING
 		AST Add Node: MEMBER
-		AST Add Tokens: STRING - key1,
-		Expect Token (): [COLON]
+		AST Add Tokens: STRING - key1, 
+		Expect Token (): [COLON] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
-			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:7 Found: :
 				Scanning: github.com/madlitz/dsl/examples/json.Scan.func5
 				Matched: COLON - :
 				Returning: github.com/madlitz/dsl/examples/json.Scan.func5
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: COLON
-		AST Skip Token: COLON - :,
-		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET]
+		AST Skip Token: COLON - :, 
+		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:8 Found: WS
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: WS,
+				Skip Rune: WS, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:9 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-				Skip Rune: ",
+				Skip Rune: ", 
 				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:10 Found: v, a, l, u, e, 1
 				Matched: STRING - value1
 				Expect () Rune: ["] Range: [] Pos:16 Found: "
-				Skip Rune: ",
+				Skip Rune: ", 
 				Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: STRING
 			Parsing: github.com/madlitz/dsl/examples/json.parseValue
 			AST Add Node: VALUE
-			AST Add Tokens: STRING - value1,
+			AST Add Tokens: STRING - value1, 
 			AST Walk Up
 			Returning: github.com/madlitz/dsl/examples/json.parseValue
 		AST Walk Up
 		Returning: github.com/madlitz/dsl/examples/json.parseMember
-	Expect Token (Optional Multiple Skip ): [COMMA]
+	Expect Token (Optional Multiple Skip ): [COMMA] 
 		Scanning: github.com/madlitz/dsl/examples/json.Scan
-		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 		Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:17 Found: ,
 			Scanning: github.com/madlitz/dsl/examples/json.Scan.func6
 			Matched: COMMA - ,
@@ -76,44 +76,44 @@ Line 2:
 		Returning: github.com/madlitz/dsl/examples/json.Scan
 	Found: COMMA
 		Parsing: github.com/madlitz/dsl/examples/json.parseMember
-		Expect Token (): [STRING]
+		Expect Token (): [STRING] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:18 Found: NL
 Line 3:
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: NL,
+				Skip Rune: NL, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			, TAB
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: TAB,
+				Skip Rune: TAB, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-				Skip Rune: ",
+				Skip Rune: ", 
 				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:3 Found: k, e, y, 2
 				Matched: STRING - key2
 				Expect () Rune: ["] Range: [] Pos:7 Found: "
-				Skip Rune: ",
+				Skip Rune: ", 
 				Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: STRING
 		AST Add Node: MEMBER
-		AST Add Tokens: STRING - key2,
-		Expect Token (): [COLON]
+		AST Add Tokens: STRING - key2, 
+		Expect Token (): [COLON] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
-			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:8 Found: :
 				Scanning: github.com/madlitz/dsl/examples/json.Scan.func5
 				Matched: COLON - :
 				Returning: github.com/madlitz/dsl/examples/json.Scan.func5
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: COLON
-		AST Skip Token: COLON - :,
-		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET]
+		AST Skip Token: COLON - :, 
+		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:9 Found: WS
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: WS,
+				Skip Rune: WS, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:10 Found: 4
 				Scanning: github.com/madlitz/dsl/examples/json.number
@@ -124,13 +124,13 @@ Line 3:
 		Found: NUMBER
 			Parsing: github.com/madlitz/dsl/examples/json.parseValue
 			AST Add Node: VALUE
-			AST Add Tokens: NUMBER - 42,
+			AST Add Tokens: NUMBER - 42, 
 			AST Walk Up
 			Returning: github.com/madlitz/dsl/examples/json.parseValue
 		AST Walk Up
 		Returning: github.com/madlitz/dsl/examples/json.parseMember
 		Scanning: github.com/madlitz/dsl/examples/json.Scan
-		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 		Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:12 Found: ,
 			Scanning: github.com/madlitz/dsl/examples/json.Scan.func6
 			Matched: COMMA - ,
@@ -138,40 +138,40 @@ Line 3:
 		Returning: github.com/madlitz/dsl/examples/json.Scan
 	Found: COMMA
 		Parsing: github.com/madlitz/dsl/examples/json.parseMember
-		Expect Token (): [STRING]
+		Expect Token (): [STRING] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:13 Found: NL
 Line 4:
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: NL,
+				Skip Rune: NL, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:1 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-				Skip Rune: ",
+				Skip Rune: ", 
 				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:2 Found: k, e, y, 3
 				Matched: STRING - key3
 				Expect () Rune: ["] Range: [] Pos:6 Found: "
-				Skip Rune: ",
+				Skip Rune: ", 
 				Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: STRING
 		AST Add Node: MEMBER
-		AST Add Tokens: STRING - key3,
-		Expect Token (): [COLON]
+		AST Add Tokens: STRING - key3, 
+		Expect Token (): [COLON] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
-			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:7 Found: :
 				Scanning: github.com/madlitz/dsl/examples/json.Scan.func5
 				Matched: COLON - :
 				Returning: github.com/madlitz/dsl/examples/json.Scan.func5
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: COLON
-		AST Skip Token: COLON - :,
-		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET]
+		AST Skip Token: COLON - :, 
+		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:8 Found: WS
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: WS,
+				Skip Rune: WS, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:9 Found: t
 				Scanning: github.com/madlitz/dsl/examples/json.literal
@@ -182,13 +182,13 @@ Line 4:
 		Found: TRUE
 			Parsing: github.com/madlitz/dsl/examples/json.parseValue
 			AST Add Node: VALUE
-			AST Add Tokens: TRUE - true,
+			AST Add Tokens: TRUE - true, 
 			AST Walk Up
 			Returning: github.com/madlitz/dsl/examples/json.parseValue
 		AST Walk Up
 		Returning: github.com/madlitz/dsl/examples/json.parseMember
 		Scanning: github.com/madlitz/dsl/examples/json.Scan
-		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 		Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:13 Found: ,
 			Scanning: github.com/madlitz/dsl/examples/json.Scan.func6
 			Matched: COMMA - ,
@@ -196,44 +196,44 @@ Line 4:
 		Returning: github.com/madlitz/dsl/examples/json.Scan
 	Found: COMMA
 		Parsing: github.com/madlitz/dsl/examples/json.parseMember
-		Expect Token (): [STRING]
+		Expect Token (): [STRING] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:14 Found: NL
 Line 5:
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: NL,
+				Skip Rune: NL, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			, TAB
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: TAB,
+				Skip Rune: TAB, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-				Skip Rune: ",
+				Skip Rune: ", 
 				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:3 Found: k, e, y, 4
 				Matched: STRING - key4
 				Expect () Rune: ["] Range: [] Pos:7 Found: "
-				Skip Rune: ",
+				Skip Rune: ", 
 				Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: STRING
 		AST Add Node: MEMBER
-		AST Add Tokens: STRING - key4,
-		Expect Token (): [COLON]
+		AST Add Tokens: STRING - key4, 
+		Expect Token (): [COLON] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
-			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:8 Found: :
 				Scanning: github.com/madlitz/dsl/examples/json.Scan.func5
 				Matched: COLON - :
 				Returning: github.com/madlitz/dsl/examples/json.Scan.func5
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: COLON
-		AST Skip Token: COLON - :,
-		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET]
+		AST Skip Token: COLON - :, 
+		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:9 Found: WS
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: WS,
+				Skip Rune: WS, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:10 Found: n
 				Scanning: github.com/madlitz/dsl/examples/json.literal
@@ -244,13 +244,13 @@ Line 5:
 		Found: NULL
 			Parsing: github.com/madlitz/dsl/examples/json.parseValue
 			AST Add Node: VALUE
-			AST Add Tokens: NULL - null,
+			AST Add Tokens: NULL - null, 
 			AST Walk Up
 			Returning: github.com/madlitz/dsl/examples/json.parseValue
 		AST Walk Up
 		Returning: github.com/madlitz/dsl/examples/json.parseMember
 		Scanning: github.com/madlitz/dsl/examples/json.Scan
-		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 		Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:14 Found: ,
 			Scanning: github.com/madlitz/dsl/examples/json.Scan.func6
 			Matched: COMMA - ,
@@ -258,44 +258,44 @@ Line 5:
 		Returning: github.com/madlitz/dsl/examples/json.Scan
 	Found: COMMA
 		Parsing: github.com/madlitz/dsl/examples/json.parseMember
-		Expect Token (): [STRING]
+		Expect Token (): [STRING] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:15 Found: NL
 Line 6:
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: NL,
+				Skip Rune: NL, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			, TAB
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: TAB,
+				Skip Rune: TAB, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-				Skip Rune: ",
+				Skip Rune: ", 
 				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:3 Found: k, e, y, 5
 				Matched: STRING - key5
 				Expect () Rune: ["] Range: [] Pos:7 Found: "
-				Skip Rune: ",
+				Skip Rune: ", 
 				Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: STRING
 		AST Add Node: MEMBER
-		AST Add Tokens: STRING - key5,
-		Expect Token (): [COLON]
+		AST Add Tokens: STRING - key5, 
+		Expect Token (): [COLON] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
-			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:8 Found: :
 				Scanning: github.com/madlitz/dsl/examples/json.Scan.func5
 				Matched: COLON - :
 				Returning: github.com/madlitz/dsl/examples/json.Scan.func5
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: COLON
-		AST Skip Token: COLON - :,
-		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET]
+		AST Skip Token: COLON - :, 
+		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:9 Found: WS
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: WS,
+				Skip Rune: WS, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:10 Found: {
 				Scanning: github.com/madlitz/dsl/examples/json.Scan.func1
@@ -304,97 +304,97 @@ Line 6:
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: LBRACE
 			Parsing: github.com/madlitz/dsl/examples/json.parseObject
-			AST Skip Token: LBRACE - {,
+			AST Skip Token: LBRACE - {, 
 			AST Add Node: OBJECT
-			Peek: [[STRING], ]
+			Peek: [[STRING], ] 
 				Scanning: github.com/madlitz/dsl/examples/json.Scan
 				Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:11 Found: NL
 Line 7:
 					Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-					Skip Rune: NL,
+					Skip Rune: NL, 
 					Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 				, TAB
 					Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-					Skip Rune: TAB,
+					Skip Rune: TAB, 
 					Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 				, TAB
 					Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-					Skip Rune: TAB,
+					Skip Rune: TAB, 
 					Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 				Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:3 Found: "
 					Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-					Skip Rune: ",
+					Skip Rune: ", 
 					Expect (Invert Multiple ) Rune: ["] Range: [] Pos:4 Found: n, e, s, t, e, d, K, e, y
 					Matched: STRING - nestedKey
 					Expect () Rune: ["] Range: [] Pos:13 Found: "
-					Skip Rune: ",
+					Skip Rune: ", 
 					Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 				Returning: github.com/madlitz/dsl/examples/json.Scan
 				Parsing: github.com/madlitz/dsl/examples/json.parseMember
-				Expect Token (): [STRING]
+				Expect Token (): [STRING] 
 				Found: STRING
 				AST Add Node: MEMBER
-				AST Add Tokens: STRING - nestedKey,
-				Expect Token (): [COLON]
+				AST Add Tokens: STRING - nestedKey, 
+				Expect Token (): [COLON] 
 					Scanning: github.com/madlitz/dsl/examples/json.Scan
-					Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+					Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 					Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:14 Found: :
 						Scanning: github.com/madlitz/dsl/examples/json.Scan.func5
 						Matched: COLON - :
 						Returning: github.com/madlitz/dsl/examples/json.Scan.func5
 					Returning: github.com/madlitz/dsl/examples/json.Scan
 				Found: COLON
-				AST Skip Token: COLON - :,
-				Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET]
+				AST Skip Token: COLON - :, 
+				Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET] 
 					Scanning: github.com/madlitz/dsl/examples/json.Scan
 					Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:15 Found: WS
 						Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-						Skip Rune: WS,
+						Skip Rune: WS, 
 						Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 					Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:16 Found: "
 						Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-						Skip Rune: ",
+						Skip Rune: ", 
 						Expect (Invert Multiple ) Rune: ["] Range: [] Pos:17 Found: n, e, s, t, e, d, V, a, l, u, e
 						Matched: STRING - nestedValue
 						Expect () Rune: ["] Range: [] Pos:28 Found: "
-						Skip Rune: ",
+						Skip Rune: ", 
 						Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 					Returning: github.com/madlitz/dsl/examples/json.Scan
 				Found: STRING
 					Parsing: github.com/madlitz/dsl/examples/json.parseValue
 					AST Add Node: VALUE
-					AST Add Tokens: STRING - nestedValue,
+					AST Add Tokens: STRING - nestedValue, 
 					AST Walk Up
 					Returning: github.com/madlitz/dsl/examples/json.parseValue
 				AST Walk Up
 				Returning: github.com/madlitz/dsl/examples/json.parseMember
-			Expect Token (Optional Multiple Skip ): [COMMA]
+			Expect Token (Optional Multiple Skip ): [COMMA] 
 				Scanning: github.com/madlitz/dsl/examples/json.Scan
 				Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:29 Found: NL
 Line 8:
 					Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-					Skip Rune: NL,
+					Skip Rune: NL, 
 					Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 				, TAB
 					Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-					Skip Rune: TAB,
+					Skip Rune: TAB, 
 					Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 				Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: }
 					Scanning: github.com/madlitz/dsl/examples/json.Scan.func2
 					Matched: RBRACE - }
 					Returning: github.com/madlitz/dsl/examples/json.Scan.func2
 				Returning: github.com/madlitz/dsl/examples/json.Scan
-			Expect Token (): [RBRACE]
+			Expect Token (): [RBRACE] 
 			Found: RBRACE
 				Parsing: github.com/madlitz/dsl/examples/json.closeNode
-				AST Skip Token: RBRACE - },
+				AST Skip Token: RBRACE - }, 
 				AST Walk Up
 				Returning: github.com/madlitz/dsl/examples/json.closeNode
 			Returning: github.com/madlitz/dsl/examples/json.parseObject
 		AST Walk Up
 		Returning: github.com/madlitz/dsl/examples/json.parseMember
 		Scanning: github.com/madlitz/dsl/examples/json.Scan
-		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 		Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:3 Found: ,
 			Scanning: github.com/madlitz/dsl/examples/json.Scan.func6
 			Matched: COMMA - ,
@@ -402,44 +402,44 @@ Line 8:
 		Returning: github.com/madlitz/dsl/examples/json.Scan
 	Found: COMMA
 		Parsing: github.com/madlitz/dsl/examples/json.parseMember
-		Expect Token (): [STRING]
+		Expect Token (): [STRING] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:4 Found: NL
 Line 9:
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: NL,
+				Skip Rune: NL, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			, TAB
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: TAB,
+				Skip Rune: TAB, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-				Skip Rune: ",
+				Skip Rune: ", 
 				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:3 Found: k, e, y, 6
 				Matched: STRING - key6
 				Expect () Rune: ["] Range: [] Pos:7 Found: "
-				Skip Rune: ",
+				Skip Rune: ", 
 				Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: STRING
 		AST Add Node: MEMBER
-		AST Add Tokens: STRING - key6,
-		Expect Token (): [COLON]
+		AST Add Tokens: STRING - key6, 
+		Expect Token (): [COLON] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
-			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:8 Found: :
 				Scanning: github.com/madlitz/dsl/examples/json.Scan.func5
 				Matched: COLON - :
 				Returning: github.com/madlitz/dsl/examples/json.Scan.func5
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: COLON
-		AST Skip Token: COLON - :,
-		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET]
+		AST Skip Token: COLON - :, 
+		Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET] 
 			Scanning: github.com/madlitz/dsl/examples/json.Scan
 			Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:9 Found: WS
 				Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-				Skip Rune: WS,
+				Skip Rune: WS, 
 				Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:10 Found: [
 				Scanning: github.com/madlitz/dsl/examples/json.Scan.func3
@@ -448,28 +448,28 @@ Line 9:
 			Returning: github.com/madlitz/dsl/examples/json.Scan
 		Found: LBRACKET
 			Parsing: github.com/madlitz/dsl/examples/json.parseArray
-			AST Skip Token: LBRACKET - [,
+			AST Skip Token: LBRACKET - [, 
 			AST Add Node: ARRAY
-			Peek: [[STRING],  [NUMBER],  [TRUE],  [FALSE],  [NULL],  [LBRACE],  [LBRACKET], ]
+			Peek: [[STRING],  [NUMBER],  [TRUE],  [FALSE],  [NULL],  [LBRACE],  [LBRACKET], ] 
 				Scanning: github.com/madlitz/dsl/examples/json.Scan
-				Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+				Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 				Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:11 Found: 1
 					Scanning: github.com/madlitz/dsl/examples/json.number
-					Expect (Optional Multiple ) Rune: [] Range: [0-9]
+					Expect (Optional Multiple ) Rune: [] Range: [0-9] 
 					Matched: NUMBER - 1
 					Returning: github.com/madlitz/dsl/examples/json.number
 				Returning: github.com/madlitz/dsl/examples/json.Scan
 				Parsing: github.com/madlitz/dsl/examples/json.parseArrayValue
-				Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET RBRACKET]
+				Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET RBRACKET] 
 				Found: NUMBER
 					Parsing: github.com/madlitz/dsl/examples/json.parseValue
 					AST Add Node: VALUE
-					AST Add Tokens: NUMBER - 1,
+					AST Add Tokens: NUMBER - 1, 
 					AST Walk Up
 					Returning: github.com/madlitz/dsl/examples/json.parseValue
-				Expect Token (Optional Multiple Skip ): [COMMA]
+				Expect Token (Optional Multiple Skip ): [COMMA] 
 					Scanning: github.com/madlitz/dsl/examples/json.Scan
-					Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+					Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 					Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:12 Found: ,
 						Scanning: github.com/madlitz/dsl/examples/json.Scan.func6
 						Matched: COMMA - ,
@@ -477,27 +477,27 @@ Line 9:
 					Returning: github.com/madlitz/dsl/examples/json.Scan
 				Found: COMMA
 					Parsing: github.com/madlitz/dsl/examples/json.parseArrayValue
-					Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET RBRACKET]
+					Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET RBRACKET] 
 						Scanning: github.com/madlitz/dsl/examples/json.Scan
 						Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:13 Found: WS
 							Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-							Skip Rune: WS,
+							Skip Rune: WS, 
 							Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 						Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:14 Found: 2
 							Scanning: github.com/madlitz/dsl/examples/json.number
-							Expect (Optional Multiple ) Rune: [] Range: [0-9]
+							Expect (Optional Multiple ) Rune: [] Range: [0-9] 
 							Matched: NUMBER - 2
 							Returning: github.com/madlitz/dsl/examples/json.number
 						Returning: github.com/madlitz/dsl/examples/json.Scan
 					Found: NUMBER
 						Parsing: github.com/madlitz/dsl/examples/json.parseValue
 						AST Add Node: VALUE
-						AST Add Tokens: NUMBER - 2,
+						AST Add Tokens: NUMBER - 2, 
 						AST Walk Up
 						Returning: github.com/madlitz/dsl/examples/json.parseValue
-					Expect Token (Optional Multiple Skip ): [COMMA]
+					Expect Token (Optional Multiple Skip ): [COMMA] 
 						Scanning: github.com/madlitz/dsl/examples/json.Scan
-						Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+						Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 						Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:15 Found: ,
 							Scanning: github.com/madlitz/dsl/examples/json.Scan.func6
 							Matched: COMMA - ,
@@ -505,27 +505,27 @@ Line 9:
 						Returning: github.com/madlitz/dsl/examples/json.Scan
 					Found: COMMA
 						Parsing: github.com/madlitz/dsl/examples/json.parseArrayValue
-						Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET RBRACKET]
+						Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET RBRACKET] 
 							Scanning: github.com/madlitz/dsl/examples/json.Scan
 							Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:16 Found: WS
 								Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-								Skip Rune: WS,
+								Skip Rune: WS, 
 								Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 							Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:17 Found: 3
 								Scanning: github.com/madlitz/dsl/examples/json.number
-								Expect (Optional Multiple ) Rune: [] Range: [0-9]
+								Expect (Optional Multiple ) Rune: [] Range: [0-9] 
 								Matched: NUMBER - 3
 								Returning: github.com/madlitz/dsl/examples/json.number
 							Returning: github.com/madlitz/dsl/examples/json.Scan
 						Found: NUMBER
 							Parsing: github.com/madlitz/dsl/examples/json.parseValue
 							AST Add Node: VALUE
-							AST Add Tokens: NUMBER - 3,
+							AST Add Tokens: NUMBER - 3, 
 							AST Walk Up
 							Returning: github.com/madlitz/dsl/examples/json.parseValue
-						Expect Token (Optional Multiple Skip ): [COMMA]
+						Expect Token (Optional Multiple Skip ): [COMMA] 
 							Scanning: github.com/madlitz/dsl/examples/json.Scan
-							Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+							Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 							Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:18 Found: ,
 								Scanning: github.com/madlitz/dsl/examples/json.Scan.func6
 								Matched: COMMA - ,
@@ -533,30 +533,30 @@ Line 9:
 							Returning: github.com/madlitz/dsl/examples/json.Scan
 						Found: COMMA
 							Parsing: github.com/madlitz/dsl/examples/json.parseArrayValue
-							Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET RBRACKET]
+							Expect Token (): [STRING NUMBER TRUE FALSE NULL LBRACE LBRACKET RBRACKET] 
 								Scanning: github.com/madlitz/dsl/examples/json.Scan
 								Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:19 Found: WS
 									Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-									Skip Rune: WS,
+									Skip Rune: WS, 
 									Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 								Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:20 Found: "
 									Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
-									Skip Rune: ",
+									Skip Rune: ", 
 									Expect (Invert Multiple ) Rune: ["] Range: [] Pos:21 Found: f, o, u, r
 									Matched: STRING - four
 									Expect () Rune: ["] Range: [] Pos:25 Found: "
-									Skip Rune: ",
+									Skip Rune: ", 
 									Returning: github.com/madlitz/dsl/examples/json.stringLiteral
 								Returning: github.com/madlitz/dsl/examples/json.Scan
 							Found: STRING
 								Parsing: github.com/madlitz/dsl/examples/json.parseValue
 								AST Add Node: VALUE
-								AST Add Tokens: STRING - four,
+								AST Add Tokens: STRING - four, 
 								AST Walk Up
 								Returning: github.com/madlitz/dsl/examples/json.parseValue
-							Expect Token (Optional Multiple Skip ): [COMMA]
+							Expect Token (Optional Multiple Skip ): [COMMA] 
 								Scanning: github.com/madlitz/dsl/examples/json.Scan
-								Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: []
+								Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] 
 								Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:26 Found: ]
 									Scanning: github.com/madlitz/dsl/examples/json.Scan.func4
 									Matched: RBRACKET - ]
@@ -566,10 +566,10 @@ Line 9:
 						Returning: github.com/madlitz/dsl/examples/json.parseArrayValue
 					Returning: github.com/madlitz/dsl/examples/json.parseArrayValue
 				Returning: github.com/madlitz/dsl/examples/json.parseArrayValue
-			Expect Token (): [RBRACKET]
+			Expect Token (): [RBRACKET] 
 			Found: RBRACKET
 				Parsing: github.com/madlitz/dsl/examples/json.closeNode
-				AST Skip Token: RBRACKET - ],
+				AST Skip Token: RBRACKET - ], 
 				AST Walk Up
 				Returning: github.com/madlitz/dsl/examples/json.closeNode
 			AST Walk Up
@@ -580,17 +580,17 @@ Line 9:
 		Expect (Optional Multiple ) Rune: [WS TAB NL CR] Range: [] Pos:27 Found: NL
 Line 10:
 			Scanning: github.com/madlitz/dsl/examples/json.skipWhitespace
-			Skip Rune: NL,
+			Skip Rune: NL, 
 			Returning: github.com/madlitz/dsl/examples/json.skipWhitespace
 		Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:1 Found: }
 			Scanning: github.com/madlitz/dsl/examples/json.Scan.func2
 			Matched: RBRACE - }
 			Returning: github.com/madlitz/dsl/examples/json.Scan.func2
 		Returning: github.com/madlitz/dsl/examples/json.Scan
-	Expect Token (): [RBRACE]
+	Expect Token (): [RBRACE] 
 	Found: RBRACE
 		Parsing: github.com/madlitz/dsl/examples/json.closeNode
-		AST Skip Token: RBRACE - },
+		AST Skip Token: RBRACE - }, 
 		AST Walk Up
 		Returning: github.com/madlitz/dsl/examples/json.closeNode
 	Returning: github.com/madlitz/dsl/examples/json.parseObject

@@ -1,218 +1,223 @@
 package dsl
 
-// import (
-// 	"testing"
-// )
+import "testing"
 
-// // MockScanner simulates the Scanner for testing purposes
-// type MockScanner struct {
-// 	tokens []Token
-// 	index  int
-// }
+// mockScanner simulates the Scanner for testing purposes
+type mockScanner struct {
+	tokens []Token
+	index  int
+}
 
-// func (m *MockScanner) scan() (Token, *Error) {
-// 	if m.index >= len(m.tokens) {
-// 		return Token{ID: TOKEN_EOF, Literal: "", Line: 0, Position: 0}, nil
-// 	}
-// 	token := m.tokens[m.index]
-// 	m.index++
-// 	return token, nil
-// }
+func (m *mockScanner) scan() (Token, *Error) {
+	if m.index >= len(m.tokens) {
+		return Token{ID: TOKEN_EOF, Literal: "EOF", Line: 0, Position: 0}, nil
+	}
+	token := m.tokens[m.index]
+	m.index++
+	return token, nil
+}
 
-// func (m *MockScanner) newError(code ErrorCode, err error) *Error {
-// 	return &Error{Code: code, Message: err.Error()}
-// }
+func (m *mockScanner) newError(code ErrorCode, err error) *Error {
+	return &Error{Code: code, Message: err.Error()}
+}
 
-// // TestExpect tests the Expect method of the Parser
-// func TestExpect(t *testing.T) {
-// 	mockScanner := &MockScanner{
-// 		tokens: []Token{
-// 			{ID: "a", Literal: "a", Line: 1, Position: 1},
-// 			{ID: "b", Literal: "b", Line: 1, Position: 2},
-// 			{ID: "c", Literal: "c", Line: 1, Position: 3},
-// 		},
-// 	}
+// mockLogger simulates the Logger for testing purposes
+type mockLogger struct{}
 
-// 	parser := &Parser{
-// 		s: mockScanner,
-// 		l: &MockLogger{},
-// 	}
+func (m *mockLogger) log(msg string, indent indent) {}
 
-// 	tests := []struct {
-// 		name          string
-// 		expectToken   ExpectToken
-// 		expectedError bool
-// 	}{
-// 		{
-// 			name: "Basic Expect",
-// 			expectToken: ExpectToken{
-// 				Branches: []BranchToken{
-// 					{Id: "a", Fn: func(*Parser) {}},
-// 				},
-// 			},
-// 			expectedError: false,
-// 		},
-// 		{
-// 			name: "Expect with Multiple",
-// 			expectToken: ExpectToken{
-// 				Branches: []BranchToken{
-// 					{Id: "a", Fn: func(*Parser) {}},
-// 					{Id: "b", Fn: func(*Parser) {}},
-// 				},
-// 				Options: ParseOptions{Multiple: true},
-// 			},
-// 			expectedError: false,
-// 		},
-// 		{
-// 			name: "Expect with Invert",
-// 			expectToken: ExpectToken{
-// 				Branches: []BranchToken{
-// 					{Id: "d", Fn: func(*Parser) {}},
-// 				},
-// 				Options: ParseOptions{Invert: true},
-// 			},
-// 			expectedError: false,
-// 		},
-// 		{
-// 			name: "Expect with Error",
-// 			expectToken: ExpectToken{
-// 				Branches: []BranchToken{
-// 					{Id: "d", Fn: func(*Parser) {}},
-// 				},
-// 			},
-// 			expectedError: true,
-// 		},
-// 	}
+// TestExpect tests the Expect method of the Parser
+func TestExpect(t *testing.T) {
 
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			mockScanner.index = 0 // Reset scanner for each test
-// 			parser.Expect(tt.expectToken)
-// 			if tt.expectedError && !parser.err {
-// 				t.Errorf("Expected an error, but got none")
-// 			}
-// 			if !tt.expectedError && parser.err {
-// 				t.Errorf("Did not expect an error, but got one")
-// 			}
-// 		})
-// 	}
-// }
+	tests := []struct {
+		name          string
+		expectToken   ExpectToken
+		expectedCount int
+		expectedError bool
+	}{
+		{
+			name: "Basic Expect",
+			expectToken: ExpectToken{
+				Branches: []BranchToken{
+					{Id: "a", Fn: func(p *Parser) {}},
+					{Id: "b", Fn: func(p *Parser) {}},
+				},
+			},
+			expectedCount: 1,
+			expectedError: false,
+		},
+		{
+			name: "Expect with Multiple",
+			expectToken: ExpectToken{
+				Branches: []BranchToken{
+					{Id: "a", Fn: func(p *Parser) {}},
+					{Id: "b", Fn: func(p *Parser) {}},
+				},
+				Options: ParseOptions{Multiple: true},
+			},
+			expectedCount: 2,
+			expectedError: false,
+		},
+		{
+			name: "Expect with Invert",
+			expectToken: ExpectToken{
+				Branches: []BranchToken{
+					{Id: "d", Fn: func(p *Parser) {}},
+				},
+				Options: ParseOptions{Invert: true},
+			},
+			expectedCount: 1,
+			expectedError: false,
+		},
+		{
+			name: "Expect with Error",
+			expectToken: ExpectToken{
+				Branches: []BranchToken{
+					{Id: "d", Fn: func(p *Parser) {}},
+				},
+			},
+			expectedCount: 0,
+			expectedError: true,
+		},
+		{
+			name: "Expect with Optional",
+			expectToken: ExpectToken{
+				Branches: []BranchToken{
+					{Id: "d", Fn: func(p *Parser) {}},
+				},
+				Options: ParseOptions{Optional: true},
+			},
+			expectedCount: 0,
+			expectedError: false,
+		},
+	}
 
-// // TestPeek tests the Peek method of the Parser
-// func TestPeek(t *testing.T) {
-// 	mockScanner := &MockScanner{
-// 		tokens: []Token{
-// 			{ID: "a", Literal: "a", Line: 1, Position: 1},
-// 			{ID: "b", Literal: "b", Line: 1, Position: 2},
-// 			{ID: "c", Literal: "c", Line: 1, Position: 3},
-// 		},
-// 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 
-// 	parser := &Parser{
-// 		s: mockScanner,
-// 		l: &MockLogger{},
-// 	}
+			parser := &Parser{
+				s: &mockScanner{
+					tokens: []Token{
+						{ID: "a", Literal: "a", Line: 1, Position: 1},
+						{ID: "b", Literal: "b", Line: 1, Position: 2},
+					},
+				},
+				l: &mockLogger{},
+			}
 
-// 	called := false
-// 	parser.Peek([]PeekToken{
-// 		{
-// 			IDs: []TokenType{"a", "b"},
-// 			Fn:  func(*Parser) { called = true },
-// 		},
-// 	})
+			parser.Expect(tt.expectToken)
+			if len(parser.tokens) != tt.expectedCount {
+				t.Errorf(
+					"Unexpected token count: got %d, want %d",
+					len(parser.tokens),
+					tt.expectedCount,
+				)
+			}
 
-// 	if !called {
-// 		t.Errorf("Peek function was not called when it should have been")
-// 	}
+			if parser.err && !tt.expectedError {
+				t.Errorf("Expect returned an error when it should not have")
+			}
+			if !parser.err && tt.expectedError {
+				t.Errorf("Expect did not return an error when it should have")
+			}
+		})
+	}
+}
 
-// 	mockScanner.index = 0 // Reset scanner
-// 	called = false
-// 	parser.Peek([]PeekToken{
-// 		{
-// 			IDs: []TokenType{"a", "d"},
-// 			Fn:  func(*Parser) { called = true },
-// 		},
-// 	})
+// TestPeek tests the Peek method of the Parser
+func TestPeek(t *testing.T) {
+	s := &mockScanner{
+		tokens: []Token{
+			{ID: "a", Literal: "a", Line: 1, Position: 1},
+			{ID: "b", Literal: "b", Line: 1, Position: 2},
+			{ID: "c", Literal: "c", Line: 1, Position: 3},
+		},
+	}
 
-// 	if called {
-// 		t.Errorf("Peek function was called when it should not have been")
-// 	}
-// }
+	parser := &Parser{
+		s: s,
+		l: &mockLogger{},
+	}
 
-// // TestAddNode tests the AddNode method of the Parser
-// func TestAddNode(t *testing.T) {
-// 	mockAst := &mockAST{}
-// 	parser := &Parser{
-// 		ast: mockAst,
-// 		l:   &MockLogger{},
-// 	}
+	called := false
+	parser.Peek([]PeekToken{
+		{
+			IDs: []TokenType{"a", "b"},
+			Fn:  func(*Parser) { called = true },
+		},
+	})
 
-// 	parser.AddNode(NODE_ROOT)
+	if !called {
+		t.Errorf("Peek function was not called when it should have been")
+	}
 
-// 	if len(mockAst.nodes) != 1 || mockAst.nodes[0] != NODE_ROOT {
-// 		t.Errorf("AddNode did not correctly add the node to the AST")
-// 	}
-// }
+	s.index = 0 // Reset scanner
+	called = false
+	parser.Peek([]PeekToken{
+		{
+			IDs: []TokenType{"a", "b", "c"},
+			Fn:  func(*Parser) { called = true },
+		},
+	})
 
-// // TestAddTokens tests the AddTokens method of the Parser
-// func TestAddTokens(t *testing.T) {
-// 	mockAst := &mockAST{}
-// 	parser := &Parser{
-// 		ast:    mockAst,
-// 		l:      &MockLogger{},
-// 		tokens: []Token{{ID: "a", Literal: "a"}},
-// 	}
+	if !called {
+		t.Errorf("Peek function was not called when it should have been")
+	}
 
-// 	parser.AddTokens()
+	s.index = 0 // Reset scanner
+	called = false
+	parser.Peek([]PeekToken{
+		{
+			IDs: []TokenType{"a", "c", "b"},
+			Fn:  func(*Parser) { called = true },
+		},
+	})
 
-// 	if len(mockAst.tokens) != 1 || mockAst.tokens[0].ID != "a" {
-// 		t.Errorf("AddTokens did not correctly add the tokens to the AST")
-// 	}
+	if called {
+		t.Errorf("Peek function was called when it should not have been")
+	}
+}
 
-// 	if len(parser.tokens) != 0 {
-// 		t.Errorf("AddTokens did not clear the parser's token buffer")
-// 	}
-// }
+// TestAddNode tests the AddNode method of the Parser
+func TestAddNode(t *testing.T) {
+	ast := newAST()
+	parser := &Parser{
+		ast: ast,
+		s: &mockScanner{
+			tokens: []Token{
+				{ID: "a", Literal: "a", Line: 1, Position: 1},
+				{ID: "b", Literal: "b", Line: 1, Position: 2},
+				{ID: "c", Literal: "c", Line: 1, Position: 3},
+			},
+		},
+		l: &mockLogger{},
+	}
 
-// // TestRecover tests the Recover method of the Parser
-// func TestRecover(t *testing.T) {
-// 	parser := &Parser{
-// 		err: true,
-// 		l:   &MockLogger{},
-// 	}
+	parser.Expect(ExpectToken{
+		Branches: []BranchToken{
+			{Id: "a", Fn: func(p *Parser) {}},
+			{Id: "b", Fn: func(p *Parser) {}},
+		},
+		Options: ParseOptions{Multiple: true},
+	})
 
-// 	called := false
-// 	parser.Recover(func(*Parser) { called = true })
+	parser.AddTokens()
+	parser.AddNode(NODE_ROOT)
 
-// 	if !called {
-// 		t.Errorf("Recover function was not called when it should have been")
-// 	}
+	if len(ast.curNode.Children) != 1 || ast.curNode.Type != NODE_ROOT {
+		t.Fatalf("Unexpected node in AST: got %v, want %v", ast.curNode.Type, NODE_ROOT)
+	}
 
-// 	if parser.err {
-// 		t.Errorf("Recover did not reset the error state")
-// 	}
-// }
+	if len(ast.curNode.Tokens) != 2 {
+		t.Fatalf("Unexpected token count in node: got %d, want %d", len(ast.curNode.Tokens), 1)
+	}
 
-// // Mock AST for testing
-// type mockAST struct {
-// 	nodes  []NodeType
-// 	tokens []Token
-// }
+	if ast.curNode.Tokens[0].ID != "a" {
+		t.Fatalf("Unexpected token in node: got %v, want %v", ast.curNode.Tokens[0].ID, "a")
+	}
 
-// func (m *mockAST) addNode(nt NodeType)      { m.nodes = append(m.nodes, nt) }
-// func (m *mockAST) addToken(tokens []Token)  { m.tokens = append(m.tokens, tokens...) }
-// func (m *mockAST) walkUp()                  {}
-// func (m *mockAST) getRoot() *Node           { return nil }
-// func (m *mockAST) getCurrent() *Node        { return nil }
-// func (m *mockAST) getParent() *Node         { return nil }
-// func (m *mockAST) getNode(id int) *Node     { return nil }
-// func (m *mockAST) String() string           { return "" }
-// func (m *mockAST) createNode(nt NodeType)   {}
-// func (m *mockAST) addChild(child *Node)     {}
-// func (m *mockAST) getChildren() []*Node     { return nil }
-// func (m *mockAST) getTokens() []Token       { return nil }
-// func (m *mockAST) setTokens(tokens []Token) {}
+	if ast.curNode.Tokens[1].ID != "b" {
+		t.Fatalf("Unexpected token in node: got %v, want %v", ast.curNode.Tokens[1].ID, "b")
+	}
 
-// type MockLogger struct{}
-
-// func (m *MockLogger) log(msg string, indent indent) {}
+}
