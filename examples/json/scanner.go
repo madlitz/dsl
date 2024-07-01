@@ -1,7 +1,7 @@
 package json
 
 import (
-	"github.com/madlitz/go-dsl"
+	"github.com/madlitz/dsl"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 	TOKEN_EOF      dsl.TokenType = "EOF"
 )
 
-func Scan(s *dsl.Scanner) dsl.Token {
+func Scan(s *dsl.DSLScanner) dsl.Token {
 	// Skip all whitespace at the beginning of the input
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
@@ -34,12 +34,12 @@ func Scan(s *dsl.Scanner) dsl.Token {
 
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
-			{Rn: '{', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: "{", ID: TOKEN_LBRACE}}) }},
-			{Rn: '}', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: "}", ID: TOKEN_RBRACE}}) }},
-			{Rn: '[', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: "[", ID: TOKEN_LBRACKET}}) }},
-			{Rn: ']', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: "]", ID: TOKEN_RBRACKET}}) }},
-			{Rn: ':', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: ":", ID: TOKEN_COLON}}) }},
-			{Rn: ',', Fn: func(s *dsl.Scanner) { s.Match([]dsl.Match{{Literal: ",", ID: TOKEN_COMMA}}) }},
+			{Rn: '{', Fn: func(s *dsl.DSLScanner) { s.Match([]dsl.Match{{Literal: "{", ID: TOKEN_LBRACE}}) }},
+			{Rn: '}', Fn: func(s *dsl.DSLScanner) { s.Match([]dsl.Match{{Literal: "}", ID: TOKEN_RBRACE}}) }},
+			{Rn: '[', Fn: func(s *dsl.DSLScanner) { s.Match([]dsl.Match{{Literal: "[", ID: TOKEN_LBRACKET}}) }},
+			{Rn: ']', Fn: func(s *dsl.DSLScanner) { s.Match([]dsl.Match{{Literal: "]", ID: TOKEN_RBRACKET}}) }},
+			{Rn: ':', Fn: func(s *dsl.DSLScanner) { s.Match([]dsl.Match{{Literal: ":", ID: TOKEN_COLON}}) }},
+			{Rn: ',', Fn: func(s *dsl.DSLScanner) { s.Match([]dsl.Match{{Literal: ",", ID: TOKEN_COMMA}}) }},
 			{Rn: '"', Fn: stringLiteral},
 		},
 		BranchRanges: []dsl.BranchRange{
@@ -53,11 +53,11 @@ func Scan(s *dsl.Scanner) dsl.Token {
 	return s.Exit()
 }
 
-func skipWhitespace(s *dsl.Scanner) {
+func skipWhitespace(s *dsl.DSLScanner) {
 	s.SkipRune()
 }
 
-func stringLiteral(s *dsl.Scanner) {
+func stringLiteral(s *dsl.DSLScanner) {
 	s.SkipRune() // Skip the opening quote
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
@@ -76,7 +76,7 @@ func stringLiteral(s *dsl.Scanner) {
 	s.SkipRune() // Skip the closing quote
 }
 
-func number(s *dsl.Scanner) {
+func number(s *dsl.DSLScanner) {
 	s.Expect(dsl.ExpectRune{
 		BranchRanges: []dsl.BranchRange{
 			{StartRn: '0', EndRn: '9', Fn: nil},
@@ -86,7 +86,7 @@ func number(s *dsl.Scanner) {
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_NUMBER}})
 }
 
-func literal(s *dsl.Scanner) {
+func literal(s *dsl.DSLScanner) {
 	s.Expect(dsl.ExpectRune{
 		BranchRanges: []dsl.BranchRange{
 			{StartRn: 'a', EndRn: 'z', Fn: nil},

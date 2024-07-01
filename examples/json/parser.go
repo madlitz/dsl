@@ -1,7 +1,7 @@
 package json
 
 import (
-	"github.com/madlitz/go-dsl"
+	"github.com/madlitz/dsl"
 )
 
 // NodeType represents the type of a node in the AST.

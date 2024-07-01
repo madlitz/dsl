@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/madlitz/go-dsl"
-	. "github.com/madlitz/go-dsl/examples/mydsl"
+	"github.com/madlitz/dsl"
+	. "github.com/madlitz/dsl/examples/mydsl"
 )
 
 func TestDSL(t *testing.T) {

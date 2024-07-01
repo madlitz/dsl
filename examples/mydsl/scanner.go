@@ -1,7 +1,7 @@
 package mydsl
 
 import (
-	"github.com/madlitz/go-dsl"
+	"github.com/madlitz/dsl"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 	TOKEN_EOF         dsl.TokenType = "EOF"
 )
 
-func Scan(s *dsl.Scanner) dsl.Token {
+func Scan(s *dsl.DSLScanner) dsl.Token {
 	if recover {
 		s.Expect(dsl.ExpectRune{
 			Branches: []dsl.Branch{
@@ -79,11 +79,11 @@ func Scan(s *dsl.Scanner) dsl.Token {
 	return s.Exit()
 }
 
-func eof(s *dsl.Scanner) {
+func eof(s *dsl.DSLScanner) {
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_EOF}})
 }
 
-func whitespace(s *dsl.Scanner) {
+func whitespace(s *dsl.DSLScanner) {
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{Rn: ' ', Fn: nil},
@@ -94,7 +94,7 @@ func whitespace(s *dsl.Scanner) {
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_WS}})
 }
 
-func variable(s *dsl.Scanner) {
+func variable(s *dsl.DSLScanner) {
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{Rn: '_', Fn: nil},
@@ -109,7 +109,7 @@ func variable(s *dsl.Scanner) {
 }
 
 // ScanFn -> literal
-func literal(s *dsl.Scanner) {
+func literal(s *dsl.DSLScanner) {
 	s.Expect(dsl.ExpectRune{
 		BranchRanges: []dsl.BranchRange{
 			{StartRn: '0', EndRn: '9', Fn: nil},
@@ -126,7 +126,7 @@ func literal(s *dsl.Scanner) {
 }
 
 // ScanFn -> literal
-func stringliteral(s *dsl.Scanner) {
+func stringliteral(s *dsl.DSLScanner) {
 	s.SkipRune()
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
@@ -139,7 +139,7 @@ func stringliteral(s *dsl.Scanner) {
 }
 
 // ScanFn -> number -> fraction
-func fraction(s *dsl.Scanner) {
+func fraction(s *dsl.DSLScanner) {
 	s.Expect(dsl.ExpectRune{
 		BranchRanges: []dsl.BranchRange{
 			{StartRn: '0', EndRn: '9', Fn: nil},
@@ -150,7 +150,7 @@ func fraction(s *dsl.Scanner) {
 }
 
 // ScanFn -> assign
-func assign(s *dsl.Scanner) {
+func assign(s *dsl.DSLScanner) {
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{Rn: '=', Fn: nil},
@@ -160,7 +160,7 @@ func assign(s *dsl.Scanner) {
 }
 
 // ScanFn -> comment
-func comment(s *dsl.Scanner) {
+func comment(s *dsl.DSLScanner) {
 	s.SkipRune()
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{

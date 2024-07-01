@@ -9,9 +9,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"github.com/madlitz/go-dsl"
+	"github.com/madlitz/dsl"
 
-	. "github.com/madlitz/go-dsl/examples/json"
+	. "github.com/madlitz/dsl/examples/json"
 )
 
 func TestJSONParser(t *testing.T) {

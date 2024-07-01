@@ -1,4 +1,4 @@
-module github.com/madlitz/go-dsl
+module github.com/madlitz/dsl
 
 go 1.22.2
 

@@ -16,7 +16,7 @@ import (
 // AST, Errors to return and other state variables.
 type Parser struct {
 	fn  ParseFunc
-	s   *Scanner
+	s   scanner
 	ast AST
 	l   logger
 	buf struct {
@@ -51,7 +51,7 @@ const (
 )
 
 // newParser returns an instance of a Parser
-func newParser(pf ParseFunc, s *Scanner, ast AST, l logger) *Parser {
+func newParser(pf ParseFunc, s *DSLScanner, ast AST, l logger) *Parser {
 	return &Parser{
 		fn:  pf,
 		s:   s,
@@ -206,8 +206,7 @@ func (p *Parser) SkipToken() {
 func (p *Parser) GetToken() Token {
 	if len(p.tokens) == 0 {
 		p.log("Error: No tokens to get.", prefixError)
-		pErr := p.s.newError(ErrorNoTokensToGet, fmt.Errorf("No tokens to get"))
-		return Token{TOKEN_ERROR, "ERROR", pErr.EndLine, pErr.EndPosition}
+		return Token{TOKEN_ERROR, "ERROR", 0, 0}
 	}
 	token := p.tokens[len(p.tokens)-1]
 	p.log("Get Last Token: ", prefixNewline)
