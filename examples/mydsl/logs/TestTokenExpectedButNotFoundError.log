@@ -1,34 +1,357 @@
 Line 1: 
 Parsing: github.com/madlitz/dsl/examples/mydsl.Parse
-Expect Token (Multiple ): [WS VARIABLE EOF] 
+Expect Token (Multiple ): [VARIABLE EOF] 
 	Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
-	Expect (Optional ) Rune: [WS TAB] Range: [] 
+		Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+		Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
 	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:1 Found: a
 		Scanning: github.com/madlitz/dsl/examples/mydsl.variable
 		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
 		Matched: VARIABLE - a
 		Returning: github.com/madlitz/dsl/examples/mydsl.variable
-	Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:2 Found: WS
 	Returning: github.com/madlitz/dsl/examples/mydsl.Scan
 Found: VARIABLE
 	Parsing: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
-	Expect Token (Optional ): [WS] 
+	Expect Token (): [ASSIGN OPEN_PAREN] 
 		Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
-		Expect (Optional ) Rune: [WS TAB] Range: [] 
+			Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+			Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:2 Found: WS
+			Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
 		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:3 Found: e
 			Scanning: github.com/madlitz/dsl/examples/mydsl.variable
 			Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] Pos:4 Found: r, r, o, r
 			Matched: VARIABLE - error
 			Returning: github.com/madlitz/dsl/examples/mydsl.variable
-		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:8 Found: WS
 		Returning: github.com/madlitz/dsl/examples/mydsl.Scan
-	Expect Token (): [ASSIGN OPEN_PAREN] 
 ***found [VARIABLE], expected any of [ASSIGN OPEN_PAREN]
-	Expect Token (Optional ): [WS] 
-	Skipping Expect as error already found.
 	Expect Token (Optional ): [COMMENT] 
 	Skipping Expect as error already found.
-	Expect Token (): [NL EOF] 
+	Expect Token (Skip ): [NL EOF] 
 	Skipping Expect as error already found.
+		Recovering: github.com/madlitz/dsl/examples/mydsl.skipUntilLineBreak
+		Expect Token (Invert Optional ): [UNKNOWN] 
+		Found: VARIABLE
+		Expect Token (): [UNKNOWN] 
+			Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+			Expect (Invert Optional Multiple ) Rune: [EOF NL] Range: [] Pos:8 Found: WS, :, =, WS, 1, WS, *, WS, 5, WS, +, WS, 7
+			Expect (Optional ) Rune: [NL] Range: [] Pos:21 Found: NL
+Line 2:
+			Matched: UNKNOWN -  := 1 * 5 + 7NL
+			Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+		Found: UNKNOWN
+		Returning: github.com/madlitz/dsl/examples/mydsl.skipUntilLineBreak
+	Returning: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
+	Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+		Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+		Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:1 Found: b
+		Scanning: github.com/madlitz/dsl/examples/mydsl.variable
+		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
+		Matched: VARIABLE - b
+		Returning: github.com/madlitz/dsl/examples/mydsl.variable
+	Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+Found: VARIABLE
+	Parsing: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
+	Expect Token (): [ASSIGN OPEN_PAREN] 
+		Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+			Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+			Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:2 Found: WS
+			Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:3 Found: :
+			Scanning: github.com/madlitz/dsl/examples/mydsl.assign
+			Expect () Rune: [=] Range: [] Pos:4 Found: =
+			Matched: ASSIGN - :=
+			Returning: github.com/madlitz/dsl/examples/mydsl.assign
+		Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+	Found: ASSIGN
+		Parsing: github.com/madlitz/dsl/examples/mydsl.assignment
+		AST Skip Token: ASSIGN - :=, 
+		AST Add Node: ASSIGNMENT
+		AST Add Tokens: VARIABLE - a, VARIABLE - error, UNKNOWN -  := 1 * 5 + 7NL, VARIABLE - b, 
+		Expect Token (): [VARIABLE LITERAL OPEN_PAREN] 
+			Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+				Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+				Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:5 Found: WS
+				Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+			Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:6 Found: 3
+				Scanning: github.com/madlitz/dsl/examples/mydsl.literal
+				Expect (Optional Multiple ) Rune: [] Range: [0-9] 
+				Expect (Optional ) Rune: [.] Range: [] Pos:7 Found: .
+					Scanning: github.com/madlitz/dsl/examples/mydsl.fraction
+					Expect (Multiple ) Rune: [] Range: [0-9] Pos:8 Found: 4, 5
+					Matched: LITERAL - 3.45
+					Returning: github.com/madlitz/dsl/examples/mydsl.fraction
+				Returning: github.com/madlitz/dsl/examples/mydsl.literal
+			Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+		Found: LITERAL
+			Parsing: github.com/madlitz/dsl/examples/mydsl.operator
+			AST Add Node: TERMINAL
+			AST Add Tokens: LITERAL - 3.45, 
+			AST Walk Up
+			Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
+				Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+					Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+					Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:10 Found: WS
+					Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+				Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:11 Found: *
+				Matched: MULTIPLY - *
+				Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+			Found: MULTIPLY
+				Parsing: github.com/madlitz/dsl/examples/mydsl.expression
+				AST Add Node: EXPRESSION
+				AST Add Tokens: MULTIPLY - *, 
+				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
+					Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+						Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+						Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:12 Found: WS
+						Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+					Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:13 Found: 4
+						Scanning: github.com/madlitz/dsl/examples/mydsl.literal
+						Expect (Optional Multiple ) Rune: [] Range: [0-9] Pos:14 Found: 4
+						Expect (Optional ) Rune: [.] Range: [] Pos:15 Found: .
+							Scanning: github.com/madlitz/dsl/examples/mydsl.fraction
+							Expect (Multiple ) Rune: [] Range: [0-9] Pos:16 Found: 2, 1
+							Matched: LITERAL - 44.21
+							Returning: github.com/madlitz/dsl/examples/mydsl.fraction
+						Returning: github.com/madlitz/dsl/examples/mydsl.literal
+					Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+				Found: LITERAL
+					Parsing: github.com/madlitz/dsl/examples/mydsl.operator
+					AST Add Node: TERMINAL
+					AST Add Tokens: LITERAL - 44.21, 
+					AST Walk Up
+					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
+						Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+							Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+							Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:18 Found: WS
+							Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+						Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:19 Found: /
+						Matched: DIVIDE - /
+						Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+					Found: DIVIDE
+						Parsing: github.com/madlitz/dsl/examples/mydsl.expression
+						AST Add Node: EXPRESSION
+						AST Add Tokens: DIVIDE - /, 
+						Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
+							Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+								Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+								Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:20 Found: WS
+								Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+							Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:21 Found: (
+							Matched: OPEN_PAREN - (
+							Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+						Found: OPEN_PAREN
+							Parsing: github.com/madlitz/dsl/examples/mydsl.parenExpression
+								Calling: github.com/madlitz/dsl/examples/mydsl.expression
+								AST Add Node: EXPRESSION
+								AST Add Tokens: OPEN_PAREN - (, 
+								Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
+									Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+										Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+										Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+										Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+									Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:22 Found: 4
+										Scanning: github.com/madlitz/dsl/examples/mydsl.literal
+										Expect (Optional Multiple ) Rune: [] Range: [0-9] 
+										Expect (Optional ) Rune: [.] Range: [] 
+										Matched: LITERAL - 4
+										Returning: github.com/madlitz/dsl/examples/mydsl.literal
+									Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+								Found: LITERAL
+									Parsing: github.com/madlitz/dsl/examples/mydsl.operator
+									AST Add Node: TERMINAL
+									AST Add Tokens: LITERAL - 4, 
+									AST Walk Up
+									Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
+										Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+											Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+											Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:23 Found: WS
+											Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+										Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:24 Found: +
+										Matched: PLUS - +
+										Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+									Found: PLUS
+										Parsing: github.com/madlitz/dsl/examples/mydsl.expression
+										AST Add Node: EXPRESSION
+										AST Add Tokens: PLUS - +, 
+										Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
+											Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+												Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+												Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:25 Found: WS
+												Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+											Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:26 Found: a
+												Scanning: github.com/madlitz/dsl/examples/mydsl.variable
+												Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
+												Matched: VARIABLE - a
+												Returning: github.com/madlitz/dsl/examples/mydsl.variable
+											Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+										Found: VARIABLE
+											Parsing: github.com/madlitz/dsl/examples/mydsl.operator
+											AST Add Node: TERMINAL
+											AST Add Tokens: VARIABLE - a, 
+											AST Walk Up
+											Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
+												Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+													Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+													Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+													Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+												Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:27 Found: )
+												Matched: CLOSE_PAREN - )
+												Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+											AST Walk Up
+											Returning: github.com/madlitz/dsl/examples/mydsl.operator
+										Returning: github.com/madlitz/dsl/examples/mydsl.expression
+									AST Walk Up
+									Returning: github.com/madlitz/dsl/examples/mydsl.operator
+								Returning: github.com/madlitz/dsl/examples/mydsl.expression
+							Expect Token (): [CLOSE_PAREN] 
+							Found: CLOSE_PAREN
+								Parsing: github.com/madlitz/dsl/examples/mydsl.operator
+								AST Add Node: TERMINAL
+								AST Add Tokens: CLOSE_PAREN - ), 
+								AST Walk Up
+								Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
+									Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+										Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+										Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:28 Found: WS
+										Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+									Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:29 Found: '
+										Scanning: github.com/madlitz/dsl/examples/mydsl.comment
+										Skip Rune: ', 
+										Expect (Invert Optional Multiple ) Rune: [EOF NL] Range: [] Pos:30 Found: A, WS, S, i, m, p, l, e, WS, E, x, p, r, e, s, s, i, o, n
+										Matched: COMMENT - A Simple Expression
+										Returning: github.com/madlitz/dsl/examples/mydsl.comment
+									Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+								AST Walk Up
+								Returning: github.com/madlitz/dsl/examples/mydsl.operator
+							Returning: github.com/madlitz/dsl/examples/mydsl.parenExpression
+						Returning: github.com/madlitz/dsl/examples/mydsl.expression
+					AST Walk Up
+					Returning: github.com/madlitz/dsl/examples/mydsl.operator
+				Returning: github.com/madlitz/dsl/examples/mydsl.expression
+			AST Walk Up
+			Returning: github.com/madlitz/dsl/examples/mydsl.operator
+		Returning: github.com/madlitz/dsl/examples/mydsl.assignment
+	Expect Token (Optional ): [COMMENT] 
+	Found: COMMENT
+		Parsing: github.com/madlitz/dsl/examples/mydsl.addcomment
+		AST Add Node: COMMENT
+		AST Add Tokens: COMMENT - A Simple Expression, 
+		AST Walk Up
+		Returning: github.com/madlitz/dsl/examples/mydsl.addcomment
+	Expect Token (Skip ): [NL EOF] 
+		Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+			Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+			Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+			Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:49 Found: NL
+Line 3:
+		Matched: NL - NL
+		Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+	Skipping: NL
+	Returning: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
+	Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+		Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+		Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:1 Found: d
+		Scanning: github.com/madlitz/dsl/examples/mydsl.variable
+		Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] Pos:2 Found: o, u, b, l, e
+		Matched: VARIABLE - double
+		Returning: github.com/madlitz/dsl/examples/mydsl.variable
+	Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+Found: VARIABLE
+	Parsing: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
+	Expect Token (): [ASSIGN OPEN_PAREN] 
+		Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+			Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+			Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+			Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:7 Found: (
+		Matched: OPEN_PAREN - (
+		Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+	Found: OPEN_PAREN
+		Parsing: github.com/madlitz/dsl/examples/mydsl.call
+		AST Skip Token: OPEN_PAREN - (, 
+		AST Add Node: CALL
+		AST Add Tokens: VARIABLE - double, 
+		Expect Token (): [VARIABLE LITERAL OPEN_PAREN] 
+			Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+				Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+				Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+				Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+			Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:8 Found: a
+				Scanning: github.com/madlitz/dsl/examples/mydsl.variable
+				Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
+				Matched: VARIABLE - a
+				Returning: github.com/madlitz/dsl/examples/mydsl.variable
+			Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+		Found: VARIABLE
+			Parsing: github.com/madlitz/dsl/examples/mydsl.operator
+			AST Add Node: TERMINAL
+			AST Add Tokens: VARIABLE - a, 
+			AST Walk Up
+			Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
+				Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+					Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+					Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:9 Found: WS
+					Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+				Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:10 Found: +
+				Matched: PLUS - +
+				Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+			Found: PLUS
+				Parsing: github.com/madlitz/dsl/examples/mydsl.expression
+				AST Add Node: EXPRESSION
+				AST Add Tokens: PLUS - +, 
+				Expect Token (): [VARIABLE LITERAL OPEN_PAREN CLOSE_PAREN] 
+					Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+						Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+						Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:11 Found: WS
+						Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+					Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:12 Found: b
+						Scanning: github.com/madlitz/dsl/examples/mydsl.variable
+						Expect (Optional Multiple ) Rune: [_] Range: [A-Z a-z] 
+						Matched: VARIABLE - b
+						Returning: github.com/madlitz/dsl/examples/mydsl.variable
+					Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+				Found: VARIABLE
+					Parsing: github.com/madlitz/dsl/examples/mydsl.operator
+					AST Add Node: TERMINAL
+					AST Add Tokens: VARIABLE - b, 
+					AST Walk Up
+					Expect Token (Optional ): [PLUS MINUS DIVIDE MULTIPLY OPEN_PAREN] 
+						Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+							Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+							Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+							Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+						Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:13 Found: )
+						Matched: CLOSE_PAREN - )
+						Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+					AST Walk Up
+					Returning: github.com/madlitz/dsl/examples/mydsl.operator
+				Returning: github.com/madlitz/dsl/examples/mydsl.expression
+			AST Walk Up
+			Returning: github.com/madlitz/dsl/examples/mydsl.operator
+		Expect Token (): [CLOSE_PAREN] 
+		Found: CLOSE_PAREN
+			Parsing: github.com/madlitz/dsl/examples/mydsl.closecall
+			AST Skip Token: CLOSE_PAREN - ), 
+			AST Walk Up
+			Returning: github.com/madlitz/dsl/examples/mydsl.closecall
+		Returning: github.com/madlitz/dsl/examples/mydsl.call
+	Expect Token (Optional ): [COMMENT] 
+		Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
+			Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+			Expect (Optional Multiple ) Rune: [WS TAB] Range: [] Pos:14 Found: WS, WS
+			Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
+		Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:16 Found: EOF
+			Scanning: github.com/madlitz/dsl/examples/mydsl.eof
+			Matched: EOF - 
+			Returning: github.com/madlitz/dsl/examples/mydsl.eof
+		Returning: github.com/madlitz/dsl/examples/mydsl.Scan
+	Expect Token (Skip ): [NL EOF] 
+	Skipping: EOF
 	Returning: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
 Returning: github.com/madlitz/dsl/examples/mydsl.Parse

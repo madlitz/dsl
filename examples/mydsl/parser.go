@@ -18,7 +18,6 @@ var recover bool
 func Parse(p *dsl.Parser) (dsl.AST, []dsl.Error) {
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
 			{Id: TOKEN_VARIABLE, Fn: assignmentOrCall},
 			{Id: TOKEN_EOF, Fn: nil},
 		},
@@ -28,29 +27,13 @@ func Parse(p *dsl.Parser) (dsl.AST, []dsl.Error) {
 	return p.Exit()
 }
 
-func skipWhitespace(p *dsl.Parser) {
-	p.SkipToken()
-}
-
 // parse -> assignmentOrCall
 func assignmentOrCall(p *dsl.Parser) {
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
-		},
-		Options: dsl.ParseOptions{Optional: true},
-	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
 			{Id: TOKEN_ASSIGN, Fn: assignment},
 			{Id: TOKEN_OPEN_PAREN, Fn: call},
 		},
-	})
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
-		},
-		Options: dsl.ParseOptions{Optional: true},
 	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
@@ -60,10 +43,12 @@ func assignmentOrCall(p *dsl.Parser) {
 	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{Id: TOKEN_NL, Fn: skipWhitespace},
+			{Id: TOKEN_NL, Fn: nil},
 			{Id: TOKEN_EOF, Fn: nil},
 		},
+		Options: dsl.ParseOptions{Skip: true},
 	})
+	p.Recover(skipUntilLineBreak)
 }
 
 // parse -> assignmentOrCall -> assignment
@@ -71,12 +56,6 @@ func assignment(p *dsl.Parser) {
 	p.SkipToken()
 	p.AddNode(NODE_ASSIGNMENT)
 	p.AddTokens()
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
-		},
-		Options: dsl.ParseOptions{Optional: true},
-	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
 			{Id: TOKEN_VARIABLE, Fn: operator},
@@ -93,22 +72,10 @@ func call(p *dsl.Parser) {
 	p.AddTokens()
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
-		},
-		Options: dsl.ParseOptions{Optional: true},
-	})
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
 			{Id: TOKEN_VARIABLE, Fn: operator},
 			{Id: TOKEN_LITERAL, Fn: operator},
 			{Id: TOKEN_OPEN_PAREN, Fn: parenExpression},
 		},
-	})
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
-		},
-		Options: dsl.ParseOptions{Optional: true},
 	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
@@ -130,12 +97,6 @@ func expression(p *dsl.Parser) {
 	p.AddTokens()
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
-		},
-		Options: dsl.ParseOptions{Optional: true},
-	})
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
 			{Id: TOKEN_VARIABLE, Fn: operator},
 			{Id: TOKEN_LITERAL, Fn: operator},
 			{Id: TOKEN_OPEN_PAREN, Fn: parenExpression},
@@ -150,12 +111,6 @@ func operator(p *dsl.Parser) {
 	p.AddNode(NODE_TERMINAL)
 	p.AddTokens()
 	p.WalkUp()
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
-		},
-		Options: dsl.ParseOptions{Optional: true},
-	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
 			{Id: TOKEN_PLUS, Fn: expression},
@@ -174,21 +129,13 @@ func operator(p *dsl.Parser) {
 // parse -> assignmentOrCall -> call -> [expression, operator] -> paren_expression
 // parse -> assignmentOrCall -> call -> paren_expression
 func parenExpression(p *dsl.Parser) {
-	p.Peek([]dsl.PeekToken{
-		{IDs: []dsl.TokenType{}, Fn: expression},
-	})
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: TOKEN_WS, Fn: skipWhitespace},
-		},
-		Options: dsl.ParseOptions{Optional: true},
-	})
+	p.Call(expression)
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
 			{Id: TOKEN_CLOSE_PAREN, Fn: operator},
 		},
 	})
-	p.Recover(skipUntilLineBreak)
+
 }
 
 // parse -> assignmentOrCall -> [expression] -> addcomment
@@ -200,6 +147,12 @@ func addcomment(p *dsl.Parser) {
 
 func skipUntilLineBreak(p *dsl.Parser) {
 	recover = true
+	p.Expect(dsl.ExpectToken{
+		Branches: []dsl.BranchToken{
+			{Id: dsl.TOKEN_UNKNOWN, Fn: nil},
+		},
+		Options: dsl.ParseOptions{Optional: true, Invert: true},
+	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
 			{Id: dsl.TOKEN_UNKNOWN, Fn: nil},

@@ -15,11 +15,12 @@ import (
 // The Parser type holds a reference to the user parse func, the Scanner,
 // AST, Errors to return and other state variables.
 type Parser struct {
-	fn  ParseFunc
-	s   scanner
-	ast AST
-	l   logger
-	buf struct {
+	fn   ParseFunc
+	s    scanner
+	ast  AST
+	l    logger
+	line string
+	buf  struct {
 		tokens []Token
 		num    int
 	} // Holds unread tokens so we don't have to make repeat calls to the Scanner
@@ -27,6 +28,11 @@ type Parser struct {
 	errors []Error
 	eof    bool
 	err    bool
+	peek   struct {
+		count int
+		line  int
+		pos   int
+	}
 }
 
 // TokenType is a string that represents the type of token found in the source.
@@ -101,8 +107,6 @@ type ParseOptions struct {
 
 //-----------------------------------------------------------------------------------
 
-// TODO: Detect infinite loops
-
 func (p *Parser) Expect(expect ExpectToken) {
 	var found1orMore bool
 	var tok Token
@@ -117,23 +121,25 @@ func (p *Parser) Expect(expect ExpectToken) {
 	for {
 		found := false
 		tok, err = p.scan()
+		if err != nil {
+			return
+		}
 		if tok.ID == TOKEN_EOF {
 			p.eof = true
 		}
-		if err != nil {
-			p.errors = append(p.errors, *err)
-			p.err = true
-			return
-		}
 		for _, branch := range expect.Branches {
-			if tok.ID == branch.Id && !expect.Options.Invert {
-				if !expect.Options.Invert {
-					p.consume(tok, expect.Options.Skip)
-				}
+			if tok.ID == branch.Id {
 				found = true
 				found1orMore = true
-				p.callFn(branch.Fn)
-				break
+				if !expect.Options.Invert {
+					if !expect.Options.Skip {
+						p.consume(tok)
+					} else {
+						p.skip(tok)
+					}
+					p.parseFn(branch.Fn)
+					break
+				}
 			}
 		}
 		if (!expect.Options.Invert && !found) || (expect.Options.Invert && found) {
@@ -141,7 +147,11 @@ func (p *Parser) Expect(expect ExpectToken) {
 			break
 		}
 		if expect.Options.Invert && !found {
-			p.consume(tok, expect.Options.Skip)
+			if !expect.Options.Skip {
+				p.consume(tok)
+			} else {
+				p.skip(tok)
+			}
 			found1orMore = true
 		}
 		if !expect.Options.Multiple || p.eof || p.err {
@@ -149,13 +159,17 @@ func (p *Parser) Expect(expect ExpectToken) {
 		}
 	}
 	if !found1orMore && !expect.Options.Optional && !expect.Options.Invert {
-		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any of %v", tok.ID, branchTokensToStrings(expect.Branches)))
+		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any of %v", tok.ID, branchTokensToStrings(expect.Branches)), p.tokToErrLine(tok))
 	} else if !found1orMore && !expect.Options.Optional && expect.Options.Invert {
-		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any except %v", tok.ID, branchTokensToStrings(expect.Branches)))
+		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any except %v", tok.ID, branchTokensToStrings(expect.Branches)), p.tokToErrLine(tok))
 	}
 }
 
-func (p *Parser) callFn(fn func(*Parser)) {
+func (p *Parser) parseFn(fn func(*Parser)) {
+	if ok, tok := p.checkForInfiniteLoop(); ok {
+		p.newError(ErrorInfiniteLoopDetected, fmt.Errorf("infinite loop detected: %v", getFuncName(fn)), p.tokToErrLine(tok))
+		return
+	}
 	if fn != nil && !p.eof {
 		p.log("Parsing: "+getFuncName(fn), prefixIncrement)
 		fn(p)
@@ -163,12 +177,15 @@ func (p *Parser) callFn(fn func(*Parser)) {
 	}
 }
 
-func (p *Parser) consume(tok Token, skip bool) {
+func (p *Parser) consume(tok Token) {
 	p.log("Found: ", prefixNewline)
 	p.log(string(tok.ID), prefixNone)
-	if !skip {
-		p.tokens = append(p.tokens, tok)
-	}
+	p.tokens = append(p.tokens, tok)
+}
+
+func (p *Parser) skip(tok Token) {
+	p.log("Skipping: ", prefixNewline)
+	p.log(string(tok.ID), prefixNone)
 }
 
 func (p *Parser) AddNode(nt NodeType) {
@@ -222,12 +239,22 @@ func (p *Parser) WalkUp() {
 }
 
 func (p *Parser) Call(fn func(*Parser)) {
-	p.log("Call", prefixNewline)
-	p.callFn(fn)
+	if fn != nil && !p.eof {
+		p.log("Calling: "+getFuncName(fn), prefixIncrement)
+		fn(p)
+		p.log("Returning: "+getFuncName(fn), prefixDecrement)
+	}
 }
+
+const MaxConsecutivePeeks = 100
 
 func (p *Parser) Peek(branches []PeekToken) {
 	p.log(fmt.Sprintf("Peek: %v ", peekTokensToStrings(branches)), prefixNewline)
+	if p.err {
+		p.log("Skipping Peek as error already found.", prefixNewline)
+		return
+	}
+
 	for _, branch := range branches {
 		tokensLen := len(branch.IDs)
 		bufLen := 0
@@ -235,7 +262,7 @@ func (p *Parser) Peek(branches []PeekToken) {
 			bufLen++
 			tok, err := p.scan()
 			if err != nil {
-				p.errors = append(p.errors, *err)
+				return
 			}
 			if tok.ID != branch.IDs[i] {
 				break
@@ -245,7 +272,7 @@ func (p *Parser) Peek(branches []PeekToken) {
 			p.unscan()
 		}
 		if tokensLen == 0 || tokensLen == bufLen {
-			p.callFn(branch.Fn)
+			p.parseFn(branch.Fn)
 			break
 		}
 	}
@@ -264,11 +291,35 @@ func (p *Parser) scan() (tok Token, err *Error) {
 	}
 
 	// Otherwise read the next token from the scanner.
-	tok, err = p.s.scan()
+	tok, line, err := p.s.scan()
+	if err != nil {
+		p.err = true
+		p.errors = append(p.errors, *err)
+	}
+	p.line = line
+
 	// Save it to the buffer in case we unscan later.
 	p.buf.tokens = append(p.buf.tokens, tok)
 
 	return
+}
+
+func (p *Parser) checkForInfiniteLoop() (bool, Token) {
+	tok := p.buf.tokens[len(p.buf.tokens)-1]
+
+	if p.peek.line == tok.Line && p.peek.pos == tok.Position {
+		p.peek.count++
+		if p.peek.count > MaxConsecutivePeeks {
+			return true, tok
+		}
+	} else {
+		p.peek.count = 0
+	}
+	p.peek.line = tok.Line
+	p.peek.pos = tok.Position
+
+	return false, Token{}
+
 }
 
 // unscan pushes the previously read token back onto the buffer.
@@ -278,21 +329,54 @@ func (p *Parser) unscan() {
 	}
 }
 
-func (p *Parser) newError(code ErrorCode, errMsg error) {
-	p.err = true
-	err := p.s.newError(code, errMsg)
-	if err != nil {
-		p.errors = append(p.errors, *err)
+type errorLine struct {
+	line      string
+	startLine int
+	startPos  int
+	endLine   int
+	endPos    int
+}
+
+func (p *Parser) tokToErrLine(tok Token) errorLine {
+	endPos := tok.Position
+	if tok.ID == TOKEN_EOF {
+		endPos++
+	}
+	return errorLine{
+		line:      p.line,
+		startLine: tok.Line,
+		startPos:  tok.Position,
+		endLine:   tok.Line,
+		endPos:    endPos + len(tok.Literal) - 1,
 	}
 }
 
-func (p *Parser) Recover(Fn func(*Parser)) {
+func (p *Parser) newError(code ErrorCode, errMsg error, el errorLine) {
+	p.err = true
+	p.errors = append(p.errors, Error{
+		Code:          code,
+		Message:       errMsg.Error(),
+		LineString:    el.line,
+		StartLine:     el.startLine,
+		StartPosition: el.startPos,
+		EndLine:       el.endLine,
+		EndPosition:   el.endPos,
+	})
+	p.log(errMsg.Error(), prefixError)
+
+}
+
+func (p *Parser) Recover(fn func(*Parser)) {
 	if !p.err {
 		return
 	}
-	p.log("Recovering....", prefixNewline)
-	p.err = false
-	p.callFn(Fn)
+
+	if fn != nil && !p.eof {
+		p.log("Recovering: "+getFuncName(fn), prefixIncrement)
+		p.err = false
+		fn(p)
+		p.log("Returning: "+getFuncName(fn), prefixDecrement)
+	}
 }
 
 // -------------------------------- Parser Helper Functions---------------------------------------

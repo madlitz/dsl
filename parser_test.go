@@ -1,6 +1,9 @@
 package dsl
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 // mockScanner simulates the Scanner for testing purposes
 type mockScanner struct {
@@ -8,17 +11,13 @@ type mockScanner struct {
 	index  int
 }
 
-func (m *mockScanner) scan() (Token, *Error) {
+func (m *mockScanner) scan() (Token, string, *Error) {
 	if m.index >= len(m.tokens) {
-		return Token{ID: TOKEN_EOF, Literal: "EOF", Line: 0, Position: 0}, nil
+		return Token{ID: TOKEN_EOF, Literal: "EOF", Line: 0, Position: 0}, "", nil
 	}
 	token := m.tokens[m.index]
 	m.index++
-	return token, nil
-}
-
-func (m *mockScanner) newError(code ErrorCode, err error) *Error {
-	return &Error{Code: code, Message: err.Error()}
+	return token, tokensToLineString(m.tokens[0:m.index]), nil
 }
 
 // mockLogger simulates the Logger for testing purposes
@@ -124,6 +123,21 @@ func TestExpect(t *testing.T) {
 	}
 }
 
+func tokensToLineString(tokens []Token) string {
+	// Create a line string from the tokens
+	// If you dont have a token that covers the current position, add a space
+	var lineString string
+	var curPos = 1
+	for _, token := range tokens {
+		for i := curPos; i < token.Position; i++ {
+			lineString += " "
+		}
+		lineString += token.Literal
+		curPos = token.Position + len(token.Literal)
+	}
+	return lineString
+}
+
 // TestPeek tests the Peek method of the Parser
 func TestPeek(t *testing.T) {
 	s := &mockScanner{
@@ -181,7 +195,7 @@ func TestPeek(t *testing.T) {
 // TestAddNode tests the AddNode method of the Parser
 func TestAddNode(t *testing.T) {
 	ast := newAST()
-	parser := &Parser{
+	p := &Parser{
 		ast: ast,
 		s: &mockScanner{
 			tokens: []Token{
@@ -193,7 +207,7 @@ func TestAddNode(t *testing.T) {
 		l: &mockLogger{},
 	}
 
-	parser.Expect(ExpectToken{
+	p.Expect(ExpectToken{
 		Branches: []BranchToken{
 			{Id: "a", Fn: func(p *Parser) {}},
 			{Id: "b", Fn: func(p *Parser) {}},
@@ -201,8 +215,8 @@ func TestAddNode(t *testing.T) {
 		Options: ParseOptions{Multiple: true},
 	})
 
-	parser.AddTokens()
-	parser.AddNode(NODE_ROOT)
+	p.AddTokens()
+	p.AddNode(NODE_ROOT)
 
 	if len(ast.curNode.Children) != 1 || ast.curNode.Type != NODE_ROOT {
 		t.Fatalf("Unexpected node in AST: got %v, want %v", ast.curNode.Type, NODE_ROOT)
@@ -220,4 +234,79 @@ func TestAddNode(t *testing.T) {
 		t.Fatalf("Unexpected token in node: got %v, want %v", ast.curNode.Tokens[1].ID, "b")
 	}
 
+}
+
+func TestParserInfiniteLoopDetection(t *testing.T) {
+
+	s := &mockScanner{
+		tokens: []Token{
+			{ID: "a", Literal: "a", Line: 1, Position: 1},
+			{ID: "b", Literal: "b", Line: 1, Position: 2},
+			{ID: "c", Literal: "c", Line: 1, Position: 3},
+		},
+	}
+	l := &mockLogger{}
+	ast := newAST()
+
+	var parseA, parseB func(*Parser)
+
+	parseA = func(p *Parser) {
+		p.Peek([]PeekToken{
+			{
+				IDs: []TokenType{"a", "b"},
+				Fn:  parseB,
+			},
+		})
+	}
+
+	parseB = func(p *Parser) {
+		p.Peek([]PeekToken{
+			{
+				IDs: []TokenType{"a", "b", "c"},
+				Fn:  parseA,
+			},
+		})
+	}
+
+	parseFunc := func(p *Parser) (AST, []Error) {
+		p.Call(parseA)
+		return p.ast, p.errors
+	}
+
+	p := &Parser{
+		fn:  parseFunc,
+		s:   s,
+		l:   l,
+		ast: ast,
+	}
+
+	// Run the parser with a timeout
+	done := make(chan bool)
+	var errors []Error
+
+	go func() {
+		_, errors = p.fn(p)
+		done <- true
+	}()
+
+	select {
+	case <-done:
+		// Check if the expected error was returned
+		infiniteLoopErrorFound := false
+		for _, err := range errors {
+			if err.Code == ErrorInfiniteLoopDetected { // Assume this error code exists
+				infiniteLoopErrorFound = true
+				break
+			}
+		}
+		if !infiniteLoopErrorFound {
+			t.Error("Parser terminated without detecting the infinite loop")
+		} else {
+			t.Log("Infinite loop correctly detected and reported")
+		}
+	case <-time.After(2 * time.Second):
+		t.Error("Test failed: parser entered an actual infinite loop")
+	}
+
+	// Additional checks can be performed here if needed
 }

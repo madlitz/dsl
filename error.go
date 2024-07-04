@@ -14,6 +14,7 @@ const (
 	ErrorRuneExpectedNotFound
 	ErrorNodeNotInNodeSet
 	ErrorNoTokensToGet
+	ErrorInfiniteLoopDetected
 )
 
 // Error contains the error text, the line and positions the error occurred on, and

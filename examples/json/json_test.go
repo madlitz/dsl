@@ -3,11 +3,11 @@ package json_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"github.com/madlitz/dsl"
 
@@ -40,77 +40,253 @@ func TestJSONParser(t *testing.T) {
 		}
 	}
 
-	expected := []dsl.Node{
-		{
-			Type: NODE_OBJECT,
-			Children: []dsl.Node{
-				{
-					Type:   NODE_MEMBER,
-					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key1", Line: 2, Position: 2}},
-					Children: []dsl.Node{
-						{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "value1", Line: 2, Position: 10}}},
+	astJSON, _ := json.Marshal(ast.RootNode)
+
+	expectedJSON := []byte(`{
+		"type": "ROOT",
+		"tokens": null,
+		"children": [
+			{
+				"type": "OBJECT",
+				"tokens": null,
+				"children": [
+					{
+						"type": "MEMBER",
+						"tokens": [
+							{
+								"ID": "STRING",
+								"Literal": "key1",
+								"Line": 2,
+								"Position": 2
+							}
+						],
+						"children": [
+							{
+								"type": "VALUE",
+								"tokens": [
+									{
+										"ID": "STRING",
+										"Literal": "value1",
+										"Line": 2,
+										"Position": 10
+									}
+								],
+								"children": null
+							}
+						]
 					},
-				},
-				{
-					Type:   NODE_MEMBER,
-					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key2", Line: 3, Position: 3}},
-					Children: []dsl.Node{
-						{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NUMBER, Literal: "42", Line: 3, Position: 10}}},
+					{
+						"type": "MEMBER",
+						"tokens": [
+							{
+								"ID": "STRING",
+								"Literal": "key2",
+								"Line": 3,
+								"Position": 3
+							}
+						],
+						"children": [
+							{
+								"type": "VALUE",
+								"tokens": [
+									{
+										"ID": "NUMBER",
+										"Literal": "42",
+										"Line": 3,
+										"Position": 10
+									}
+								],
+								"children": null
+							}
+						]
 					},
-				},
-				{
-					Type:   NODE_MEMBER,
-					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key3", Line: 4, Position: 2}},
-					Children: []dsl.Node{
-						{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_TRUE, Literal: "true", Line: 4, Position: 9}}},
+					{
+						"type": "MEMBER",
+						"tokens": [
+							{
+								"ID": "STRING",
+								"Literal": "key3",
+								"Line": 4,
+								"Position": 2
+							}
+						],
+						"children": [
+							{
+								"type": "VALUE",
+								"tokens": [
+									{
+										"ID": "TRUE",
+										"Literal": "true",
+										"Line": 4,
+										"Position": 9
+									}
+								],
+								"children": null
+							}
+						]
 					},
-				},
-				{
-					Type:   NODE_MEMBER,
-					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key4", Line: 5, Position: 3}},
-					Children: []dsl.Node{
-						{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NULL, Literal: "null", Line: 5, Position: 10}}},
+					{
+						"type": "MEMBER",
+						"tokens": [
+							{
+								"ID": "STRING",
+								"Literal": "key4",
+								"Line": 5,
+								"Position": 3
+							}
+						],
+						"children": [
+							{
+								"type": "VALUE",
+								"tokens": [
+									{
+										"ID": "NULL",
+										"Literal": "null",
+										"Line": 5,
+										"Position": 10
+									}
+								],
+								"children": null
+							}
+						]
 					},
-				},
-				{
-					Type:   NODE_MEMBER,
-					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key5", Line: 6, Position: 3}},
-					Children: []dsl.Node{
-						{
-							Type: NODE_OBJECT,
-							Children: []dsl.Node{
-								{
-									Type:   NODE_MEMBER,
-									Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "nestedKey", Line: 7, Position: 4}},
-									Children: []dsl.Node{
-										{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "nestedValue", Line: 7, Position: 17}}},
+					{
+						"type": "MEMBER",
+						"tokens": [
+							{
+								"ID": "STRING",
+								"Literal": "key5",
+								"Line": 6,
+								"Position": 3
+							}
+						],
+						"children": [
+							{
+								"type": "OBJECT",
+								"tokens": null,
+								"children": [
+									{
+										"type": "MEMBER",
+										"tokens": [
+											{
+												"ID": "STRING",
+												"Literal": "nestedKey",
+												"Line": 7,
+												"Position": 4
+											}
+										],
+										"children": [
+											{
+												"type": "VALUE",
+												"tokens": [
+													{
+														"ID": "STRING",
+														"Literal": "nestedValue",
+														"Line": 7,
+														"Position": 17
+													}
+												],
+												"children": null
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						"type": "MEMBER",
+						"tokens": [
+							{
+								"ID": "STRING",
+								"Literal": "key6",
+								"Line": 9,
+								"Position": 3
+							}
+						],
+						"children": [
+							{
+								"type": "ARRAY",
+								"tokens": null,
+								"children": [
+									{
+										"type": "VALUE",
+										"tokens": [
+											{
+												"ID": "NUMBER",
+												"Literal": "1",
+												"Line": 9,
+												"Position": 11
+											}
+										],
+										"children": null
 									},
-								},
-							},
-						},
-					},
-				},
-				{
-					Type:   NODE_MEMBER,
-					Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "key6", Line: 9, Position: 3}},
-					Children: []dsl.Node{
-						{
-							Type: NODE_ARRAY,
-							Children: []dsl.Node{
-								{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NUMBER, Literal: "1", Line: 9, Position: 11}}},
-								{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NUMBER, Literal: "2", Line: 9, Position: 14}}},
-								{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_NUMBER, Literal: "3", Line: 9, Position: 17}}},
-								{Type: NODE_VALUE, Tokens: []dsl.Token{{ID: TOKEN_STRING, Literal: "four", Line: 9, Position: 21}}},
-							},
-						},
-					},
-				},
-			},
-		},
+									{
+										"type": "VALUE",
+										"tokens": [
+											{
+												"ID": "NUMBER",
+												"Literal": "2",
+												"Line": 9,
+												"Position": 14
+											}
+										],
+										"children": null
+									},
+									{
+										"type": "VALUE",
+										"tokens": [
+											{
+												"ID": "NUMBER",
+												"Literal": "3",
+												"Line": 9,
+												"Position": 17
+											}
+										],
+										"children": null
+									},
+									{
+										"type": "VALUE",
+										"tokens": [
+											{
+												"ID": "STRING",
+												"Literal": "four",
+												"Line": 9,
+												"Position": 21
+											}
+										],
+										"children": null
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+	  	]
+	}`)
+
+	expectJSON(t, expectedJSON, astJSON)
+
+}
+
+// expectJSON returns an assertion function that compares the expected and
+// actual JSON payloads.
+func expectJSON(t *testing.T, expected []byte, actual []byte) {
+
+	t.Helper()
+
+	var a, e map[string]any
+	if err := json.Unmarshal(expected, &e); err != nil {
+		t.Fatalf("error unmarshaling expected json payload: %v", err)
 	}
 
-	if diff := cmp.Diff(expected, ast.RootNode.Children, cmpopts.IgnoreFields(dsl.Node{}, "Parent")); diff != "" {
-		t.Errorf("AST mismatch (-got +want):\n%s", diff)
+	if err := json.Unmarshal(actual, &a); err != nil {
+		t.Fatalf("error unmarshaling actual json payload: %v", err)
+	}
+
+	if diff := cmp.Diff(e, a); diff != "" {
+		t.Errorf(diff)
 	}
 
 }

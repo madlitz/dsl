@@ -16,7 +16,6 @@ const (
 	TOKEN_VARIABLE    dsl.TokenType = "VARIABLE"
 	TOKEN_COMMENT     dsl.TokenType = "COMMENT"
 	TOKEN_NL          dsl.TokenType = "NL"
-	TOKEN_WS          dsl.TokenType = "WS"
 	TOKEN_EOF         dsl.TokenType = "EOF"
 )
 
@@ -29,17 +28,18 @@ func Scan(s *dsl.Scanner) dsl.Token {
 			},
 			Options: dsl.ScanOptions{Multiple: true, Invert: true, Optional: true},
 		})
+		s.Expect(dsl.ExpectRune{
+			Branches: []dsl.Branch{
+				{Rn: '\n', Fn: nil},
+			},
+			Options: dsl.ScanOptions{Optional: true},
+		})
+
 		s.Match([]dsl.Match{{Literal: "", ID: dsl.TOKEN_UNKNOWN}})
 		return s.Exit()
 	}
 
-	s.Expect(dsl.ExpectRune{
-		Branches: []dsl.Branch{
-			{Rn: ' ', Fn: whitespace},
-			{Rn: '\t', Fn: whitespace},
-		},
-		Options: dsl.ScanOptions{Optional: true},
-	})
+	s.Call(skipWhitespace)
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{Rn: '-', Fn: nil},
@@ -69,13 +69,6 @@ func Scan(s *dsl.Scanner) dsl.Token {
 		{Literal: ")", ID: TOKEN_CLOSE_PAREN},
 		{Literal: "\n", ID: TOKEN_NL},
 	})
-	s.Expect(dsl.ExpectRune{
-		Branches: []dsl.Branch{
-			{Rn: ' ', Fn: nil},
-			{Rn: '\t', Fn: nil},
-		},
-		Options: dsl.ScanOptions{Multiple: true, Optional: true},
-	})
 	return s.Exit()
 }
 
@@ -83,15 +76,14 @@ func eof(s *dsl.Scanner) {
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_EOF}})
 }
 
-func whitespace(s *dsl.Scanner) {
+func skipWhitespace(s *dsl.Scanner) {
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{Rn: ' ', Fn: nil},
 			{Rn: '\t', Fn: nil},
 		},
-		Options: dsl.ScanOptions{Optional: true, Multiple: true},
+		Options: dsl.ScanOptions{Optional: true, Multiple: true, Skip: true},
 	})
-	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_WS}})
 }
 
 func variable(s *dsl.Scanner) {

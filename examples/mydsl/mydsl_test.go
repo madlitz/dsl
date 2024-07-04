@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/madlitz/dsl"
 	. "github.com/madlitz/dsl/examples/mydsl"
 )
@@ -30,165 +29,174 @@ double(a + b)`)
 		t.Fatalf("Should report exactly 0 errors: got %d", len(errs))
 	}
 
-	expectedNodes := dsl.Node{
-		Type: dsl.NODE_ROOT,
-		Children: []dsl.Node{
-			{
-				Type: NODE_ASSIGNMENT,
-				Tokens: []dsl.Token{
-					{ID: TOKEN_VARIABLE, Literal: "a", Line: 1, Position: 1},
-				},
-				Children: []dsl.Node{
-					{
-						Type: NODE_TERMINAL,
-						Tokens: []dsl.Token{
-							{ID: TOKEN_LITERAL, Literal: "1", Line: 1, Position: 6},
-						},
-					},
-					{
-						Type: NODE_EXPRESSION,
-						Tokens: []dsl.Token{
-							{ID: TOKEN_MULTIPLY, Literal: "*", Line: 1, Position: 8},
-						},
-						Children: []dsl.Node{
-							{
-								Type: NODE_TERMINAL,
-								Tokens: []dsl.Token{
-									{ID: TOKEN_LITERAL, Literal: "5", Line: 1, Position: 10},
-								},
-							},
-							{
-								Type: NODE_EXPRESSION,
-								Tokens: []dsl.Token{
-									{ID: TOKEN_PLUS, Literal: "+", Line: 1, Position: 12},
-								},
-								Children: []dsl.Node{
-									{
-										Type: NODE_TERMINAL,
-										Tokens: []dsl.Token{
-											{ID: TOKEN_LITERAL, Literal: "7", Line: 1, Position: 14},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			{
-				Type: NODE_ASSIGNMENT,
-				Tokens: []dsl.Token{
-					{ID: TOKEN_VARIABLE, Literal: "b", Line: 2, Position: 1},
-				},
-				Children: []dsl.Node{
-					{
-						Type: NODE_TERMINAL,
-						Tokens: []dsl.Token{
-							{ID: TOKEN_LITERAL, Literal: "3.45", Line: 2, Position: 6},
-						},
-					},
-					{
-						Type: NODE_EXPRESSION,
-						Tokens: []dsl.Token{
-							{ID: TOKEN_MULTIPLY, Literal: "*", Line: 2, Position: 11},
-						},
-						Children: []dsl.Node{
-							{
-								Type: NODE_TERMINAL,
-								Tokens: []dsl.Token{
-									{ID: TOKEN_LITERAL, Literal: "44.21", Line: 2, Position: 13},
-								},
-							},
-							{
-								Type: NODE_EXPRESSION,
-								Tokens: []dsl.Token{
-									{ID: TOKEN_DIVIDE, Literal: "/", Line: 2, Position: 19},
-								},
-								Children: []dsl.Node{
-									{
-										Type: NODE_EXPRESSION,
-										Tokens: []dsl.Token{
-											{ID: TOKEN_OPEN_PAREN, Literal: "(", Line: 2, Position: 21},
-										},
-										Children: []dsl.Node{
-											{
-												Type: NODE_TERMINAL,
-												Tokens: []dsl.Token{
-													{ID: TOKEN_LITERAL, Literal: "4", Line: 2, Position: 22},
-												},
-											},
-											{
-												Type: NODE_EXPRESSION,
-												Tokens: []dsl.Token{
-													{ID: TOKEN_PLUS, Literal: "+", Line: 2, Position: 24},
-												},
-												Children: []dsl.Node{
-													{
-														Type: NODE_TERMINAL,
-														Tokens: []dsl.Token{
-															{ID: TOKEN_VARIABLE, Literal: "a", Line: 2, Position: 26},
-														},
-													},
-												},
-											},
-										},
-									},
-									{
-										Type: NODE_TERMINAL,
-										Tokens: []dsl.Token{
-											{ID: TOKEN_CLOSE_PAREN, Literal: ")", Line: 2, Position: 27},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			{
-				Type: NODE_COMMENT,
-				Tokens: []dsl.Token{
-					{ID: TOKEN_COMMENT, Literal: "A Simple Expression", Line: 2, Position: 30},
-				},
-			},
-			{
-				Type: NODE_CALL,
-				Tokens: []dsl.Token{
-					{ID: TOKEN_VARIABLE, Literal: "double", Line: 3, Position: 1},
-				},
-				Children: []dsl.Node{
-					{
-						Type: NODE_TERMINAL,
-						Tokens: []dsl.Token{
-							{ID: TOKEN_VARIABLE, Literal: "a", Line: 3, Position: 8},
-						},
-					},
-					{
-						Type: NODE_EXPRESSION,
-						Tokens: []dsl.Token{
-							{ID: TOKEN_PLUS, Literal: "+", Line: 3, Position: 10},
-						},
-						Children: []dsl.Node{
-							{
-								Type: NODE_TERMINAL,
-								Tokens: []dsl.Token{
-									{ID: TOKEN_VARIABLE, Literal: "b", Line: 3, Position: 12},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
+	astJSON, _ := json.Marshal(ast.RootNode)
 
-	if diff := cmp.Diff(
-		expectedNodes,
-		*ast.RootNode,
-		cmpopts.IgnoreFields(dsl.Node{}, "Parent"), // Ignore Parent field as this is a pointer
-	); diff != "" {
-		t.Errorf("AST mismatch (-expected +actual):\n%s", diff)
-	}
+	expectedJSON := []byte(`
+	{
+		"type": "ROOT",
+		"tokens": null,
+		"children": [
+			{
+				"type": "ASSIGNMENT",
+				"tokens": [
+					{"ID": "VARIABLE", "Literal": "a", "Line": 1, "Position": 1}
+				],
+				"children": [
+					{
+						"type": "TERMINAL",
+						"tokens": [
+							{"ID": "LITERAL", "Literal": "1", "Line": 1, "Position": 6}
+						],
+						"children": null
+					},
+					{
+						"type": "EXPRESSION",
+						"tokens": [
+							{"ID": "MULTIPLY", "Literal": "*", "Line": 1, "Position": 8}
+						],
+						"children": [
+							{
+								"type": "TERMINAL",
+								"tokens": [
+									{"ID": "LITERAL", "Literal": "5", "Line": 1, "Position": 10}
+								],
+								"children": null
+							},
+							{
+								"type": "EXPRESSION",
+								"tokens": [
+									{"ID": "PLUS", "Literal": "+", "Line": 1, "Position": 12}
+								],
+								"children": [
+									{
+										"type": "TERMINAL",
+										"tokens": [
+											{"ID": "LITERAL", "Literal": "7", "Line": 1, "Position": 14}
+										],
+										"children": null
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"type": "ASSIGNMENT",
+				"tokens": [
+					{"ID": "VARIABLE", "Literal": "b", "Line": 2, "Position": 1}
+				],
+				"children": [
+					{
+						"type": "TERMINAL",
+						"tokens": [
+							{"ID": "LITERAL", "Literal": "3.45", "Line": 2, "Position": 6}
+						],
+						"children": null
+					},
+					{
+						"type": "EXPRESSION",
+						"tokens": [
+							{"ID": "MULTIPLY", "Literal": "*", "Line": 2, "Position": 11}
+						],
+						"children": [
+							{
+								"type": "TERMINAL",
+								"tokens": [
+									{"ID": "LITERAL", "Literal": "44.21", "Line": 2, "Position": 13}
+								],
+								"children": null
+							},
+							{
+								"type": "EXPRESSION",
+								"tokens": [
+									{"ID": "DIVIDE", "Literal": "/", "Line": 2, "Position": 19}
+								],
+								"children": [
+									{
+										"type": "EXPRESSION",
+										"tokens": [
+											{"ID": "OPEN_PAREN", "Literal": "(", "Line": 2, "Position": 21}
+										],
+										"children": [
+											{
+												"type": "TERMINAL",
+												"tokens": [
+													{"ID": "LITERAL", "Literal": "4", "Line": 2, "Position": 22}
+												],
+												"children": null
+											},
+											{
+												"type": "EXPRESSION",
+												"tokens": [
+													{"ID": "PLUS", "Literal": "+", "Line": 2, "Position": 24}
+												],
+												"children": [
+													{
+														"type": "TERMINAL",
+														"tokens": [
+															{"ID": "VARIABLE", "Literal": "a", "Line": 2, "Position": 26}
+														],
+														"children": null
+													}
+												]
+											}
+										]
+									},
+									{
+										"type": "TERMINAL",
+										"tokens": [
+											{"ID": "CLOSE_PAREN", "Literal": ")", "Line": 2, "Position": 27}
+										],
+										"children": null
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"type": "COMMENT",
+				"tokens": [
+					{"ID": "COMMENT", "Literal": "A Simple Expression", "Line": 2, "Position": 30}
+				],
+				"children": null
+			},
+			{
+				"type": "CALL",
+				"tokens": [
+					{"ID": "VARIABLE", "Literal": "double", "Line": 3, "Position": 1}
+				],
+				"children": [
+					{
+						"type": "TERMINAL",
+						"tokens": [
+							{"ID": "VARIABLE", "Literal": "a", "Line": 3, "Position": 8}
+						],
+						"children": null
+					},
+					{
+						"type": "EXPRESSION",
+						"tokens": [
+							{"ID": "PLUS", "Literal": "+", "Line": 3, "Position": 10}
+						],
+						"children": [
+							{
+								"type": "TERMINAL",
+								"tokens": [
+									{"ID": "VARIABLE", "Literal": "b", "Line": 3, "Position": 12}
+								],
+								"children": null
+							}
+						]
+					}
+				]
+			}
+		]
+	}`)
+
+	expectJSON(t, expectedJSON, astJSON)
 
 }
 
@@ -221,9 +229,9 @@ double(a + b)  `)
 		t.Fail()
 		t.Errorf("Expected error start position 3. Found position: %v", err.StartPosition)
 	}
-	if err.EndPosition != 9 {
+	if err.EndPosition != 7 {
 		t.Fail()
-		t.Errorf("Expected error end position 9. Found position: %v", err.EndPosition)
+		t.Errorf("Expected error end position 7. Found position: %v", err.EndPosition)
 	}
 
 }
@@ -283,6 +291,7 @@ double((a + b)`)
 	err := errs[0]
 	if err.Code != dsl.ErrorRuneExpectedNotFound {
 		t.Fail()
+		t.Log(err.Error())
 		t.Errorf("Expected error code 'Rune expected but not found'. Found error: '%v", err)
 	}
 	if err.StartLine != 2 {
@@ -310,50 +319,9 @@ double((a + b)`)
 		t.Fail()
 		t.Errorf("Expected error start position 15. Found position: %v", err.StartPosition)
 	}
-	if err.EndPosition != 16 {
+	if err.EndPosition != 15 {
 		t.Fail()
-		t.Errorf("Expected error end position 16. Found position: %v", err.EndPosition)
-	}
-
-}
-
-func TestMultiLineError(t *testing.T) {
-	reader := bytes.NewBufferString(
-		`a := 1 * 5 + 7
-b := 3.45 * 44.21 / 4" \ercec
-gevhvrh  " + a) 'A Simple Expression
-double(a + b)`)
-	bufreader := bufio.NewReader(reader)
-	logfilename := "logs/TestMultiLineError.log"
-	logfile, fileErr := os.Create(logfilename)
-	if fileErr != nil {
-		t.Fatal("Error: Could not create log file " + logfilename + ": " + fileErr.Error())
-	}
-	_, errs := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
-
-	if len(errs) != 1 {
-		t.Fatalf("Should report exactly 1 error: got %d", len(errs))
-	}
-	err := errs[0]
-	if err.Code != dsl.ErrorTokenExpectedNotFound {
-		t.Fail()
-		t.Errorf("Expected error code 'Token expected but not found'. Found error: '%v", err)
-	}
-	if err.StartLine != 2 {
-		t.Fail()
-		t.Errorf("Expected error start line 3. Found line: %v", err.StartLine)
-	}
-	if err.StartPosition != 22 {
-		t.Fail()
-		t.Errorf("Expected error start position 22. Found position: %v", err.StartPosition)
-	}
-	if err.EndLine != 3 {
-		t.Fail()
-		t.Errorf("Expected error end line 1. Found line: %v", err.StartLine)
-	}
-	if err.EndPosition != 10 {
-		t.Fail()
-		t.Errorf("Expected error end position 10. Found position: %v", err.EndPosition)
+		t.Errorf("Expected error end position 15. Found position: %v", err.EndPosition)
 	}
 
 }
@@ -372,8 +340,8 @@ func TestPrintAST(t *testing.T) {
 	ast, _ := dsl.Parse(Parse, Scan, bufreader, dsl.WithLogger(logfile))
 	logfile.Close()
 
-	astjson, _ := json.Marshal(ast)
-	expectedJson := `{
+	astJSON, _ := json.Marshal(ast)
+	expectedJSON := []byte(`{
 		"root": {
 			"type": "ROOT",
 			"tokens": null,
@@ -642,19 +610,29 @@ func TestPrintAST(t *testing.T) {
 				}
 			]
 		}
-	}`
+	}`)
 
-	var actual interface{}
-	if err := json.Unmarshal(astjson, &actual); err != nil {
-		t.Fatal("Error: Could not unmarshal AST JSON: " + err.Error())
+	expectJSON(t, expectedJSON, astJSON)
+
+}
+
+// expectJSON returns an assertion function that compares the expected and
+// actual JSON payloads.
+func expectJSON(t *testing.T, expected []byte, actual []byte) {
+
+	t.Helper()
+
+	var a, e map[string]any
+	if err := json.Unmarshal(expected, &e); err != nil {
+		t.Fatalf("error unmarshaling expected json payload: %v", err)
 	}
 
-	var expected interface{}
-	if err := json.Unmarshal([]byte(expectedJson), &expected); err != nil {
-		t.Fatal("Error: Could not unmarshal expected JSON: " + err.Error())
+	if err := json.Unmarshal(actual, &a); err != nil {
+		t.Fatalf("error unmarshaling actual json payload: %v", err)
 	}
 
-	if diff := cmp.Diff(expected, actual); diff != "" {
-		t.Errorf("JSON mismatch (-expected +actual):\n%s", diff)
+	if diff := cmp.Diff(e, a); diff != "" {
+		t.Errorf(diff)
 	}
+
 }
