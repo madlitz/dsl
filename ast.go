@@ -20,14 +20,19 @@ type AST struct {
 	curNode  *Node `json:"-"`
 }
 
+type ASTToken struct {
+	ID      TokenType `json:"ID"`
+	Literal string    `json:"Literal"`
+}
+
 // A Node can contain multiple Tokens which can be useful if the user knows how
 // many Tokens belong to a particular Node type. Otherwise, the user should only
 // add one token per node.
 type Node struct {
-	Type     NodeType `json:"type"`
-	Tokens   []Token  `json:"tokens"`
-	Parent   *Node    `json:"-"`
-	Children []Node   `json:"children"`
+	Type     NodeType   `json:"type"`
+	Tokens   []ASTToken `json:"tokens"`
+	Parent   *Node      `json:"-"`
+	Children []Node     `json:"children"`
 }
 
 type NodeType string
@@ -125,10 +130,11 @@ func (a *AST) addNode(nt NodeType) {
 // If Parser.AddToken() is called without any tokens available on the Parser.toks buffer
 // the call to AddToken will be logged but no tokens will be added to the node.
 func (a *AST) addToken(toks []Token) {
-	if toks != nil {
-		tokens := append(a.curNode.Tokens, toks...)
-		a.curNode.Tokens = tokens
+
+	for _, tok := range toks {
+		a.curNode.Tokens = append(a.curNode.Tokens, ASTToken{ID: tok.ID, Literal: tok.Literal})
 	}
+
 }
 
 // Called by Parser.WalkUp() in the user parse function. Moves the AST

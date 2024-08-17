@@ -39,39 +39,39 @@ double(a + b)`)
 			{
 				"type": "ASSIGNMENT",
 				"tokens": [
-					{"ID": "VARIABLE", "Literal": "a", "Line": 1, "Position": 1}
+					{"ID": "VARIABLE", "Literal": "a"}
 				],
 				"children": [
 					{
 						"type": "TERMINAL",
 						"tokens": [
-							{"ID": "LITERAL", "Literal": "1", "Line": 1, "Position": 6}
+							{"ID": "LITERAL", "Literal": "1"}
 						],
 						"children": null
 					},
 					{
 						"type": "EXPRESSION",
 						"tokens": [
-							{"ID": "MULTIPLY", "Literal": "*", "Line": 1, "Position": 8}
+							{"ID": "MULTIPLY", "Literal": "*"}
 						],
 						"children": [
 							{
 								"type": "TERMINAL",
 								"tokens": [
-									{"ID": "LITERAL", "Literal": "5", "Line": 1, "Position": 10}
+									{"ID": "LITERAL", "Literal": "5"}
 								],
 								"children": null
 							},
 							{
 								"type": "EXPRESSION",
 								"tokens": [
-									{"ID": "PLUS", "Literal": "+", "Line": 1, "Position": 12}
+									{"ID": "PLUS", "Literal": "+"}
 								],
 								"children": [
 									{
 										"type": "TERMINAL",
 										"tokens": [
-											{"ID": "LITERAL", "Literal": "7", "Line": 1, "Position": 14}
+											{"ID": "LITERAL", "Literal": "7"}
 										],
 										"children": null
 									}
@@ -84,58 +84,58 @@ double(a + b)`)
 			{
 				"type": "ASSIGNMENT",
 				"tokens": [
-					{"ID": "VARIABLE", "Literal": "b", "Line": 2, "Position": 1}
+					{"ID": "VARIABLE", "Literal": "b"}
 				],
 				"children": [
 					{
 						"type": "TERMINAL",
 						"tokens": [
-							{"ID": "LITERAL", "Literal": "3.45", "Line": 2, "Position": 6}
+							{"ID": "LITERAL", "Literal": "3.45"}
 						],
 						"children": null
 					},
 					{
 						"type": "EXPRESSION",
 						"tokens": [
-							{"ID": "MULTIPLY", "Literal": "*", "Line": 2, "Position": 11}
+							{"ID": "MULTIPLY", "Literal": "*"}
 						],
 						"children": [
 							{
 								"type": "TERMINAL",
 								"tokens": [
-									{"ID": "LITERAL", "Literal": "44.21", "Line": 2, "Position": 13}
+									{"ID": "LITERAL", "Literal": "44.21"}
 								],
 								"children": null
 							},
 							{
 								"type": "EXPRESSION",
 								"tokens": [
-									{"ID": "DIVIDE", "Literal": "/", "Line": 2, "Position": 19}
+									{"ID": "DIVIDE", "Literal": "/"}
 								],
 								"children": [
 									{
 										"type": "EXPRESSION",
 										"tokens": [
-											{"ID": "OPEN_PAREN", "Literal": "(", "Line": 2, "Position": 21}
+											{"ID": "OPEN_PAREN", "Literal": "("}
 										],
 										"children": [
 											{
 												"type": "TERMINAL",
 												"tokens": [
-													{"ID": "LITERAL", "Literal": "4", "Line": 2, "Position": 22}
+													{"ID": "LITERAL", "Literal": "4"}
 												],
 												"children": null
 											},
 											{
 												"type": "EXPRESSION",
 												"tokens": [
-													{"ID": "PLUS", "Literal": "+", "Line": 2, "Position": 24}
+													{"ID": "PLUS", "Literal": "+"}
 												],
 												"children": [
 													{
 														"type": "TERMINAL",
 														"tokens": [
-															{"ID": "VARIABLE", "Literal": "a", "Line": 2, "Position": 26}
+															{"ID": "VARIABLE", "Literal": "a"}
 														],
 														"children": null
 													}
@@ -146,7 +146,7 @@ double(a + b)`)
 									{
 										"type": "TERMINAL",
 										"tokens": [
-											{"ID": "CLOSE_PAREN", "Literal": ")", "Line": 2, "Position": 27}
+											{"ID": "CLOSE_PAREN", "Literal": ")"}
 										],
 										"children": null
 									}
@@ -159,33 +159,33 @@ double(a + b)`)
 			{
 				"type": "COMMENT",
 				"tokens": [
-					{"ID": "COMMENT", "Literal": "A Simple Expression", "Line": 2, "Position": 30}
+					{"ID": "COMMENT", "Literal": "A Simple Expression"}
 				],
 				"children": null
 			},
 			{
 				"type": "CALL",
 				"tokens": [
-					{"ID": "VARIABLE", "Literal": "double", "Line": 3, "Position": 1}
+					{"ID": "VARIABLE", "Literal": "double"}
 				],
 				"children": [
 					{
 						"type": "TERMINAL",
 						"tokens": [
-							{"ID": "VARIABLE", "Literal": "a", "Line": 3, "Position": 8}
+							{"ID": "VARIABLE", "Literal": "a"}
 						],
 						"children": null
 					},
 					{
 						"type": "EXPRESSION",
 						"tokens": [
-							{"ID": "PLUS", "Literal": "+", "Line": 3, "Position": 10}
+							{"ID": "PLUS", "Literal": "+"}
 						],
 						"children": [
 							{
 								"type": "TERMINAL",
 								"tokens": [
-									{"ID": "VARIABLE", "Literal": "b", "Line": 3, "Position": 12}
+									{"ID": "VARIABLE", "Literal": "b"}
 								],
 								"children": null
 							}
@@ -351,9 +351,7 @@ func TestPrintAST(t *testing.T) {
 					"tokens": [
 						{
 							"ID": "VARIABLE",
-							"Literal": "a",
-							"Line": 1,
-							"Position": 1
+							"Literal": "a"
 						}
 					],
 					"children": [
@@ -362,9 +360,7 @@ func TestPrintAST(t *testing.T) {
 							"tokens": [
 								{
 									"ID": "LITERAL",
-									"Literal": "1",
-									"Line": 1,
-									"Position": 6
+									"Literal": "1"
 								}
 							],
 							"children": null
@@ -374,9 +370,7 @@ func TestPrintAST(t *testing.T) {
 							"tokens": [
 								{
 									"ID": "MULTIPLY",
-									"Literal": "*",
-									"Line": 1,
-									"Position": 8
+									"Literal": "*"
 								}
 							],
 							"children": [
@@ -385,9 +379,7 @@ func TestPrintAST(t *testing.T) {
 									"tokens": [
 										{
 											"ID": "LITERAL",
-											"Literal": "5",
-											"Line": 1,
-											"Position": 10
+											"Literal": "5"
 										}
 									],
 									"children": null
@@ -397,9 +389,7 @@ func TestPrintAST(t *testing.T) {
 									"tokens": [
 										{
 											"ID": "PLUS",
-											"Literal": "+",
-											"Line": 1,
-											"Position": 12
+											"Literal": "+"
 										}
 									],
 									"children": [
@@ -408,9 +398,7 @@ func TestPrintAST(t *testing.T) {
 											"tokens": [
 												{
 													"ID": "LITERAL",
-													"Literal": "7",
-													"Line": 1,
-													"Position": 14
+													"Literal": "7"
 												}
 											],
 											"children": null
@@ -426,9 +414,7 @@ func TestPrintAST(t *testing.T) {
 					"tokens": [
 						{
 							"ID": "VARIABLE",
-							"Literal": "b",
-							"Line": 2,
-							"Position": 3
+							"Literal": "b"
 						}
 					],
 					"children": [
@@ -437,9 +423,7 @@ func TestPrintAST(t *testing.T) {
 							"tokens": [
 								{
 									"ID": "LITERAL",
-									"Literal": "3.45",
-									"Line": 2,
-									"Position": 8
+									"Literal": "3.45"
 								}
 							],
 							"children": null
@@ -449,9 +433,7 @@ func TestPrintAST(t *testing.T) {
 							"tokens": [
 								{
 									"ID": "MULTIPLY",
-									"Literal": "*",
-									"Line": 2,
-									"Position": 13
+									"Literal": "*"
 								}
 							],
 							"children": [
@@ -460,9 +442,7 @@ func TestPrintAST(t *testing.T) {
 									"tokens": [
 										{
 											"ID": "LITERAL",
-											"Literal": "44.21",
-											"Line": 2,
-											"Position": 15
+											"Literal": "44.21"
 										}
 									],
 									"children": null
@@ -472,9 +452,7 @@ func TestPrintAST(t *testing.T) {
 									"tokens": [
 										{
 											"ID": "DIVIDE",
-											"Literal": "/",
-											"Line": 2,
-											"Position": 21
+											"Literal": "/"
 										}
 									],
 									"children": [
@@ -483,9 +461,7 @@ func TestPrintAST(t *testing.T) {
 											"tokens": [
 												{
 													"ID": "OPEN_PAREN",
-													"Literal": "(",
-													"Line": 2,
-													"Position": 23
+													"Literal": "("
 												}
 											],
 											"children": [
@@ -494,9 +470,7 @@ func TestPrintAST(t *testing.T) {
 													"tokens": [
 														{
 															"ID": "LITERAL",
-															"Literal": "4",
-															"Line": 2,
-															"Position": 24
+															"Literal": "4"
 														}
 													],
 													"children": null
@@ -506,9 +480,7 @@ func TestPrintAST(t *testing.T) {
 													"tokens": [
 														{
 															"ID": "PLUS",
-															"Literal": "+",
-															"Line": 2,
-															"Position": 26
+															"Literal": "+"
 														}
 													],
 													"children": [
@@ -517,9 +489,7 @@ func TestPrintAST(t *testing.T) {
 															"tokens": [
 																{
 																	"ID": "VARIABLE",
-																	"Literal": "a",
-																	"Line": 2,
-																	"Position": 28
+																	"Literal": "a"
 																}
 															],
 															"children": null
@@ -533,9 +503,7 @@ func TestPrintAST(t *testing.T) {
 											"tokens": [
 												{
 													"ID": "CLOSE_PAREN",
-													"Literal": ")",
-													"Line": 2,
-													"Position": 29
+													"Literal": ")"
 												}
 											],
 											"children": null
@@ -551,9 +519,7 @@ func TestPrintAST(t *testing.T) {
 					"tokens": [
 						{
 							"ID": "COMMENT",
-							"Literal": "A Simple Expression",
-							"Line": 2,
-							"Position": 32
+							"Literal": "A Simple Expression"
 						}
 					],
 					"children": null
@@ -563,9 +529,7 @@ func TestPrintAST(t *testing.T) {
 					"tokens": [
 						{
 							"ID": "VARIABLE",
-							"Literal": "double",
-							"Line": 3,
-							"Position": 3
+							"Literal": "double"
 						}
 					],
 					"children": [
@@ -574,9 +538,7 @@ func TestPrintAST(t *testing.T) {
 							"tokens": [
 								{
 									"ID": "VARIABLE",
-									"Literal": "a",
-									"Line": 3,
-									"Position": 10
+									"Literal": "a"
 								}
 							],
 							"children": null
@@ -586,9 +548,7 @@ func TestPrintAST(t *testing.T) {
 							"tokens": [
 								{
 									"ID": "PLUS",
-									"Literal": "+",
-									"Line": 3,
-									"Position": 12
+									"Literal": "+"
 								}
 							],
 							"children": [
@@ -597,9 +557,7 @@ func TestPrintAST(t *testing.T) {
 									"tokens": [
 										{
 											"ID": "VARIABLE",
-											"Literal": "b",
-											"Line": 3,
-											"Position": 14
+											"Literal": "b"
 										}
 									],
 									"children": null

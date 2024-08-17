@@ -55,9 +55,7 @@ func TestJSONParser(t *testing.T) {
 						"tokens": [
 							{
 								"ID": "STRING",
-								"Literal": "key1",
-								"Line": 2,
-								"Position": 2
+								"Literal": "key1"
 							}
 						],
 						"children": [
@@ -66,9 +64,7 @@ func TestJSONParser(t *testing.T) {
 								"tokens": [
 									{
 										"ID": "STRING",
-										"Literal": "value1",
-										"Line": 2,
-										"Position": 10
+										"Literal": "value1"
 									}
 								],
 								"children": null
@@ -80,9 +76,7 @@ func TestJSONParser(t *testing.T) {
 						"tokens": [
 							{
 								"ID": "STRING",
-								"Literal": "key2",
-								"Line": 3,
-								"Position": 3
+								"Literal": "key2"
 							}
 						],
 						"children": [
@@ -91,9 +85,7 @@ func TestJSONParser(t *testing.T) {
 								"tokens": [
 									{
 										"ID": "NUMBER",
-										"Literal": "42",
-										"Line": 3,
-										"Position": 10
+										"Literal": "42"
 									}
 								],
 								"children": null
@@ -105,9 +97,7 @@ func TestJSONParser(t *testing.T) {
 						"tokens": [
 							{
 								"ID": "STRING",
-								"Literal": "key3",
-								"Line": 4,
-								"Position": 2
+								"Literal": "key3"
 							}
 						],
 						"children": [
@@ -116,9 +106,7 @@ func TestJSONParser(t *testing.T) {
 								"tokens": [
 									{
 										"ID": "TRUE",
-										"Literal": "true",
-										"Line": 4,
-										"Position": 9
+										"Literal": "true"
 									}
 								],
 								"children": null
@@ -130,9 +118,7 @@ func TestJSONParser(t *testing.T) {
 						"tokens": [
 							{
 								"ID": "STRING",
-								"Literal": "key4",
-								"Line": 5,
-								"Position": 3
+								"Literal": "key4"
 							}
 						],
 						"children": [
@@ -141,9 +127,7 @@ func TestJSONParser(t *testing.T) {
 								"tokens": [
 									{
 										"ID": "NULL",
-										"Literal": "null",
-										"Line": 5,
-										"Position": 10
+										"Literal": "null"
 									}
 								],
 								"children": null
@@ -155,9 +139,7 @@ func TestJSONParser(t *testing.T) {
 						"tokens": [
 							{
 								"ID": "STRING",
-								"Literal": "key5",
-								"Line": 6,
-								"Position": 3
+								"Literal": "key5"
 							}
 						],
 						"children": [
@@ -170,9 +152,7 @@ func TestJSONParser(t *testing.T) {
 										"tokens": [
 											{
 												"ID": "STRING",
-												"Literal": "nestedKey",
-												"Line": 7,
-												"Position": 4
+												"Literal": "nestedKey"
 											}
 										],
 										"children": [
@@ -181,9 +161,7 @@ func TestJSONParser(t *testing.T) {
 												"tokens": [
 													{
 														"ID": "STRING",
-														"Literal": "nestedValue",
-														"Line": 7,
-														"Position": 17
+														"Literal": "nestedValue"
 													}
 												],
 												"children": null
@@ -199,9 +177,7 @@ func TestJSONParser(t *testing.T) {
 						"tokens": [
 							{
 								"ID": "STRING",
-								"Literal": "key6",
-								"Line": 9,
-								"Position": 3
+								"Literal": "key6"
 							}
 						],
 						"children": [
@@ -214,9 +190,7 @@ func TestJSONParser(t *testing.T) {
 										"tokens": [
 											{
 												"ID": "NUMBER",
-												"Literal": "1",
-												"Line": 9,
-												"Position": 11
+												"Literal": "1"
 											}
 										],
 										"children": null
@@ -226,9 +200,7 @@ func TestJSONParser(t *testing.T) {
 										"tokens": [
 											{
 												"ID": "NUMBER",
-												"Literal": "2",
-												"Line": 9,
-												"Position": 14
+												"Literal": "2"
 											}
 										],
 										"children": null
@@ -238,9 +210,7 @@ func TestJSONParser(t *testing.T) {
 										"tokens": [
 											{
 												"ID": "NUMBER",
-												"Literal": "3",
-												"Line": 9,
-												"Position": 17
+												"Literal": "3"
 											}
 										],
 										"children": null
@@ -250,9 +220,7 @@ func TestJSONParser(t *testing.T) {
 										"tokens": [
 											{
 												"ID": "STRING",
-												"Literal": "four",
-												"Line": 9,
-												"Position": 21
+												"Literal": "four"
 											}
 										],
 										"children": null
