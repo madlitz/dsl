@@ -168,6 +168,13 @@ func (s *Scanner) Expect(expect ExpectRune) {
 
 }
 
+// Peek is used to check if the next rune matches the expected rune without consuming it
+// This is useful for lookahead and lookbehind in the parser
+func (s *Scanner) Peek(expect ExpectRune) {
+	s.Expect(expect)
+	s.unread()
+}
+
 func (s *Scanner) Call(fn func(*Scanner)) {
 	s.log("Calling: "+getFuncName(fn), prefixIncrement)
 	fn(s)
@@ -176,7 +183,7 @@ func (s *Scanner) Call(fn func(*Scanner)) {
 
 // Match is required to be called by the user scan function before it
 // returns to the user parse function, otherwise it will return the
-// token NOT_MATCHED. Match will match every rune currently accepted by
+// token UNKNOWN. Match will match every rune currently accepted by
 // Expect() and not skipped (s.scanStr), against the input string.
 //
 // Once matched a Token is generated from the input ID, s.scanStr and
