@@ -3,7 +3,7 @@ Parsing: github.com/madlitz/dsl/examples/mydsl.Parse
 Expect Token (Multiple ): [VARIABLE EOF] 
 	Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
 		Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
-		Expect (Optional Multiple ) Rune: [WS TAB] Range: [] 
+		Expect (Optional Multiple Skip ) Rune: [WS TAB] Range: [] 
 		Returning: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
 	Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] 
 ***found [_], expected any of [- + * / ( ) NL : ' " EOF 0-9 A-Z a-z]

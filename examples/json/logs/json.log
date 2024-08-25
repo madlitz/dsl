@@ -22,7 +22,7 @@ Line 2:
 		Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:1 Found: "
 			Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 			Skip Rune: ", 
-			Expect (Invert Multiple ) Rune: ["] Range: [] Pos:2 Found: k, e, y, 1
+			ExpectNot (Optional Multiple ) Rune: ["] Range: [] , k, e, y, 1
 			Matched: STRING - key1
 			Expect () Rune: ["] Range: [] Pos:6 Found: "
 			Skip Rune: ", 
@@ -52,7 +52,7 @@ Line 2:
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:9 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 				Skip Rune: ", 
-				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:10 Found: v, a, l, u, e, 1
+				ExpectNot (Optional Multiple ) Rune: ["] Range: [] , v, a, l, u, e, 1
 				Matched: STRING - value1
 				Expect () Rune: ["] Range: [] Pos:16 Found: "
 				Skip Rune: ", 
@@ -90,7 +90,7 @@ Line 3:
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 				Skip Rune: ", 
-				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:3 Found: k, e, y, 2
+				ExpectNot (Optional Multiple ) Rune: ["] Range: [] , k, e, y, 2
 				Matched: STRING - key2
 				Expect () Rune: ["] Range: [] Pos:7 Found: "
 				Skip Rune: ", 
@@ -148,7 +148,7 @@ Line 4:
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:1 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 				Skip Rune: ", 
-				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:2 Found: k, e, y, 3
+				ExpectNot (Optional Multiple ) Rune: ["] Range: [] , k, e, y, 3
 				Matched: STRING - key3
 				Expect () Rune: ["] Range: [] Pos:6 Found: "
 				Skip Rune: ", 
@@ -210,7 +210,7 @@ Line 5:
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 				Skip Rune: ", 
-				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:3 Found: k, e, y, 4
+				ExpectNot (Optional Multiple ) Rune: ["] Range: [] , k, e, y, 4
 				Matched: STRING - key4
 				Expect () Rune: ["] Range: [] Pos:7 Found: "
 				Skip Rune: ", 
@@ -272,7 +272,7 @@ Line 6:
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 				Skip Rune: ", 
-				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:3 Found: k, e, y, 5
+				ExpectNot (Optional Multiple ) Rune: ["] Range: [] , k, e, y, 5
 				Matched: STRING - key5
 				Expect () Rune: ["] Range: [] Pos:7 Found: "
 				Skip Rune: ", 
@@ -324,7 +324,7 @@ Line 7:
 				Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:3 Found: "
 					Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 					Skip Rune: ", 
-					Expect (Invert Multiple ) Rune: ["] Range: [] Pos:4 Found: n, e, s, t, e, d, K, e, y
+					ExpectNot (Optional Multiple ) Rune: ["] Range: [] , n, e, s, t, e, d, K, e, y
 					Matched: STRING - nestedKey
 					Expect () Rune: ["] Range: [] Pos:13 Found: "
 					Skip Rune: ", 
@@ -354,7 +354,7 @@ Line 7:
 					Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:16 Found: "
 						Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 						Skip Rune: ", 
-						Expect (Invert Multiple ) Rune: ["] Range: [] Pos:17 Found: n, e, s, t, e, d, V, a, l, u, e
+						ExpectNot (Optional Multiple ) Rune: ["] Range: [] , n, e, s, t, e, d, V, a, l, u, e
 						Matched: STRING - nestedValue
 						Expect () Rune: ["] Range: [] Pos:28 Found: "
 						Skip Rune: ", 
@@ -416,7 +416,7 @@ Line 9:
 			Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:2 Found: "
 				Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 				Skip Rune: ", 
-				Expect (Invert Multiple ) Rune: ["] Range: [] Pos:3 Found: k, e, y, 6
+				ExpectNot (Optional Multiple ) Rune: ["] Range: [] , k, e, y, 6
 				Matched: STRING - key6
 				Expect () Rune: ["] Range: [] Pos:7 Found: "
 				Skip Rune: ", 
@@ -542,7 +542,7 @@ Line 9:
 								Expect (Optional ) Rune: [{ } [ ] : , "] Range: [0-9 a-z A-Z] Pos:20 Found: "
 									Scanning: github.com/madlitz/dsl/examples/json.stringLiteral
 									Skip Rune: ", 
-									Expect (Invert Multiple ) Rune: ["] Range: [] Pos:21 Found: f, o, u, r
+									ExpectNot (Optional Multiple ) Rune: ["] Range: [] , f, o, u, r
 									Matched: STRING - four
 									Expect () Rune: ["] Range: [] Pos:25 Found: "
 									Skip Rune: ", 

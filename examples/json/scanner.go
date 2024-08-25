@@ -29,7 +29,7 @@ func Scan(s *dsl.Scanner) dsl.Token {
 			{Rn: '\n', Fn: skipWhitespace},
 			{Rn: '\r', Fn: skipWhitespace},
 		},
-		Options: dsl.ScanOptions{Multiple: true, Optional: true},
+		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
 
 	s.Expect(dsl.ExpectRune{
@@ -47,7 +47,7 @@ func Scan(s *dsl.Scanner) dsl.Token {
 			{StartRn: 'a', EndRn: 'z', Fn: literal},
 			{StartRn: 'A', EndRn: 'Z', Fn: literal},
 		},
-		Options: dsl.ScanOptions{Optional: true},
+		Options: dsl.ExpectRuneOptions{Optional: true},
 	})
 
 	return s.Exit()
@@ -59,11 +59,12 @@ func skipWhitespace(s *dsl.Scanner) {
 
 func stringLiteral(s *dsl.Scanner) {
 	s.SkipRune() // Skip the opening quote
-	s.Expect(dsl.ExpectRune{
-		Branches: []dsl.Branch{
-			{Rn: '"', Fn: nil}, // Closing quote
+	s.ExpectNot(dsl.ExpectNotRune{
+		Runes: []rune{
+			'"',
 		},
-		Options: dsl.ScanOptions{Multiple: true, Invert: true},
+		Fn:      nil,
+		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
 
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_STRING}})
@@ -81,7 +82,7 @@ func number(s *dsl.Scanner) {
 		BranchRanges: []dsl.BranchRange{
 			{StartRn: '0', EndRn: '9', Fn: nil},
 		},
-		Options: dsl.ScanOptions{Multiple: true, Optional: true},
+		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_NUMBER}})
 }
@@ -92,7 +93,7 @@ func literal(s *dsl.Scanner) {
 			{StartRn: 'a', EndRn: 'z', Fn: nil},
 			{StartRn: 'A', EndRn: 'Z', Fn: nil},
 		},
-		Options: dsl.ScanOptions{Multiple: true, Optional: true},
+		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
 
 	s.Match([]dsl.Match{

@@ -21,18 +21,18 @@ const (
 
 func Scan(s *dsl.Scanner) dsl.Token {
 	if recover {
-		s.Expect(dsl.ExpectRune{
-			Branches: []dsl.Branch{
-				{Rn: rune(0), Fn: nil},
-				{Rn: '\n', Fn: nil},
+		s.ExpectNot(dsl.ExpectNotRune{
+			Runes: []rune{
+				rune(0), '\n',
 			},
-			Options: dsl.ScanOptions{Multiple: true, Invert: true, Optional: true},
+			Fn:      nil,
+			Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 		})
 		s.Expect(dsl.ExpectRune{
 			Branches: []dsl.Branch{
 				{Rn: '\n', Fn: nil},
 			},
-			Options: dsl.ScanOptions{Optional: true},
+			Options: dsl.ExpectRuneOptions{Optional: true},
 		})
 
 		s.Match([]dsl.Match{{Literal: "", ID: dsl.TOKEN_UNKNOWN}})
@@ -82,7 +82,7 @@ func skipWhitespace(s *dsl.Scanner) {
 			{Rn: ' ', Fn: nil},
 			{Rn: '\t', Fn: nil},
 		},
-		Options: dsl.ScanOptions{Optional: true, Multiple: true, Skip: true},
+		Options: dsl.ExpectRuneOptions{Optional: true, Multiple: true, Skip: true},
 	})
 }
 
@@ -95,7 +95,7 @@ func variable(s *dsl.Scanner) {
 			{StartRn: 'A', EndRn: 'Z', Fn: nil},
 			{StartRn: 'a', EndRn: 'z', Fn: nil},
 		},
-		Options: dsl.ScanOptions{Multiple: true, Optional: true},
+		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_VARIABLE}})
 }
@@ -106,13 +106,13 @@ func literal(s *dsl.Scanner) {
 		BranchRanges: []dsl.BranchRange{
 			{StartRn: '0', EndRn: '9', Fn: nil},
 		},
-		Options: dsl.ScanOptions{Multiple: true, Optional: true},
+		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{Rn: '.', Fn: fraction},
 		},
-		Options: dsl.ScanOptions{Optional: true},
+		Options: dsl.ExpectRuneOptions{Optional: true},
 	})
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_LITERAL}})
 }
@@ -120,12 +120,14 @@ func literal(s *dsl.Scanner) {
 // ScanFn -> literal
 func stringliteral(s *dsl.Scanner) {
 	s.SkipRune()
-	s.Expect(dsl.ExpectRune{
-		Branches: []dsl.Branch{
-			{Rn: '"', Fn: nil},
+	s.ExpectNot(dsl.ExpectNotRune{
+		Runes: []rune{
+			'"',
 		},
-		Options: dsl.ScanOptions{Multiple: true, Invert: true, Optional: true},
+		Fn:      nil,
+		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
+
 	s.SkipRune()
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_LITERAL}})
 }
@@ -136,7 +138,7 @@ func fraction(s *dsl.Scanner) {
 		BranchRanges: []dsl.BranchRange{
 			{StartRn: '0', EndRn: '9', Fn: nil},
 		},
-		Options: dsl.ScanOptions{Multiple: true},
+		Options: dsl.ExpectRuneOptions{Multiple: true},
 	})
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_LITERAL}})
 }
@@ -154,12 +156,12 @@ func assign(s *dsl.Scanner) {
 // ScanFn -> comment
 func comment(s *dsl.Scanner) {
 	s.SkipRune()
-	s.Expect(dsl.ExpectRune{
-		Branches: []dsl.Branch{
-			{Rn: rune(0), Fn: nil},
-			{Rn: '\n', Fn: nil},
+	s.ExpectNot(dsl.ExpectNotRune{
+		Runes: []rune{
+			rune(0), '\n',
 		},
-		Options: dsl.ScanOptions{Multiple: true, Invert: true, Optional: true},
+		Fn:      nil,
+		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
 	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_COMMENT}})
 }
