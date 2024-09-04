@@ -1,0 +1,22 @@
+	Scanning: github.com/madlitz/dsl.TestPeekScan.func1.1
+	Expect (Optional ) Rune: [EOF] Range: [] 
+	Expect (Optional ) Rune: [.] Range: [] 
+	Expect (Multiple ) Rune: [] Range: [0-9] Pos:2 Found: 1, 2, 3
+	Expect (Optional Peek ) Rune: [.] Range: [] 
+	Expect (Optional ) Rune: [.] Range: [] 
+	Matched: NUMBER - 123
+	Returning: github.com/madlitz/dsl.TestPeekScan.func1.1
+	Scanning: github.com/madlitz/dsl.TestPeekScan.func1.1
+	Expect (Optional ) Rune: [EOF] Range: [] Pos:5 Found: EOF
+		Scanning: github.com/madlitz/dsl.TestPeekScan.func1.1.1
+		Matched: EOF - 
+		Returning: github.com/madlitz/dsl.TestPeekScan.func1.1.1
+	Expect (Optional ) Rune: [.] Range: [] 
+	Already Matched. Skipping.
+	Expect (Multiple ) Rune: [] Range: [0-9] 
+	Already Matched. Skipping.
+	Expect (Optional Peek ) Rune: [.] Range: [] 
+	Already Matched. Skipping.
+	Expect (Optional ) Rune: [.] Range: [] 
+	Already Matched. Skipping.
+	Returning: github.com/madlitz/dsl.TestPeekScan.func1.1

@@ -21,6 +21,7 @@ type Scanner struct {
 		unread int
 	}
 	curLineBuffer bytes.Buffer
+	peekBuffer    []rune
 	startLine     int
 	curLine       int
 	startPos      int
@@ -80,6 +81,7 @@ type ExpectRuneOptions struct {
 	Optional bool
 	Multiple bool
 	Skip     bool
+	Peek     bool
 }
 
 type ExpectRune struct {
@@ -99,30 +101,54 @@ type ExpectRune struct {
 //
 // Any runes that are read but not consumed or skipped will be unread.
 func (s *Scanner) Expect(expect ExpectRune) {
+
 	s.log(fmt.Sprintf("Expect %v ", getExpectRuneOptions(expect.Options)), prefixNewline)
 	s.log(fmt.Sprintf("Rune: %v ", branchesToStrings(expect.Branches)), prefixNone)
 	s.log(fmt.Sprintf("Range: %v ", branchRangesToStrings(expect.BranchRanges)), prefixNone)
+	if s.tok.ID != "" {
+		s.log("Already Matched. Skipping.", prefixNewline)
+		return
+	}
 
 	var found1orMore bool
 	var rn rune
 
+	// Loop if Multiple is true
 	for {
 		found := false
 		rn = s.read()
+
+		// Check if the current rune matches any of the branches
 		for _, branch := range expect.Branches {
 			if branch.Rn == rn {
-				s.consume(rn, expect.Options.Skip, found1orMore)
-				found1orMore = true
+				if !expect.Options.Peek {
+					if len(s.peekBuffer) > 0 {
+						// If we have peeked but now no longer peeking, consume the peeked runes
+						s.consumePeeked()
+					}
+					s.consume(rn, expect.Options.Skip)
+				}
+				s.logMatch(rn, found1orMore)
+				found1orMore = true // For Multiple check
 				found = true
 				s.scanFn(branch.Fn)
 				break
 			}
 		}
+
+		// Check if the current rune matches any of the branch ranges
 		if !found {
 			for _, branch := range expect.BranchRanges {
 				if branch.StartRn <= rn && rn <= branch.EndRn {
-					s.consume(rn, expect.Options.Skip, found1orMore)
-					found1orMore = true
+					if !expect.Options.Peek {
+						if len(s.peekBuffer) > 0 {
+							// If we have peeked but now no longer peeking, consume the peeked runes
+							s.consumePeeked()
+						}
+						s.consume(rn, expect.Options.Skip)
+					}
+					s.logMatch(rn, found1orMore)
+					found1orMore = true // For Multiple check
 					found = true
 					s.scanFn(branch.Fn)
 					break
@@ -130,19 +156,49 @@ func (s *Scanner) Expect(expect ExpectRune) {
 			}
 		}
 		if !found {
+			// If no match was found, unread the rune and break out of the loop
 			s.unread()
 			break
 		}
+
+		// We found a match
+		if expect.Options.Peek {
+			// If we are peeking, remember each rune read
+			s.peekBuffer = append(s.peekBuffer, rn)
+		}
 		if !expect.Options.Multiple {
+			// If Multiple is false break out of the loop
 			break
 		}
 	}
+
+	// If we have finished peeking and there are runes to unread, unread them
+	if expect.Options.Peek && len(s.peekBuffer) > 0 {
+		s.unreadPeeked()
+	}
+
 	if !found1orMore && !expect.Options.Optional {
 		s.expRunes = append(s.expRunes, rn)
 		strings := append(branchesToStrings(expect.Branches), branchRangesToStrings(expect.BranchRanges)...)
 		s.error = s.newError(ErrorRuneExpectedNotFound, fmt.Errorf("found [%v], expected any of %v", string(rn), strings))
 	}
 
+}
+
+// unreadPeeked is used to unread the peeked runes
+func (s *Scanner) unreadPeeked() {
+	for i := len(s.peekBuffer) - 1; i >= 0; i-- {
+		s.unread()
+	}
+	s.peekBuffer = nil
+}
+
+// consumePeeked is used to consume the peeked runes
+func (s *Scanner) consumePeeked() {
+	for _, rn := range s.peekBuffer {
+		s.consume(rn, false)
+	}
+	s.peekBuffer = nil
 }
 
 type RuneRange struct {
@@ -171,6 +227,10 @@ func (s *Scanner) ExpectNot(expect ExpectNotRune) {
 	s.log(fmt.Sprintf("ExpectNot %v ", getExpectRuneOptions(expect.Options)), prefixNewline)
 	s.log(fmt.Sprintf("Rune: %v ", runesToStrings(expect.Runes)), prefixNone)
 	s.log(fmt.Sprintf("Range: %v ", runeRangesToStrings(expect.RuneRanges)), prefixNone)
+	if s.tok.ID != "" {
+		s.log("Already Matched. Skipping.", prefixNewline)
+		return
+	}
 
 	var found1orMoreNot bool
 	var rn rune
@@ -198,7 +258,8 @@ func (s *Scanner) ExpectNot(expect ExpectNotRune) {
 		}
 
 		found1orMoreNot = true
-		s.consume(rn, expect.Options.Skip, found1orMoreNot)
+		s.consume(rn, expect.Options.Skip)
+		s.logMatch(rn, found1orMoreNot)
 		s.scanFn(expect.Fn)
 
 		if !expect.Options.Multiple {
@@ -210,47 +271,6 @@ func (s *Scanner) ExpectNot(expect ExpectNotRune) {
 		s.expRunes = append(s.expRunes, rn)
 		strings := append(runesToStrings(expect.Runes), runeRangesToStrings(expect.RuneRanges)...)
 		s.error = s.newError(ErrorRuneExpectedNotFound, fmt.Errorf("found [%v], expected any except %v", string(rn), strings))
-	}
-
-}
-
-type BranchString struct {
-	String string
-	Fn     func(*Scanner)
-}
-
-// Peek reads runes from the buffer and tries to match against the input
-// branch strings. If a match is found the branch is 'taken' (i.e. the branch function is called).
-//
-// No runes are consumed by this function.
-func (s *Scanner) Peek(expectedBranches []BranchString) {
-	s.log(fmt.Sprintf("Peek %v ", branchStringsToStrings(expectedBranches)), prefixNewline)
-
-	for _, expectedBranch := range expectedBranches {
-		var numRead int
-		var noMatch bool
-
-		// Read each rune in the expected branch string and match against the
-		// next rune in the buffer.
-		for _, expectedRune := range expectedBranch.String {
-			rn := s.read()
-			numRead++
-			if rn != expectedRune {
-				noMatch = true
-				break
-			}
-		}
-
-		// Put all read runes back onto the buffer
-		for i := 0; i < numRead; i++ {
-			s.unread()
-		}
-
-		// If a match is found, call the branch function
-		if !noMatch {
-			s.scanFn(expectedBranch.Fn)
-			break
-		}
 	}
 
 }
@@ -325,7 +345,7 @@ func (s *Scanner) scan() (Token, string, *Error) {
 
 // -------------------------------- Scanner Core Functions---------------------------------------
 
-func (s *Scanner) consume(rn rune, skip bool, found1orMore bool) {
+func (s *Scanner) logMatch(rn rune, found1orMore bool) {
 	if !found1orMore {
 		s.log(fmt.Sprintf("Pos:%v ", s.curPos), prefixNone)
 		s.log("Found: ", prefixNone)
@@ -334,6 +354,12 @@ func (s *Scanner) consume(rn rune, skip bool, found1orMore bool) {
 		s.log(", ", prefixNone)
 		s.log(sanitize(string(rn), true), prefixNone)
 	}
+	if rn == '\n' {
+		s.log(fmt.Sprintf("Line %v:", s.curLine), prefixStartLine)
+	}
+}
+
+func (s *Scanner) consume(rn rune, skip bool) {
 	if !skip {
 		s.expRunes = append(s.expRunes, rn)
 	}
@@ -343,7 +369,6 @@ func (s *Scanner) consume(rn rune, skip bool, found1orMore bool) {
 		s.curLine++
 		s.curPos = 1
 		s.curLineBuffer.Reset()
-		s.log(fmt.Sprintf("Line %v:", s.curLine), prefixStartLine)
 	} else {
 		s.curLineBuffer.WriteRune(rn)
 	}
@@ -380,6 +405,10 @@ func (s *Scanner) unread() {
 
 func (s *Scanner) scanFn(fn func(*Scanner)) {
 	if fn != nil {
+		if s.tok.ID != "" {
+			s.log("Already Matched. Skipping.", prefixNewline)
+			return
+		}
 		s.log("Scanning: "+getFuncName(fn), prefixIncrement)
 		fn(s)
 		s.log("Returning: "+getFuncName(fn), prefixDecrement)
@@ -395,6 +424,8 @@ func (s *Scanner) init() {
 	s.error = nil
 	s.startLine = s.curLine
 	s.startPos = s.curPos
+	s.peekBuffer = nil
+	s.curLineBuffer.Reset()
 }
 
 // Creates a new error and passes it to the parser. Only one error is generated by the
@@ -459,6 +490,9 @@ func getExpectRuneOptions(opts ExpectRuneOptions) string {
 	if opts.Skip {
 		buf.WriteString("Skip ")
 	}
+	if opts.Peek {
+		buf.WriteString("Peek ")
+	}
 	buf.WriteRune(')')
 	return buf.String()
 }
@@ -477,14 +511,6 @@ func runesToString(runes []rune) (str string) {
 func branchesToStrings(branches []Branch) (branchStrings []string) {
 	for _, branch := range branches {
 		branchStrings = append(branchStrings, sanitize(string(branch.Rn), true))
-	}
-	return
-}
-
-// Similar to runesToStrings except that it accepts the BranchString type used in Peek()
-func branchStringsToStrings(branches []BranchString) (branchStrings []string) {
-	for _, branch := range branches {
-		branchStrings = append(branchStrings, branch.String)
 	}
 	return
 }
