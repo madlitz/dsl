@@ -123,8 +123,7 @@ Line 2:
 			Returning: github.com/madlitz/dsl/examples/mydsl.operator
 		Returning: github.com/madlitz/dsl/examples/mydsl.assignment
 	Expect Token (Optional ): [COMMENT] 
-	Expect Token (Skip ): [NL EOF] 
-	Skipping: NL
+	Expect Token (Skip ): [NL EOF] Found: NL
 	Returning: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
 	Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
 		Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
@@ -274,15 +273,14 @@ Found: VARIABLE
 	Expect Token (Skip ): [NL EOF] 
 	Skipping Expect as error already found.
 		Recovering: github.com/madlitz/dsl/examples/mydsl.skipUntilLineBreak
-		Expect Token (Invert Optional ): [UNKNOWN] 
+		Expect Not Token (Optional ): [UNKNOWN, ] 
 			Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
-			ExpectNot (Optional Multiple ) Rune: [EOF NL] Range: [] , ;, WS, +, WS, a, ), WS, ', A, WS, S, i, m, p, l, e, WS, E, x, p, r, e, s, s, i, o, n
+			ExpectNot (Optional Multiple ) Rune: [EOF NL] Range: [] Pos:24 Found: ;, WS, +, WS, a, ), WS, ', A, WS, S, i, m, p, l, e, WS, E, x, p, r, e, s, s, i, o, n
 			Expect (Optional ) Rune: [NL] Range: [] Pos:1 Found: NL
 Line 3:
 			Matched: UNKNOWN - ; + a) 'A Simple ExpressionNL
 			Returning: github.com/madlitz/dsl/examples/mydsl.Scan
-		Expect Token (): [UNKNOWN] 
-		Found: UNKNOWN
+		Expect Token (): [UNKNOWN] Found: UNKNOWN
 		Returning: github.com/madlitz/dsl/examples/mydsl.skipUntilLineBreak
 	Returning: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
 	Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
@@ -381,8 +379,7 @@ Found: VARIABLE
 					AST Walk Up
 					Returning: github.com/madlitz/dsl/examples/mydsl.operator
 				Returning: github.com/madlitz/dsl/examples/mydsl.expression
-			Expect Token (): [CLOSE_PAREN] 
-			Found: CLOSE_PAREN
+			Expect Token (): [CLOSE_PAREN] Found: CLOSE_PAREN
 				Parsing: github.com/madlitz/dsl/examples/mydsl.operator
 				AST Add Node: TERMINAL
 				AST Add Tokens: CLOSE_PAREN - ), 

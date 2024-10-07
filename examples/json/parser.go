@@ -26,13 +26,31 @@ func Parse(p *dsl.Parser) (dsl.AST, []dsl.Error) {
 func parseObject(p *dsl.Parser) {
 	p.SkipToken()
 	p.AddNode(NODE_OBJECT)
-	p.Peek([]dsl.PeekToken{
-		{IDs: []dsl.TokenType{TOKEN_STRING}, Fn: parseMember},
-	})
 
+	// First member
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{Id: TOKEN_COMMA, Fn: parseMember},
+			{Id: TOKEN_STRING, Fn: func(p *dsl.Parser) {
+				p.AddNode(NODE_MEMBER)
+				p.AddTokens()
+				p.Expect(dsl.ExpectToken{
+					Branches: []dsl.BranchToken{
+						{Id: TOKEN_COLON, Fn: nil},
+					},
+					Options: dsl.ParseOptions{Skip: true},
+				})
+				p.Call(parseValue)
+			}},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
+
+	p.WalkUp()
+
+	// Subsequent members
+	p.Expect(dsl.ExpectToken{
+		Branches: []dsl.BranchToken{
+			{Id: TOKEN_COMMA, Fn: parseKeyAndValue},
 		},
 		Options: dsl.ParseOptions{Multiple: true, Optional: true, Skip: true},
 	})
@@ -44,7 +62,7 @@ func parseObject(p *dsl.Parser) {
 	})
 }
 
-func parseMember(p *dsl.Parser) {
+func parseKeyAndValue(p *dsl.Parser) {
 
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
@@ -59,34 +77,53 @@ func parseMember(p *dsl.Parser) {
 		Branches: []dsl.BranchToken{
 			{Id: TOKEN_COLON, Fn: nil},
 		},
+		Options: dsl.ParseOptions{Skip: true},
 	})
-	p.SkipToken() // Skip the colon
+
+	p.Call(parseValue)
+	p.WalkUp()
+}
+
+func parseValue(p *dsl.Parser) {
+
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{
-			{Id: TOKEN_STRING, Fn: parseValue},
-			{Id: TOKEN_NUMBER, Fn: parseValue},
-			{Id: TOKEN_TRUE, Fn: parseValue},
-			{Id: TOKEN_FALSE, Fn: parseValue},
-			{Id: TOKEN_NULL, Fn: parseValue},
+			{Id: TOKEN_STRING, Fn: addValue},
+			{Id: TOKEN_NUMBER, Fn: addValue},
+			{Id: TOKEN_TRUE, Fn: addValue},
+			{Id: TOKEN_FALSE, Fn: addValue},
+			{Id: TOKEN_NULL, Fn: addValue},
 			{Id: TOKEN_LBRACE, Fn: parseObject},
 			{Id: TOKEN_LBRACKET, Fn: parseArray},
 		},
 	})
-	p.WalkUp()
+
 }
 
 func parseArray(p *dsl.Parser) {
 	p.SkipToken()
 	p.AddNode(NODE_ARRAY)
 
-	p.Peek([]dsl.PeekToken{
-		{IDs: []dsl.TokenType{TOKEN_STRING}, Fn: parseArrayValue},
-		{IDs: []dsl.TokenType{TOKEN_NUMBER}, Fn: parseArrayValue},
-		{IDs: []dsl.TokenType{TOKEN_TRUE}, Fn: parseArrayValue},
-		{IDs: []dsl.TokenType{TOKEN_FALSE}, Fn: parseArrayValue},
-		{IDs: []dsl.TokenType{TOKEN_NULL}, Fn: parseArrayValue},
-		{IDs: []dsl.TokenType{TOKEN_LBRACE}, Fn: parseArrayValue},
-		{IDs: []dsl.TokenType{TOKEN_LBRACKET}, Fn: parseArrayValue},
+	// First value
+	p.Expect(dsl.ExpectToken{
+		Branches: []dsl.BranchToken{
+			{Id: TOKEN_STRING, Fn: addValue},
+			{Id: TOKEN_NUMBER, Fn: addValue},
+			{Id: TOKEN_TRUE, Fn: addValue},
+			{Id: TOKEN_FALSE, Fn: addValue},
+			{Id: TOKEN_NULL, Fn: addValue},
+			{Id: TOKEN_LBRACE, Fn: parseObject},
+			{Id: TOKEN_LBRACKET, Fn: parseArray},
+		},
+		Options: dsl.ParseOptions{Optional: true},
+	})
+
+	// Subsequent values
+	p.Expect(dsl.ExpectToken{
+		Branches: []dsl.BranchToken{
+			{Id: TOKEN_COMMA, Fn: parseValue},
+		},
+		Options: dsl.ParseOptions{Multiple: true, Optional: true, Skip: true},
 	})
 
 	p.Expect(dsl.ExpectToken{
@@ -99,30 +136,7 @@ func parseArray(p *dsl.Parser) {
 
 }
 
-func parseArrayValue(p *dsl.Parser) {
-
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: TOKEN_STRING, Fn: parseValue},
-			{Id: TOKEN_NUMBER, Fn: parseValue},
-			{Id: TOKEN_TRUE, Fn: parseValue},
-			{Id: TOKEN_FALSE, Fn: parseValue},
-			{Id: TOKEN_NULL, Fn: parseValue},
-			{Id: TOKEN_LBRACE, Fn: parseObject},
-			{Id: TOKEN_LBRACKET, Fn: parseArray},
-			{Id: TOKEN_RBRACKET, Fn: closeNode},
-		},
-	})
-
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: TOKEN_COMMA, Fn: parseArrayValue},
-		},
-		Options: dsl.ParseOptions{Multiple: true, Optional: true, Skip: true},
-	})
-}
-
-func parseValue(p *dsl.Parser) {
+func addValue(p *dsl.Parser) {
 	p.AddNode(NODE_VALUE)
 	p.AddTokens()
 	p.WalkUp()

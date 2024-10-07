@@ -67,14 +67,14 @@ func stringLiteral(s *dsl.Scanner) {
 		Options: dsl.ExpectRuneOptions{Multiple: true, Optional: true},
 	})
 
-	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_STRING}})
-
 	s.Expect(dsl.ExpectRune{
 		Branches: []dsl.Branch{
 			{Rn: '"', Fn: nil}, // Closing quote
 		},
 	})
 	s.SkipRune() // Skip the closing quote
+	s.Match([]dsl.Match{{Literal: "", ID: TOKEN_STRING}})
+
 }
 
 func number(s *dsl.Scanner) {

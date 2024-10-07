@@ -147,11 +147,10 @@ func addcomment(p *dsl.Parser) {
 
 func skipUntilLineBreak(p *dsl.Parser) {
 	recover = true
-	p.Expect(dsl.ExpectToken{
-		Branches: []dsl.BranchToken{
-			{Id: dsl.TOKEN_UNKNOWN, Fn: nil},
-		},
-		Options: dsl.ParseOptions{Optional: true, Invert: true},
+	p.ExpectNot(dsl.ExpectNotToken{
+		Tokens:  []dsl.TokenType{dsl.TOKEN_UNKNOWN},
+		Fn:      nil,
+		Options: dsl.ParseOptions{Optional: true},
 	})
 	p.Expect(dsl.ExpectToken{
 		Branches: []dsl.BranchToken{

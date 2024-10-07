@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 
@@ -233,6 +234,8 @@ func TestJSONParser(t *testing.T) {
 			}
 	  	]
 	}`)
+
+	fmt.Println(string(astJSON))
 
 	expectJSON(t, expectedJSON, astJSON)
 

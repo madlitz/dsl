@@ -24,11 +24,12 @@ type Parser struct {
 		tokens []Token
 		num    int
 	} // Holds unread tokens so we don't have to make repeat calls to the Scanner
-	tokens []Token // Holds all tokens consumed until they are moved to the AST
-	errors []Error
-	eof    bool
-	err    bool
-	peek   struct {
+	tokens     []Token // Holds all tokens consumed until they are moved to the AST
+	peekBuffer []Token // Holds all tokens peeked until they are consumed
+	errors     []Error
+	eof        bool
+	err        bool
+	loopCheck  struct {
 		count int
 		line  int
 		pos   int
@@ -75,14 +76,15 @@ type ExpectToken struct {
 	Options  ParseOptions
 }
 
+type ExpectNotToken struct {
+	Tokens  []TokenType
+	Fn      func(*Parser)
+	Options ParseOptions
+}
+
 type BranchToken struct {
 	Id TokenType
 	Fn func(*Parser)
-}
-
-type PeekToken struct {
-	IDs []TokenType
-	Fn  func(*Parser)
 }
 
 // If the Optional option is false and a match is not found, an error is returned to the
@@ -93,15 +95,15 @@ type PeekToken struct {
 // Multiple option is set to false, only the first branch to be matched is taken and
 // consumed.
 //
-// If the Invert option is set to true the parser consumes the token and takes a branch if
-// it doesn't match any of the branches.
+// If the Peek option is set to true the parser will not consume the token that is matched
+// and will push the token back onto the buffer if no subseqent match is found.
 //
 // If the the Skip option is set to true the parser will take the branch if a match is
 // found but will not consume the token.
 type ParseOptions struct {
 	Optional bool
 	Multiple bool
-	Invert   bool
+	Peek     bool
 	Skip     bool
 }
 
@@ -119,7 +121,9 @@ func (p *Parser) Expect(expect ExpectToken) {
 		return
 	}
 	for {
+		var branchFn func(*Parser)
 		found := false
+
 		tok, err = p.scan()
 		if err != nil {
 			return
@@ -130,38 +134,117 @@ func (p *Parser) Expect(expect ExpectToken) {
 		for _, branch := range expect.Branches {
 			if tok.ID == branch.Id {
 				found = true
-				found1orMore = true
-				if !expect.Options.Invert {
-					if !expect.Options.Skip {
-						p.consume(tok)
-					} else {
-						p.skip(tok)
-					}
-					p.parseFn(branch.Fn)
-					break
-				}
+				branchFn = branch.Fn
+				break
 			}
 		}
-		if (!expect.Options.Invert && !found) || (expect.Options.Invert && found) {
+
+		// If no match was found, unread the token and break out of the loop
+		if !found {
 			p.unscan()
 			break
 		}
-		if expect.Options.Invert && !found {
-			if !expect.Options.Skip {
-				p.consume(tok)
-			} else {
-				p.skip(tok)
+
+		// Match found
+
+		if expect.Options.Peek {
+			// If we are peeking, remember each token read
+			p.peekBuffer = append(p.peekBuffer, tok)
+		} else {
+			// If we are not peeking, consume the token
+			if len(p.peekBuffer) > 0 {
+				// If we have peeked but now no longer peeking, consume the peeked runes
+				p.consumePeeked()
 			}
-			found1orMore = true
+			p.consume(tok, expect.Options.Skip)
 		}
+
+		p.logMatch(tok)
+		found1orMore = true // Set to true only after logging the first match
+		p.parseFn(branchFn)
+
 		if !expect.Options.Multiple || p.eof || p.err {
+			// If Multiple is false break out of the loop
 			break
 		}
 	}
-	if !found1orMore && !expect.Options.Optional && !expect.Options.Invert {
+
+	// If we have finished peeking and there are tokens to unread, unread them
+	if expect.Options.Peek && len(p.peekBuffer) > 0 {
+		p.unreadPeeked()
+	}
+
+	if !found1orMore && !expect.Options.Optional {
 		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any of %v", tok.ID, branchTokensToStrings(expect.Branches)), p.tokToErrLine(tok))
-	} else if !found1orMore && !expect.Options.Optional && expect.Options.Invert {
-		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any except %v", tok.ID, branchTokensToStrings(expect.Branches)), p.tokToErrLine(tok))
+	}
+}
+
+func (p *Parser) ExpectNot(expect ExpectNotToken) {
+	var found bool
+	var found1orMoreNot bool
+	var tok Token
+	var err *Error
+
+	p.log(fmt.Sprintf("Expect Not Token %v: %v ", getParseOptions(expect.Options), tokensToStrings(expect.Tokens)), prefixNewline)
+	if p.err {
+		p.log("Skipping Expect Not as error already found.", prefixNewline)
+		return
+	}
+
+	for {
+		found = false
+		tok, err = p.scan()
+		if err != nil {
+			return
+		}
+		if tok.ID == TOKEN_EOF {
+			p.eof = true
+		}
+
+		for _, token := range expect.Tokens {
+			if tok.ID == token {
+				found = true
+				break
+			}
+		}
+
+		// If a match was found, unread the token and break out of the loop
+		if found {
+			p.unscan()
+			break
+		}
+
+		// Match not found, which is what we are expecting
+
+		if expect.Options.Peek {
+			// If we are peeking, remember each token read
+			p.peekBuffer = append(p.peekBuffer, tok)
+		} else {
+			// If we are not peeking, consume the token
+			if len(p.peekBuffer) > 0 {
+				// If we have peeked but now no longer peeking, consume the peeked tokens
+				p.consumePeeked()
+			}
+			p.consume(tok, expect.Options.Skip)
+		}
+
+		p.logMatch(tok)
+		found1orMoreNot = true
+		p.parseFn(expect.Fn)
+
+		if !expect.Options.Multiple || p.eof || p.err {
+			// If Multiple is false break out of the loop
+			break
+		}
+	}
+
+	// If we have finished peeking and there are tokens to unread, unread them
+	if expect.Options.Peek && len(p.peekBuffer) > 0 {
+		p.unreadPeeked()
+	}
+
+	if !found1orMoreNot && !expect.Options.Optional {
+		p.newError(ErrorTokenExpectedNotFound, fmt.Errorf("found [%v], expected any except %v", tok.ID, tokensToStrings(expect.Tokens)), p.tokToErrLine(tok))
 	}
 }
 
@@ -177,14 +260,14 @@ func (p *Parser) parseFn(fn func(*Parser)) {
 	}
 }
 
-func (p *Parser) consume(tok Token) {
-	p.log("Found: ", prefixNewline)
-	p.log(string(tok.ID), prefixNone)
-	p.tokens = append(p.tokens, tok)
+func (p *Parser) consume(tok Token, skip bool) {
+	if !skip {
+		p.tokens = append(p.tokens, tok)
+	}
 }
 
-func (p *Parser) skip(tok Token) {
-	p.log("Skipping: ", prefixNewline)
+func (p *Parser) logMatch(tok Token) {
+	p.log("Found: ", prefixNone)
 	p.log(string(tok.ID), prefixNone)
 }
 
@@ -246,38 +329,6 @@ func (p *Parser) Call(fn func(*Parser)) {
 	}
 }
 
-const MaxConsecutivePeeks = 100
-
-func (p *Parser) Peek(branches []PeekToken) {
-	p.log(fmt.Sprintf("Peek: %v ", peekTokensToStrings(branches)), prefixNewline)
-	if p.err {
-		p.log("Skipping Peek as error already found.", prefixNewline)
-		return
-	}
-
-	for _, branch := range branches {
-		tokensLen := len(branch.IDs)
-		bufLen := 0
-		for i := 0; i < tokensLen; i++ {
-			bufLen++
-			tok, err := p.scan()
-			if err != nil {
-				return
-			}
-			if tok.ID != branch.IDs[i] {
-				break
-			}
-		}
-		for i := 0; i < bufLen; i++ {
-			p.unscan()
-		}
-		if tokensLen == 0 || tokensLen == bufLen {
-			p.parseFn(branch.Fn)
-			break
-		}
-	}
-}
-
 func (p *Parser) Exit() (AST, []Error) {
 	return p.ast, p.errors
 }
@@ -304,19 +355,21 @@ func (p *Parser) scan() (tok Token, err *Error) {
 	return
 }
 
+const MaxConsecutivePeeks = 10
+
 func (p *Parser) checkForInfiniteLoop() (bool, Token) {
 	tok := p.buf.tokens[len(p.buf.tokens)-1]
 
-	if p.peek.line == tok.Line && p.peek.pos == tok.Position {
-		p.peek.count++
-		if p.peek.count > MaxConsecutivePeeks {
+	if p.loopCheck.line == tok.Line && p.loopCheck.pos == tok.Position {
+		p.loopCheck.count++
+		if p.loopCheck.count > MaxConsecutivePeeks {
 			return true, tok
 		}
 	} else {
-		p.peek.count = 0
+		p.loopCheck.count = 0
 	}
-	p.peek.line = tok.Line
-	p.peek.pos = tok.Position
+	p.loopCheck.line = tok.Line
+	p.loopCheck.pos = tok.Position
 
 	return false, Token{}
 
@@ -327,6 +380,22 @@ func (p *Parser) unscan() {
 	if p.buf.num < len(p.buf.tokens) {
 		p.buf.num++
 	}
+}
+
+// unreadPeeked is used to unread the peeked tokens
+func (p *Parser) unreadPeeked() {
+	for i := len(p.peekBuffer) - 1; i >= 0; i-- {
+		p.unscan()
+	}
+	p.peekBuffer = nil
+}
+
+// consumePeeked is used to consume the peeked tokens
+func (p *Parser) consumePeeked() {
+	for _, tok := range p.peekBuffer {
+		p.consume(tok, false)
+	}
+	p.peekBuffer = nil
 }
 
 type errorLine struct {
@@ -385,9 +454,6 @@ func (p *Parser) Recover(fn func(*Parser)) {
 func getParseOptions(opts ParseOptions) string {
 	var buf bytes.Buffer
 	buf.WriteRune('(')
-	if opts.Invert {
-		buf.WriteString("Invert ")
-	}
 	if opts.Optional {
 		buf.WriteString("Optional ")
 	}
@@ -397,14 +463,17 @@ func getParseOptions(opts ParseOptions) string {
 	if opts.Skip {
 		buf.WriteString("Skip ")
 	}
+	if opts.Peek {
+		buf.WriteString("Peek ")
+	}
 	buf.WriteRune(')')
 	return buf.String()
 }
 
 // Used to print tokens passed to Peek() to an Error or to the log
-func peekTokensToStrings(branches []PeekToken) (literals []string) {
-	for _, branch := range branches {
-		literals = append(literals, fmt.Sprintf("%v, ", branch.IDs))
+func tokensToStrings(tokens []TokenType) (literals []string) {
+	for _, token := range tokens {
+		literals = append(literals, fmt.Sprintf("%v, ", token))
 	}
 	return
 }

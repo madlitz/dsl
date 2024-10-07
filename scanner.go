@@ -115,23 +115,15 @@ func (s *Scanner) Expect(expect ExpectRune) {
 
 	// Loop if Multiple is true
 	for {
+		var branchFn func(*Scanner)
 		found := false
 		rn = s.read()
 
 		// Check if the current rune matches any of the branches
 		for _, branch := range expect.Branches {
 			if branch.Rn == rn {
-				if !expect.Options.Peek {
-					if len(s.peekBuffer) > 0 {
-						// If we have peeked but now no longer peeking, consume the peeked runes
-						s.consumePeeked()
-					}
-					s.consume(rn, expect.Options.Skip)
-				}
-				s.logMatch(rn, found1orMore)
-				found1orMore = true // For Multiple check
 				found = true
-				s.scanFn(branch.Fn)
+				branchFn = branch.Fn
 				break
 			}
 		}
@@ -140,17 +132,8 @@ func (s *Scanner) Expect(expect ExpectRune) {
 		if !found {
 			for _, branch := range expect.BranchRanges {
 				if branch.StartRn <= rn && rn <= branch.EndRn {
-					if !expect.Options.Peek {
-						if len(s.peekBuffer) > 0 {
-							// If we have peeked but now no longer peeking, consume the peeked runes
-							s.consumePeeked()
-						}
-						s.consume(rn, expect.Options.Skip)
-					}
-					s.logMatch(rn, found1orMore)
-					found1orMore = true // For Multiple check
 					found = true
-					s.scanFn(branch.Fn)
+					branchFn = branch.Fn
 					break
 				}
 			}
@@ -166,6 +149,18 @@ func (s *Scanner) Expect(expect ExpectRune) {
 			// If we are peeking, remember each rune read
 			s.peekBuffer = append(s.peekBuffer, rn)
 		}
+		if !expect.Options.Peek {
+			// If we are not peeking, consume the rune
+			if len(s.peekBuffer) > 0 {
+				// If we have peeked but now no longer peeking, consume the peeked runes
+				s.consumePeeked()
+			}
+			s.consume(rn, expect.Options.Skip)
+		}
+		s.logMatch(rn, found1orMore)
+		found1orMore = true // Set to true only after logging the first match
+		s.scanFn(branchFn)
+
 		if !expect.Options.Multiple {
 			// If Multiple is false break out of the loop
 			break
@@ -183,22 +178,6 @@ func (s *Scanner) Expect(expect ExpectRune) {
 		s.error = s.newError(ErrorRuneExpectedNotFound, fmt.Errorf("found [%v], expected any of %v", string(rn), strings))
 	}
 
-}
-
-// unreadPeeked is used to unread the peeked runes
-func (s *Scanner) unreadPeeked() {
-	for i := len(s.peekBuffer) - 1; i >= 0; i-- {
-		s.unread()
-	}
-	s.peekBuffer = nil
-}
-
-// consumePeeked is used to consume the peeked runes
-func (s *Scanner) consumePeeked() {
-	for _, rn := range s.peekBuffer {
-		s.consume(rn, false)
-	}
-	s.peekBuffer = nil
 }
 
 type RuneRange struct {
@@ -252,19 +231,39 @@ func (s *Scanner) ExpectNot(expect ExpectNotRune) {
 				}
 			}
 		}
+
+		// If a match was found, unread the rune and break out of the loop
 		if found {
 			s.unread()
 			break
 		}
 
-		found1orMoreNot = true
-		s.consume(rn, expect.Options.Skip)
+		// Match not found, which is what we are expecting
+
+		if expect.Options.Peek {
+			// If we are peeking, remember each rune read
+			s.peekBuffer = append(s.peekBuffer, rn)
+		} else {
+			// If we are not peeking, consume the rune
+			if len(s.peekBuffer) > 0 {
+				// If we have peeked but now no longer peeking, consume the peeked runes
+				s.consumePeeked()
+			}
+			s.consume(rn, expect.Options.Skip)
+		}
+
 		s.logMatch(rn, found1orMoreNot)
+		found1orMoreNot = true // Set to true only after logging the first match
 		s.scanFn(expect.Fn)
 
 		if !expect.Options.Multiple {
 			break
 		}
+	}
+
+	// If we have finished peeking and there are runes to unread, unread them
+	if expect.Options.Peek && len(s.peekBuffer) > 0 {
+		s.unreadPeeked()
 	}
 
 	if !found1orMoreNot && !expect.Options.Optional {
@@ -401,6 +400,22 @@ func (s *Scanner) unread() {
 	if s.buf.unread < len(s.buf.runes) { // Ensure we don't unread more runes than have been read
 		s.buf.unread++
 	}
+}
+
+// unreadPeeked is used to unread the peeked runes
+func (s *Scanner) unreadPeeked() {
+	for i := len(s.peekBuffer) - 1; i >= 0; i-- {
+		s.unread()
+	}
+	s.peekBuffer = nil
+}
+
+// consumePeeked is used to consume the peeked runes
+func (s *Scanner) consumePeeked() {
+	for _, rn := range s.peekBuffer {
+		s.consume(rn, false)
+	}
+	s.peekBuffer = nil
 }
 
 func (s *Scanner) scanFn(fn func(*Scanner)) {

@@ -123,8 +123,7 @@ Line 2:
 			Returning: github.com/madlitz/dsl/examples/mydsl.operator
 		Returning: github.com/madlitz/dsl/examples/mydsl.assignment
 	Expect Token (Optional ): [COMMENT] 
-	Expect Token (Skip ): [NL EOF] 
-	Skipping: NL
+	Expect Token (Skip ): [NL EOF] Found: NL
 	Returning: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
 	Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
 		Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
@@ -290,8 +289,7 @@ Found: VARIABLE
 									AST Walk Up
 									Returning: github.com/madlitz/dsl/examples/mydsl.operator
 								Returning: github.com/madlitz/dsl/examples/mydsl.expression
-							Expect Token (): [CLOSE_PAREN] 
-							Found: CLOSE_PAREN
+							Expect Token (): [CLOSE_PAREN] Found: CLOSE_PAREN
 								Parsing: github.com/madlitz/dsl/examples/mydsl.operator
 								AST Add Node: TERMINAL
 								AST Add Tokens: CLOSE_PAREN - ), 
@@ -304,7 +302,7 @@ Found: VARIABLE
 									Expect () Rune: [- + * / ( ) NL : ' " EOF] Range: [0-9 A-Z a-z] Pos:32 Found: '
 										Scanning: github.com/madlitz/dsl/examples/mydsl.comment
 										Skip Rune: ', 
-										ExpectNot (Optional Multiple ) Rune: [EOF NL] Range: [] , A, WS, S, i, m, p, l, e, WS, E, x, p, r, e, s, s, i, o, n
+										ExpectNot (Optional Multiple ) Rune: [EOF NL] Range: [] Pos:33 Found: A, WS, S, i, m, p, l, e, WS, E, x, p, r, e, s, s, i, o, n
 										Matched: COMMENT - A Simple Expression
 										Returning: github.com/madlitz/dsl/examples/mydsl.comment
 									Returning: github.com/madlitz/dsl/examples/mydsl.Scan
@@ -318,8 +316,7 @@ Found: VARIABLE
 			AST Walk Up
 			Returning: github.com/madlitz/dsl/examples/mydsl.operator
 		Returning: github.com/madlitz/dsl/examples/mydsl.assignment
-	Expect Token (Optional ): [COMMENT] 
-	Found: COMMENT
+	Expect Token (Optional ): [COMMENT] Found: COMMENT
 		Parsing: github.com/madlitz/dsl/examples/mydsl.addcomment
 		AST Add Node: COMMENT
 		AST Add Tokens: COMMENT - A Simple Expression, 
@@ -334,7 +331,7 @@ Found: VARIABLE
 Line 3:
 		Matched: NL - NL
 		Returning: github.com/madlitz/dsl/examples/mydsl.Scan
-	Skipping: NL
+	Found: NL
 	Returning: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
 	Scanning: github.com/madlitz/dsl/examples/mydsl.Scan
 		Calling: github.com/madlitz/dsl/examples/mydsl.skipWhitespace
@@ -418,8 +415,7 @@ Found: VARIABLE
 				Returning: github.com/madlitz/dsl/examples/mydsl.expression
 			AST Walk Up
 			Returning: github.com/madlitz/dsl/examples/mydsl.operator
-		Expect Token (): [CLOSE_PAREN] 
-		Found: CLOSE_PAREN
+		Expect Token (): [CLOSE_PAREN] Found: CLOSE_PAREN
 			Parsing: github.com/madlitz/dsl/examples/mydsl.closecall
 			AST Skip Token: CLOSE_PAREN - ), 
 			AST Walk Up
@@ -435,7 +431,6 @@ Found: VARIABLE
 			Matched: EOF - 
 			Returning: github.com/madlitz/dsl/examples/mydsl.eof
 		Returning: github.com/madlitz/dsl/examples/mydsl.Scan
-	Expect Token (Skip ): [NL EOF] 
-	Skipping: EOF
+	Expect Token (Skip ): [NL EOF] Found: EOF
 	Returning: github.com/madlitz/dsl/examples/mydsl.assignmentOrCall
 Returning: github.com/madlitz/dsl/examples/mydsl.Parse
