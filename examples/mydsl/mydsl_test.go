@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/dezlitz/dsl"
+	. "github.com/dezlitz/dsl/examples/mydsl"
 	"github.com/google/go-cmp/cmp"
-	"github.com/madlitz/dsl"
-	. "github.com/madlitz/dsl/examples/mydsl"
 )
 
 func TestDSL(t *testing.T) {

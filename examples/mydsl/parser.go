@@ -1,7 +1,7 @@
 package mydsl
 
 import (
-	"github.com/madlitz/dsl"
+	"github.com/dezlitz/dsl"
 )
 
 // NodeType represents the type of a node in the AST.

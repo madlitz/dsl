@@ -1,7 +1,7 @@
 package json
 
 import (
-	"github.com/madlitz/dsl"
+	"github.com/dezlitz/dsl"
 )
 
 const (
